@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Lista de Clientes</title>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      margin: 0;
+    }
+    header {
+      background-color: #000000;
+      padding: 15px 15px 15px 40px;
+      text-align: center;
+      font-size: 20px;
+      font-weight: bold;
+      color: white;
+      position: relative;
+    }
+    .back-arrow {
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 22px;
+      color: white;
+      cursor: pointer;
+    }
+    .container {
+      max-width: 500px;
+      margin: auto;
+      padding: 20px;
+    }
+    .search-box input {
+      width: 90%;
+      padding: 10px;
+      font-size: 16px;
+      margin-bottom: 20px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    .cliente {
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .acciones {
+      margin-top: 10px;
+      display: none;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .acciones button {
+      width: 100%;
+      padding: 10px;
+      font-size: 14px;
+      border-radius: 6px;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    .opciones-btn {
+      width: 100%;
+      padding: 10px;
+      font-size: 14px;
+      border-radius: 6px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    .eliminar-btn { background-color: #dc3545; }
+    .pedido-btn { background-color: #17a2b8; }
+    .ver-btn { background-color: #28a745; }
+    .historial-btn { background-color: #ffc107; color: #333; }
+    .info-btn { background-color: #6f42c1; }
+    .ver-btn[disabled] {
+      background-color: #6c757d;
+      cursor: not-allowed;
+      font-size: 12px;
+    }
+    .historial {
+      display: none;
+      margin-top: 10px;
+      padding: 10px;
+      background: #eef7f8;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+    .historial.mostrar {
+      display: block;
+    }
+    .ubicacion {
+      margin-top: 8px;
+      font-size: 14px;
+    }
+    .ubicacion a {
+      text-decoration: none;
+      color: #28a745;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+<header>
+  <span class="back-arrow" onclick="history.back()">←</span>
+  📁 Lista de Clientes
+</header>
+<div class="container">
+  <div class="search-box">
+    <input type="text" id="buscador" placeholder="🔍 Buscar cliente..." oninput="renderClientes()">
+  </div>
+  <div id="listaClientes"></div>
+</div>
+<script>
+  let clientes = JSON.parse(localStorage.getItem('clientes')) || [];
+  function guardarClientes() {
+    localStorage.setItem('clientes', JSON.stringify(clientes));
+  }
+  function reiniciarVisitas() {
+    const ahora = new Date();
+    const ultimaFecha = localStorage.getItem("ultimaFechaVisita") || "";
+    const hoy = ahora.toLocaleDateString();
+    if (hoy !== ultimaFecha) {
+      clientes.forEach(cliente => cliente.estado = "visitar");
+      guardarClientes();
+      localStorage.setItem("ultimaFechaVisita", hoy);
+    }
+  }
+  function eliminarCliente(index) {
+    Swal.fire({
+      title: '¿Eliminar cliente?',
+      text: 'Esta acción no se puede deshacer.',
+      icon: 'warning',
+      input: 'password',
+      inputLabel: 'Contraseña',
+      inputPlaceholder: 'Ingrese la contraseña',
+      showCancelButton: true,
+      confirmButtonText: 'Eliminar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        if (result.value !== '1234') {
+          Swal.fire('Error', 'Contraseña incorrecta.', 'error');
+        } else {
+          clientes.splice(index, 1);
+          guardarClientes();
+          renderClientes();
+          Swal.fire('Eliminado', 'Cliente eliminado correctamente.', 'success');
+        }
+      }
+    });
+  }
+  function marcarVisitado(index) {
+    clientes[index].estado = "visitado";
+    guardarClientes();
+    renderClientes();
+    Swal.fire('✅ Cliente visitado', '', 'success');
+  }
+  function seleccionarCliente(index) {
+    clientes[index].estado = "visitado";
+    guardarClientes();
+    const clienteSeleccionado = { ...clientes[index], id: index };
+    localStorage.setItem('clienteSeleccionado', JSON.stringify(clienteSeleccionado));
+    window.location.href = 'inventario.html';
+  }
+  function toggleHistorial(id) {
+    document.getElementById(id).classList.toggle('mostrar');
+  }
+  function toggleOpciones(index) {
+    const opcionesDiv = document.getElementById(`opciones-${index}`);
+    opcionesDiv.style.display = opcionesDiv.style.display === 'flex' ? 'none' : 'flex';
+  }
+  function mostrarInformacion(cliente) {
+    Swal.fire({
+      title: '📋 Información del Cliente',
+      html: `
+        <b>Nombre:</b> ${cliente.nombre || '-'}<br>
+        <b>Teléfono:</b> ${cliente.telefono || '-'}<br>
+        <b>Dirección:</b> ${cliente.direccion || '-'}<br>
+        <b>Negocio:</b> ${cliente.negocio || '-'}<br>
+        <b>Correo:</b> ${cliente.correo || '-'}<br>
+        <b>Latitud:</b> ${cliente.latitud || '-'}<br>
+        <b>Longitud:</b> ${cliente.longitud || '-'}<br>
+        <b>Estado:</b> ${cliente.estado || 'visitar'}
+      `,
+      icon: 'info',
+      confirmButtonText: 'Cerrar'
+    });
+  }
+  function renderClientes() {
+    const contenedor = document.getElementById('listaClientes');
+    const filtro = document.getElementById('buscador').value.toLowerCase();
+    contenedor.innerHTML = '';
+    const filtrados = clientes
+      .map((cliente, i) => ({ ...cliente, index: i }))
+      .filter(c => c.nombre.toLowerCase().includes(filtro) || c.negocio?.toLowerCase().includes(filtro));
+    if (filtrados.length === 0) {
+      contenedor.innerHTML = '<p style="text-align:center;">No se encontraron clientes.</p>';
+      return;
+    }
+    filtrados.forEach((cliente) => {
+      const { nombre, telefono, direccion, negocio, correo, latitud, longitud, historial = [], estado = "visitar", index } = cliente;
+      const div = document.createElement('div');
+      div.className = 'cliente';
+      const historialHTML = historial.length
+        ? historial.map(p => `
+          <div>
+            📦 <strong>${p.producto || 'Producto'}</strong><br>
+            🔢 Cantidad: ${p.cantidad || '0'}<br>
+            🕓 Fecha: ${p.fecha || 'Sin fecha'}
+            <hr>
+          </div>`).join('')
+        : '<em>Sin historial aún.</em>';
+      div.innerHTML = `
+        <strong>🏪 ${negocio}</strong><br>
+        📍 ${direccion}<br>
+        📞 ${telefono}<br>
+        ${correo ? `📧 ${correo}<br>` : ''}
+        ${latitud && longitud ? `
+        <div class="ubicacion">
+          📌 <a href="https://www.google.com/maps?q=${latitud},${longitud}" target="_blank">Ver ubicación</a>
+        </div>` : ''}
+        <button class="opciones-btn" onclick="toggleOpciones(${index})">⚙️ Opciones</button>
+        <div class="acciones" id="opciones-${index}">
+          <button class="pedido-btn" onclick="seleccionarCliente(${index})">➕ Pedido</button>
+          ${
+            estado === "visitado"
+              ? `<button class="ver-btn" disabled>✅ Visitado</button>`
+              : `<button class="ver-btn" onclick="marcarVisitado(${index})">🔍 Visitar</button>`
+          }
+          <button class="historial-btn" onclick="toggleHistorial('historial-${index}')">📄 Ver historial</button>
+          <button class="info-btn" onclick='mostrarInformacion(${JSON.stringify(cliente)})'>ℹ️ Información</button>
+          <button class="eliminar-btn" onclick="eliminarCliente(${index})">🗑️ Eliminar</button>
+        </div>
+        <div id="historial-${index}" class="historial">
+          ${historialHTML}
+        </div>
+      `;
+      contenedor.appendChild(div);
+    });
+  }
+  document.addEventListener('DOMContentLoaded', () => {
+    reiniciarVisitas();
+    renderClientes();
+  });
+</script>
+</body>
+</html>

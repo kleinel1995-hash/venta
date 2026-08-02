@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ventas Beltre - Iniciar Sesión</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: "Poppins", sans-serif;
+    }
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      background-color: #f9fafb;
+    }
+    body {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+    }
+    .logo img {
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-bottom: 5px;
+    }
+    h2 {
+      font-size: 22px;
+      margin-bottom: 2px;
+    }
+    h2 span { color:#db7419; }
+    p {
+      color: #6b7280;
+      font-size: 13px;
+      margin-bottom: 15px;
+    }
+    .input-group {
+      position: relative;
+      margin-bottom: 12px;
+      width: 80%;
+      max-width: 320px;
+    }
+    .input-group i {
+      position: absolute;
+      top: 50%;
+      left: 15px;
+      transform: translateY(-50%);
+      color: #9ca3af;
+    }
+    .input-group input {
+      width: 100%;
+      padding: 12px 40px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 15px;
+      outline: none;
+      background-color: #fff;
+    }
+    .input-group input:focus {
+      border-color: #007bff;
+      box-shadow: 0 0 4px rgba(0,123,255,0.3);
+    }
+    button {
+      width: 40%;
+      max-width: 320px;
+      padding: 12px;
+      background-color: #000000;
+      border: none;
+      border-radius: 8px;
+      color: white;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: background 0.3s;
+    }
+    button:hover { background-color: #db7419; }
+    .links {
+      margin-top: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .links a {
+      text-decoration: none;
+      color: #007bff;
+      font-size: 14px;
+    }
+    .links a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="logo">
+    <img src="logo.png" alt="Logo Ventas Beltre">
+  </div>
+  <h2><span>Ventas</span> Beltre</h2>
+  <p>Inicie sesión en su cuenta</p>
+  <div class="input-group">
+    <i class="fa fa-user"></i>
+    <input type="text" id="usuario" placeholder="Usuario" autocomplete="username">
+  </div>
+  <div class="input-group">
+    <i class="fa fa-lock"></i>
+    <input type="password" id="clave" placeholder="Clave" autocomplete="current-password">
+  </div>
+  <button id="btnEntrar" onclick="login()">ENTRAR</button>
+  <div class="links">
+    <a href="#">Olvidé mi contraseña</a>
+  </div>
+  <script>
+    // Usuarios de ejemplo
+    const users = {
+      'Admin': { password: '1234', nombre: 'Administrador' },
+      'Juan':  { password: '1234', nombre: 'Juan Pérez' }
+    };
+    // Permite enviar con Enter
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') login();
+    });
+    function login() {
+      const usuario = document.getElementById('usuario').value.trim();
+      const clave   = document.getElementById('clave').value;
+      if (!usuario || !clave) {
+        return Swal.fire({
+          toast: true, position: 'top', icon: 'warning',
+          title: 'Complete usuario y clave',
+          showConfirmButton: false, timer: 1600
+        });
+      }
+      const user = users[usuario];
+      if (user && user.password === clave) {
+        // Claves originales (compatibilidad con tu app)
+        localStorage.setItem('rol', usuario);
+        localStorage.setItem('nombreUsuario', user.nombre);
+        // ✅ NUEVAS CLAVES que pediste (guardamos datos reales del usuario logueado)
+        localStorage.setItem('usuarioSesion', JSON.stringify({
+          nombre: user.nombre,   // p.ej. "Juan Pérez"
+          usuario: usuario       // p.ej. "Juan"
+        }));
+        localStorage.setItem('currentUser', JSON.stringify({
+          name: user.nombre,     // p.ej. "Juan Pérez"
+          username: usuario,     // p.ej. "Juan"
+          role: usuario          // si usas el usuario como rol por ahora
+        }));
+        // Ejemplos fijos (no necesarios, pero si quieres exactamente tus líneas):
+        // localStorage.setItem('usuarioSesion', JSON.stringify({ nombre: 'Kleinel J. Beltre' }));
+        // localStorage.setItem('currentUser', JSON.stringify({ name: 'VB Ventas' }));
+        Swal.fire({
+          toast: true,
+          position: 'top',
+          icon: 'success',
+          title: '¡Bienvenido ' + user.nombre + '!',
+          showConfirmButton: false,
+          timer: 1800
+        }).then(() => {
+          // Redirige a tu menú principal
+          window.location.href = "menu.html";
+        });
+      } else {
+        Swal.fire({
+          toast: true,
+          position: 'top',
+          icon: 'error',
+          title: 'Usuario o contraseña incorrectos',
+          showConfirmButton: false,
+          timer: 1800
+        });
+      }
+    }
+  </script>
+</body>
+</html>

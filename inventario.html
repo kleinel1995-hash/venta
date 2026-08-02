@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Productos</title>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    body {
+      background: #f4f4f4; color: #333; min-height: 200vh; display: flex; flex-direction: column;
+    }
+    .header-top {
+      position: fixed; top: 0; left: 0; width: 100%;
+      background: #000000; color: #fff; z-index: 1000;
+      padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;
+    }
+    .search-wrapper { display: flex; align-items: center; }
+    .search-input {
+      width: 0; opacity: 0; padding: 5px 10px; margin-right: 10px;
+      border: 1px solid #000; border-radius: 50px; transition: all .4s;
+    }
+    .search-input.active { width: 200px; opacity: 1; }
+    .search-toggle { background: none; border: none; font-size: 20px; color: #fff; cursor: pointer; }
+    .products-container {
+      padding: 90px 20px 20px;
+      display: flex; flex-direction: column; gap: 15px;
+    }
+    .product-card {
+      background: #fff; padding: 10px; border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,.1); display: flex; gap: 15px;
+    }
+    .product-card img { width: 80px; height: 80px; object-fit: cover; border-radius: 8px; }
+    .product-details { flex: 1; display: flex; flex-direction: column; }
+    .product-details h3 { margin-bottom: 5px; font-size: 18px; }
+    .product-details p { margin: 2px 0; font-size: 15px; }
+    .add-container { display: flex; justify-content: flex-end; margin-top: 8px; }
+    .add-btn {
+      background: #000000; color: #fff; padding: 6px 12px; font-size: 14px;
+      border: none; border-radius: 5px; cursor: pointer; transition: .3s;
+    }
+    .add-btn.disabled { background: #9e9e9e; cursor: default; }
+    .stock-alert { color: red; font-weight: bold; }
+    .stock-warning { color: #e67e22; font-weight: bold; }
+    .swal2-title-centered-bold { text-align: center; font-weight: bold; }
+    .label-bold-center { text-align: center; font-weight: bold; }
+    /* ===== Menú inferior ===== */
+    .bottom-nav {
+      position: fixed; bottom: 0; width: 100%; background: #fff; border-top: 1px solid #ddd;
+      display: flex; justify-content: space-around; padding: 10px 0; box-shadow: 0 -2px 6px rgba(0,0,0,0.05);
+      z-index: 999;
+    }
+    .nav-item {
+      text-decoration: none; color: #666; font-size: 13px; display: flex; flex-direction: column;
+      align-items: center; min-width: 60px; position: relative; transition: color .15s ease;
+    }
+    .nav-item svg {
+      width: 28px; height: 28px; margin-bottom: 3px; fill: #666;
+      transition: fill .15s ease, transform .15s ease;
+    }
+    .label { margin-top: 2px; font-size: 12px; }
+    /* Burbuja Carrito */
+    .badge {
+      width: 20px; height: 20px; position: absolute; top: -10px; right: 1px;
+      background: #25D366; color: white; font-size: 13px; font-weight: bold; padding: 2px;
+      border-radius: 50%; display: none;
+    }
+    /* Burbuja Usuario (igual que en Carrito.html) */
+    .badge-user{
+      position: absolute;
+      top: -8px;
+      right: 6px;
+      min-width: 18px;
+      height: 18px;
+      padding: 0 5px;
+      background: #FF9800;  /* mismo tono que usaste en Carrito */
+      color: #fff;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      line-height: 18px;
+      text-align: center;
+      display: none;
+      box-shadow: 0 2px 6px rgba(0,0,0,.15);
+    }
+    .nav-item:hover { color: #000; }
+    .nav-item:hover svg { fill: #000; transform: translateY(-1px); }
+    .nav-item.active { color:#db7419; font-weight: 700; }
+    .nav-item.active svg { fill:#db7419; }
+    .nav-item.active:hover svg { transform: translateY(-1px); }
+  </style>
+</head>
+<body>
+  <!-- HEADER -->
+  <header class="header-top">
+    <span class="user-name">Productos</span>
+    <div class="search-wrapper">
+      <input type="text" class="search-input" placeholder="Buscar producto...">
+      <button class="search-toggle" onclick="toggleSearch()">
+        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#FFFFFF">
+          <path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+  <!-- LISTADO -->
+  <main class="products-container" id="productsList"></main>
+  <!-- MENÚ INFERIOR -->
+  <nav class="bottom-nav">
+    <a href="menu.html" class="nav-item">
+      <svg xmlns="http://www.w3.org/2000/svg" height="23px" viewBox="0 -960 960 960" width="35px"><path d="M240-200h120v-240h240v240h120v-360L480-740 240-560v360Zm-80 80v-480l320-240 320 240v480H520v-240h-80v240H160Zm320-350Z"/></svg>
+      <div class="label">Inicio</div>
+    </a>
+    <a href="inventario.html" class="nav-item">
+      <svg xmlns="http://www.w3.org/2000/svg" height="23px" viewBox="0 -960 960 960" width="35px"><path d="M320-280q17 0 28.5-11.5T360-320q0-17-11.5-28.5T320-360q-17 0-28.5 11.5T280-320q0 17 11.5 28.5T320-280Zm0-160q17 0 28.5-11.5T360-480q0-17-11.5-28.5T320-520q-17 0-28.5 11.5T280-480q0 17 11.5 28.5T320-440Zm0-160q17 0 28.5-11.5T360-640q0-17-11.5-28.5T320-680q-17 0-28.5 11.5T280-640q0 17 11.5 28.5T320-600Zm120 320h240v-80H440v80Zm0-160h240v-80H440v80Zm0-160h240v-80H440v80ZM200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-560H200v560Zm0-560v560-560Z"/></svg>
+      <div class="label">Inventario</div>
+    </a>
+    <a href="Carrito.html" class="nav-item" id="nav-carrito">
+      <svg xmlns="http://www.w3.org/2000/svg" height="26px" viewBox="0 -960 960 960" width="35px">
+        <path d="M280-80q-33 0-56.5-23.5T200-160q0-33 23.5-56.5T280-240q33 0 56.5 23.5T360-160q0 33-23.5 56.5T280-80Zm400 0q-33 0-56.5-23.5T600-160q0-33 23.5-56.5T680-240q33 0 56.5 23.5T760-160q0 33-23.5 56.5T680-80ZM246-720l96 200h280l110-200H246Zm-38-80h590q23 0 35 20.5t1 41.5L692-482q-11 20-29.5 31T622-440H324l-44 80h480v80H280q-45 0-68-39.5t-2-78.5l54-98-144-304H40v-80h130l38 80Zm134 280h280-280Z"/>
+      </svg>
+      <span class="badge" id="cart-count">0</span>
+      <div class="label">Carrito</div>
+    </a>
+    <a href="Usuario.html" class="nav-item" id="nav-usuario">
+      <svg xmlns="http://www.w3.org/2000/svg" height="26px" viewBox="0 -960 960 960" width="35px">
+        <path d="m370-80-16-128q-13-5-24.5-12T307-235l-119 50L78-375l103-78q-1-7-1-13.5v-27q0-6.5 1-13.5L78-585l110-190 119 50q11-8 23-15t24-12l16-128h220l16 128q13 5 24.5 12t22.5 15l119-50 110 190-103 78q1 7 1 13.5v27q0 6.5-2 13.5l103 78-110 190-118-50q-11 8-23 15t-24 12L590-80H370Zm70-80h79l14-106q31-8 57.5-23.5T639-327l99 41 39-68-86-65q5-14 7-29.5t2-31.5q0-16-2-31.5t-7-29.5l86-65-39-68-99 42q-22-23-48.5-38.5T533-694l-13-106h-79l-14 106q-31 8-57.5 23.5T321-633l-99-41-39 68 86 64q-5 15-7 30t-2 32q0 16 2 31t7 30l-86 65 39 68 99-42q22 23 48.5 38.5T427-266l13 106Zm42-180q58 0 99-41t41-99q0-58-41-99t-99-41q-59 0-99.5 41T342-480q0 58 40.5 99t99.5 41Zm-2-140Z"/>
+      </svg>
+      <span class="badge-user" id="user-count">0</span>
+      <div class="label">Usuario</div>
+    </a>
+  </nav>
+  <!-- Script principal -->
+  <script>
+    const productList = document.getElementById('productsList');
+    const searchInput = document.querySelector('.search-input');
+    const clienteData = JSON.parse(localStorage.getItem('clienteSeleccionado'));
+    let products = JSON.parse(localStorage.getItem('products')) || [];
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+    function toggleSearch(){
+      searchInput.classList.toggle('active');
+      if(searchInput.classList.contains('active')) {
+        searchInput.focus();
+      } else {
+        searchInput.value = '';
+        renderProducts(products);
+      }
+    }
+    searchInput.addEventListener('input', ()=>filtrarProductos(searchInput.value));
+    function filtrarProductos(texto = ''){
+      const filtro = texto.toLowerCase();
+      const listFiltrada = products.filter(p => p.name.toLowerCase().includes(filtro));
+      renderProducts(listFiltrada);
+    }
+    function renderProducts(list){
+      list.sort((a, b) => a.name.localeCompare(b.name));
+      productList.innerHTML = '';
+      if (list.length === 0) {
+        productList.innerHTML = `
+          <div style="text-align:center;padding:40px;">
+            <img src="no-producto.png" alt="No encontrado" style="width:180px;max-width:100%;margin-bottom:5px;">
+            <p style="font-size:16px; font-weight:bold; color:#444; margin-top:2px;">No existe producto con este nombre</p>
+          </div>`;
+        return;
+      }
+      list.forEach(prod => {
+        const card = document.createElement('div');
+        card.className = 'product-card';
+        card.innerHTML = `
+          <img src="${prod.image || 'https://via.placeholder.com/80?text=Imagen'}">
+          <div class="product-details">
+            <h3>${prod.name}</h3>
+            <p>Precio: $${parseFloat(prod.price).toLocaleString('es-DO',{minimumFractionDigits:2})}</p>
+            ${getStockText(prod.quantity)}
+            <div class="add-container">
+              ${getAddButton(prod)}
+            </div>
+          </div>`;
+        productList.appendChild(card);
+      });
+      attachAddHandlers();
+    }
+    function getStockText(q){
+      if(q <= 0) return `<p class="stock-alert">Cantidad: ${q} (Sin stock)</p>`;
+      if(q === 1) return `<p class="stock-warning">Cantidad: 1 (Última unidad)</p>`;
+      return `<p>Cantidad: ${q}</p>`;
+    }
+    function getAddButton(prod){
+      const enCarrito = cart.some(item => item.name === prod.name && item.cliente?.nombre === clienteData?.nombre);
+      return `<button class="add-btn ${enCarrito ? 'disabled' : ''}" data-name="${prod.name}" ${enCarrito ? 'disabled' : ''}>
+                ${enCarrito ? '✔️ Listo' : 'Agregar'}
+              </button>`;
+    }
+    function attachAddHandlers(){
+      document.querySelectorAll('.add-btn:not(.disabled)').forEach(btn => {
+        btn.onclick = async () => {
+          const nombre = btn.dataset.name;
+          const prod = products.find(p => p.name === nombre);
+          const { value: cantidad } = await Swal.fire({
+            title: `Agregar "${prod.name}"`,
+            input: 'number',
+            inputLabel: `¿Cuántas unidades deseas agregar? (Disponibles: ${prod.quantity})`,
+            customClass: { inputLabel: 'label-bold-center' },
+            inputAttributes: { min: 1, max: prod.quantity, step: 1 },
+            inputValidator: (value) => {
+              if (!value || isNaN(value) || value <= 0) return 'Ingresa una cantidad válida';
+              if (value > prod.quantity) return 'No hay suficiente stock';
+              return null;
+            },
+            confirmButtonText: 'Agregar al carrito'
+          });
+          if (!cantidad) return;
+          saveCartItem(prod, parseInt(cantidad));
+          prod.quantity -= parseInt(cantidad);
+          localStorage.setItem('products', JSON.stringify(products));
+          btn.textContent = '✔️ Listo';
+          btn.classList.add('disabled');
+          btn.disabled = true;
+          cart = JSON.parse(localStorage.getItem('cart')) || [];
+          filtrarProductos(searchInput.value);
+          // === BURBUJA CARRITO ===
+          updateCartCount();
+          Swal.fire({
+            icon: 'success',
+            title: 'Agregado',
+            text: `Se agregaron ${cantidad} unidad(es) de "${prod.name}" al carrito`,
+            timer: 2000,
+            showConfirmButton: false
+          });
+        };
+      });
+    }
+    function saveCartItem(prod, cant){
+      const idx = cart.findIndex(item => item.name === prod.name && item.cliente?.nombre === clienteData?.nombre);
+      if (idx > -1) {
+        cart[idx].quantity += cant;
+      } else {
+        cart.push({ name: prod.name, price: prod.price, image: prod.image, quantity: cant, cliente: clienteData || {} });
+      }
+      localStorage.setItem('cart', JSON.stringify(cart));
+    }
+    /* === ACTIVO POR ARCHIVO === */
+    function marcarActivo() {
+      const currentFile = (location.pathname.split('/').pop() || '').toLowerCase() || 'index.html';
+      document.querySelectorAll('.bottom-nav .nav-item').forEach(link => {
+        const href = (link.getAttribute('href') || '').toLowerCase();
+        if (href === currentFile) link.classList.add('active');
+      });
+    }
+    /* === BURBUJA CARRITO (igual Carrito.html) === */
+    const cartCountEl = document.getElementById('cart-count');
+    function updateCartCount() {
+      const actual = JSON.parse(localStorage.getItem('cart')) || [];
+      const totalQty = actual.reduce((sum, item) => sum + (Number(item.quantity) || 0), 0);
+      cartCountEl.textContent = totalQty;
+      cartCountEl.style.display = totalQty > 0 ? 'inline-block' : 'none';
+    }
+    // Refrescar burbuja carrito si cambia en otra pestaña
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'cart') updateCartCount();
+      if (e.key === 'historialPedidos') actualizarBurbujaUsuario(); // <- para la burbuja de Usuario
+    });
+    /* === BURBUJA USUARIO (igual Carrito.html) === */
+    function actualizarBurbujaUsuario() {
+      const el = document.getElementById('user-count');
+      const pedidos = JSON.parse(localStorage.getItem('historialPedidos')) || [];
+      // Si usas estados, cuenta solo pendientes; si no, cuenta todos
+      const estadosPend = ['pendiente','en proceso','por entregar','no entregado'];
+      const pendientes = pedidos.filter(p => estadosPend.includes(String(p.estado||'').toLowerCase())).length;
+      const count = pendientes > 0 ? pendientes : pedidos.length;
+      el.textContent = count;
+      el.style.display = count > 0 ? 'inline-block' : 'none';
+    }
+    document.addEventListener('DOMContentLoaded', () => {
+      renderProducts(products);
+      marcarActivo();
+      updateCartCount();        // carrito al cargar
+      actualizarBurbujaUsuario(); // usuario al cargar
+    });
+  </script>
+</body>
+</html>

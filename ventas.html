@@ -1,0 +1,559 @@
+
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ventas</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <style>
+  :root{
+    --ink:#000;
+    --brand:#00796b;
+    --paper:#fff;
+    --bg:#f4f4f4;
+    --soft:#f0fdf8;
+  }
+  *{box-sizing:border-box}
+  body{
+    font-family:'Segoe UI',system-ui,-apple-system,Roboto,Arial,sans-serif;
+    background:var(--bg);
+    color:#222;
+    margin:0;
+    padding-top:70px;
+  }
+
+  /* ====== HEADER (MÓVIL IGUAL) ====== */
+  header{
+    position:fixed;
+    top:0; left:0; right:0;
+    height:65px;
+    background:var(--ink);
+    color:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 15px;
+    z-index:1000;
+    box-shadow:0 4px 6px rgba(0,0,0,.15);
+  }
+  .back-btn{
+    font-size:22px;
+    text-decoration:none;
+    color:#fff;
+    font-weight:900;
+    line-height:1;
+  }
+  h2{
+    margin:0;
+    font-size:20px;
+    flex:1;
+    text-align:center;
+  }
+  .header-actions{
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .reset-btn,.total-btn{
+    background:#fff;
+    color:var(--brand);
+    border:none;
+    font-size:13px;
+    padding:6px 12px;
+    border-radius:20px;
+    font-weight:800;
+    cursor:pointer;
+  }
+
+  /* ====== TARJETA (MÓVIL IGUAL) ====== */
+  .venta{
+    background:var(--paper);
+    border:1px solid var(--ink);
+    border-radius:10px;
+    box-shadow:0 2px 8px rgba(0,0,0,.08);
+    margin:20px 16px;
+    padding:18px;
+  }
+
+  .cliente-info{
+    background:var(--soft);
+    padding:15px;
+    border:1px solid var(--ink);
+    border-radius:8px;
+    margin-bottom:15px;
+  }
+  .cliente-info p{
+    margin:4px 0;
+    font-size:16px;
+    color:#333;
+    word-break:break-word;
+  }
+
+  .producto{
+    display:flex;
+    align-items:center;
+    padding:10px 0;
+    border-bottom:1px solid #eee;
+    gap:12px;
+  }
+  .producto:last-child{border-bottom:none}
+  .producto img{
+    width:50px;
+    height:50px;
+    object-fit:cover;
+    border-radius:8px;
+    background:#f3f3f3;
+  }
+  .producto-info{flex:1}
+  .producto-info p{margin:3px 0; font-size:15px}
+
+  .total{
+    text-align:right;
+    font-weight:900;
+    margin-top:10px;
+    font-size:16px;
+    color:var(--brand);
+  }
+
+  .print-btn{
+    margin-top:12px;
+    padding:9px 14px;
+    border:none;
+    background:var(--brand);
+    color:#fff;
+    border-radius:8px;
+    font-weight:900;
+    cursor:pointer;
+    width:100%;
+  }
+
+  .muted{ color:#777; font-size:14px; }
+
+  /* ===================== ESTILO PC ===================== */
+  @media (min-width: 992px){
+
+    body{
+      padding-top:80px; /* header un poco más alto */
+    }
+
+    header{
+      height:72px;
+      padding:0 26px;
+    }
+
+    h2{
+      font-size:22px;
+      text-align:left;
+      padding-left:10px;
+    }
+
+    /* Contenedor centrado */
+    #ventasContainer{
+      max-width:1200px;
+      margin: 0 auto;
+      padding: 14px 18px 40px;
+      display:grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    /* En pantallas grandes: 3 columnas */
+    @media (min-width: 1280px){
+      #ventasContainer{
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    /* Tarjeta PC */
+    .venta{
+      margin: 0;          /* ya no usa margin porque el grid maneja el espacio */
+      padding: 18px;
+      border-radius: 14px;
+      box-shadow: 0 8px 24px rgba(0,0,0,.08);
+      transition: transform .12s ease, box-shadow .12s ease;
+    }
+    .venta:hover{
+      transform: translateY(-2px);
+      box-shadow: 0 14px 34px rgba(0,0,0,.12);
+    }
+
+    .cliente-info{
+      padding: 14px;
+      border-radius: 12px;
+    }
+    .cliente-info p{
+      font-size: 15px;
+    }
+
+    .producto img{
+      width:58px;
+      height:58px;
+    }
+
+    .producto-info p{
+      font-size: 14px;
+    }
+
+    /* Botón imprimir más "pro" en PC */
+    .print-btn{
+      width:auto;
+      min-width: 220px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      padding: 10px 16px;
+      border-radius: 10px;
+    }
+
+    .total{
+      font-size: 17px;
+    }
+  }
+
+  /* ====== PRINT ====== */
+  @media print{
+    header,.print-btn,.reset-btn,.total-btn{display:none !important;}
+    body{padding:0;}
+    #ventasContainer{ display:block !important; max-width:none !important; padding:0 !important; }
+    .venta{border:none; box-shadow:none; margin:0; padding:0;}
+  }
+</style>
+
+</head>
+<body>
+
+<header>
+  <a href="Usuario.html" class="back-btn" title="Volver">←</a>
+  <h2>📋 Ventas</h2>
+  <div class="header-actions">
+    <button class="total-btn" id="totalVentasBtn">Total: $0.00</button>
+    <button class="reset-btn" onclick="restablecerVentas()" title="Restablecer ventas">🗑️</button>
+  </div>
+</header>
+
+<div id="ventasContainer"></div>
+
+<script>
+  // ===================== CONFIG =====================
+  const NOMBRE_NEGOCIO_TICKET = '🛒 MI NEGOCIO';
+  const PASS_RESETEO = '1234';
+
+  // ===================== HELPERS =====================
+  function normaliza(x){ return String(x||'').trim().toLowerCase(); }
+
+  function money(n){
+    return Number(n||0).toLocaleString('es-DO',{ minimumFractionDigits: 2 });
+  }
+
+  // ============ IDENTIDADES / ROLES ============
+  function getIdentidadesUsuario(){
+    const ids = new Set();
+
+    const nombreUsuario = localStorage.getItem('nombreUsuario');
+    if (nombreUsuario) ids.add(normaliza(nombreUsuario));
+
+    const rol = localStorage.getItem('rol');
+    if (rol) ids.add(normaliza(rol));
+
+    try{
+      const us = JSON.parse(localStorage.getItem('usuarioSesion')||'null');
+      if (us?.nombre)  ids.add(normaliza(us.nombre));
+      if (us?.usuario) ids.add(normaliza(us.usuario));
+      if (us?.rol)     ids.add(normaliza(us.rol));
+    }catch(e){}
+
+    try{
+      const cu = JSON.parse(localStorage.getItem('currentUser')||'null');
+      if (cu?.name)     ids.add(normaliza(cu.name));
+      if (cu?.username) ids.add(normaliza(cu.username));
+      if (cu?.role)     ids.add(normaliza(cu.role));
+    }catch(e){}
+
+    return ids;
+  }
+
+  function esAdmin(){
+    const ids = getIdentidadesUsuario();
+    return ids.has('admin') || ids.has('administrador');
+  }
+
+  function getVendedorSesionLegible(){
+    try{
+      const us = JSON.parse(localStorage.getItem('usuarioSesion')||'null');
+      if (us?.nombre)  return String(us.nombre);
+      if (us?.usuario) return String(us.usuario);
+    }catch(e){}
+    try{
+      const cu = JSON.parse(localStorage.getItem('currentUser')||'null');
+      if (cu?.name) return String(cu.name);
+      if (cu?.username) return String(cu.username);
+      if (cu?.role && !['admin','administrador'].includes(normaliza(cu.role))) return String(cu.role);
+    }catch(e){}
+
+    const nombreUsuario = localStorage.getItem('nombreUsuario');
+    if (nombreUsuario) return String(nombreUsuario);
+
+    const rol = localStorage.getItem('rol');
+    if (rol) return String(rol);
+
+    return 'No definido';
+  }
+
+  function ventaDelUsuario(venta, identidades){
+    const candidato =
+      venta?.vendedor ??
+      venta?.usuario ??
+      venta?.creadoPor ??
+      venta?.owner ??
+      null;
+
+    if (!candidato) return false;
+    return identidades.has(normaliza(candidato));
+  }
+
+  function asegurarVendedor(venta){
+    if (!venta.vendedor && !venta.usuario && !venta.creadoPor && !venta.owner){
+      venta.vendedor = getVendedorSesionLegible();
+      return true;
+    }
+    return false;
+  }
+
+  // ✅ SÚPER IMPORTANTE: sacar el cliente aunque venga con llaves diferentes
+  function obtenerClienteDeVenta(venta){
+    if (venta?.clienteInfo) return venta.clienteInfo;
+    if (venta?.cliente) return venta.cliente;
+    if (venta?.clienteSeleccionado) return venta.clienteSeleccionado;
+
+    const negocio  = venta?.negocio || venta?.nombreNegocio || '';
+    const direccion = venta?.direccion || venta?.dirección || '';
+    const telefono  = venta?.telefono || venta?.tel || '';
+
+    if (negocio || direccion || telefono) return { negocio, direccion, telefono };
+    return {};
+  }
+
+  function normalizaClienteObj(c){
+    if (!c) return {};
+    const obj = { ...c };
+
+    if (!obj.negocio && obj.nombreNegocio) obj.negocio = obj.nombreNegocio;
+    if (!obj.direccion && obj.dirección) obj.direccion = obj.dirección;
+    if (!obj.telefono && obj.tel) obj.telefono = obj.tel;
+
+    return obj;
+  }
+
+  // ===================== DATOS =====================
+  const contenedor = document.getElementById('ventasContainer');
+  const totalVentasBtn = document.getElementById('totalVentasBtn');
+
+  const identidades = getIdentidadesUsuario();
+  const admin = esAdmin();
+
+  let ventasTodas = JSON.parse(localStorage.getItem('ventasRealizadas')) || [];
+
+  // ✅ PARCHE: arreglar ventas viejas (si no tenían clienteInfo, intentar recuperarlo)
+  let cambios = false;
+  ventasTodas.forEach(v => {
+    if (asegurarVendedor(v)) cambios = true;
+
+    // si no tiene clienteInfo, intentar obtenerlo de otras llaves y guardarlo
+    if (!v.clienteInfo){
+      const c = obtenerClienteDeVenta(v);
+      if (c && (c.negocio || c.direccion || c.telefono)){
+        v.clienteInfo = normalizaClienteObj(c);
+        cambios = true;
+      }
+    } else {
+      v.clienteInfo = normalizaClienteObj(v.clienteInfo);
+    }
+  });
+
+  if (cambios) localStorage.setItem('ventasRealizadas', JSON.stringify(ventasTodas));
+
+  // ✅ Admin ve todas; usuario normal solo las suyas
+  const ventasFiltradas = admin ? ventasTodas : ventasTodas.filter(v => ventaDelUsuario(v, identidades));
+
+  if (ventasFiltradas.length === 0){
+    contenedor.innerHTML = "<p style='text-align:center; margin-top:16px;'>No hay ventas registradas para tu usuario.</p>";
+  }
+
+  // ===================== RENDER =====================
+  let totalVentas = 0;
+
+  ventasFiltradas.forEach((venta, idx) => {
+    const cliente = normalizaClienteObj(obtenerClienteDeVenta(venta));
+    const numeroPedido = String(idx + 1).padStart(6, '0');
+    const vendedor = venta.vendedor || getVendedorSesionLegible();
+
+    totalVentas += Number(venta.total) || 0;
+
+    const productosHtml = (venta.productos || []).map(p => {
+      const cant = Number(p.cantidad || 0);
+      const precio = Number(p.precio || 0);
+      const subtotal = (p.subtotal != null) ? Number(p.subtotal) : (precio * cant);
+
+      return `
+        <div class="producto">
+          <img src="${p.imagen || 'https://via.placeholder.com/50?text=%20'}" alt="${p.nombre || ''}">
+          <div class="producto-info">
+            <p><strong>${p.nombre || 'Producto'}</strong></p>
+            <p class="muted">Cant: ${cant.toLocaleString('es-DO')} • Precio: $${money(precio)}</p>
+            <p class="muted">Subtotal: $${money(subtotal)}</p>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    const card = document.createElement('div');
+    card.className = 'venta';
+    card.innerHTML = `
+      <div class="cliente-info">
+        <p><strong>Negocio:</strong> ${cliente?.negocio || 'No disponible'}</p>
+        <p><strong>Dirección:</strong> ${cliente?.direccion || '-'}</p>
+        <p><strong>Teléfono:</strong> ${cliente?.telefono || '-'}</p>
+        <p><strong>Pedido N.º:</strong> ${numeroPedido}</p>
+        <p><strong>Fecha:</strong> ${venta.fecha || '-'}</p>
+        <p><strong>Vendedor:</strong> ${vendedor}</p>
+      </div>
+
+      ${productosHtml}
+
+      <div class="total">Total: $${money(venta.total)}</div>
+
+      <button class="print-btn" onclick="imprimirVenta(${idx})">🧾 Imprimir Ticket</button>
+    `;
+    contenedor.appendChild(card);
+  });
+
+  totalVentasBtn.innerText = "Total: $" + money(totalVentas);
+
+  // ===================== IMPRESIÓN 58MM + QR =====================
+  function imprimirVenta(index){
+    const venta = ventasFiltradas[index];
+    const cliente = normalizaClienteObj(obtenerClienteDeVenta(venta));
+    const numeroPedido = String(index + 1).padStart(6, '0');
+    const vendedor = venta.vendedor || getVendedorSesionLegible();
+
+    const productosHTML = (venta.productos || []).map((p, i) => {
+      const cant = Number(p.cantidad || 0);
+      const precio = Number(p.precio || 0);
+      const sub = (p.subtotal != null) ? Number(p.subtotal) : (precio * cant);
+
+      return `
+        <tr><td colspan="2">${i+1}. ${p.nombre || 'Producto'}</td></tr>
+        <tr>
+          <td style="font-size:12px;">Cant: ${cant.toLocaleString('es-DO')}</td>
+          <td style="text-align:right; font-size:12px;">
+            $${money(sub)}
+          </td>
+        </tr>
+      `;
+    }).join('');
+
+    const totalFmt = money(venta.total);
+
+    const qrTexto =
+`Pedido: ${numeroPedido}
+Negocio: ${cliente.negocio || 'N/A'}
+Direccion: ${cliente.direccion || '-'}
+Tel: ${cliente.telefono || '-'}
+Fecha: ${venta.fecha || '-'}
+Vendedor: ${vendedor}
+Total: $${Number(venta.total||0).toFixed(2)}`;
+
+    const qrAPI = `https://api.qrserver.com/v1/create-qr-code/?size=130x130&data=${encodeURIComponent(qrTexto)}`;
+
+    const html = `
+      <html>
+        <head>
+          <meta charset="UTF-8">
+          <title>Ticket</title>
+          <style>
+            body { font-family: monospace; font-size: 13px; margin: 0; padding: 10px; width: 58mm; color:#000; }
+            .center { text-align:center; }
+            .bold { font-weight:900; }
+            table { width:100%; border-collapse:collapse; }
+            td { padding:2px 0; vertical-align:top; }
+            .total { font-weight:900; font-size: 14px; text-align:right; margin-top:8px; }
+            hr { border:none; border-top:1px dashed #000; margin:8px 0; }
+            .qr { margin-top:10px; text-align:center; }
+            .footer { margin-top:8px; text-align:center; font-size: 11px; }
+            @media print { @page { margin: 0; } body { margin:0; } }
+          </style>
+        </head>
+        <body onload="window.print(); setTimeout(()=>window.close(), 400);">
+          <div class="center bold">${NOMBRE_NEGOCIO_TICKET}</div>
+          <hr>
+          <div><strong>Negocio:</strong> ${cliente.negocio || 'No disponible'}</div>
+          <div><strong>Dirección:</strong> ${cliente.direccion || '-'}</div>
+          <div><strong>Tel:</strong> ${cliente.telefono || '-'}</div>
+          <div><strong>Pedido N.º:</strong> ${numeroPedido}</div>
+          <div><strong>Fecha:</strong> ${venta.fecha || '-'}</div>
+          <div><strong>Vendedor:</strong> ${vendedor}</div>
+          <hr>
+          <table>${productosHTML}</table>
+          <hr>
+          <div class="total">Total: $${totalFmt}</div>
+          <div class="qr"><img src="${qrAPI}" alt="QR"></div>
+          <div class="footer">Gracias por su compra</div>`;
+
+    const pop = window.open('', '_blank', 'width=400,height=650');
+    pop.document.open();
+    pop.document.write(html);
+    pop.document.close();
+
+    const boton = document.getElementsByClassName('venta')[index]?.querySelector('.print-btn');
+    if (boton) boton.innerText = '🔁 Reimprimir Ticket';
+  }
+
+  // ===================== RESTABLECER =====================
+  function restablecerVentas(){
+    Swal.fire({
+      title:'🔒 Restablecer Ventas',
+      text:'Ingrese la contraseña para continuar:',
+      input:'password',
+      inputAttributes:{ autocapitalize:'off', autocorrect:'off' },
+      showCancelButton:true,
+      confirmButtonText:'Confirmar',
+      cancelButtonText:'Cancelar',
+      preConfirm:(password)=>{
+        if (password !== PASS_RESETEO) Swal.showValidationMessage('Contraseña incorrecta');
+        return password;
+      }
+    }).then(result=>{
+      if (!result.isConfirmed) return;
+
+      Swal.fire({
+        title:'¿Está seguro?',
+        text:'Se eliminarán todas las ventas registradas.',
+        icon:'warning',
+        showCancelButton:true,
+        confirmButtonColor:'#d33',
+        confirmButtonText:'Sí, eliminar',
+        cancelButtonText:'Cancelar'
+      }).then(confirmar=>{
+        if (confirmar.isConfirmed){
+          localStorage.removeItem('ventasRealizadas');
+          Swal.fire('✔️ Ventas eliminadas','Las ventas han sido eliminadas correctamente.','success')
+            .then(()=>location.reload());
+        }
+      });
+    });
+  }
+</script>
+
+</body>
+</html>
+
+
+
+
+
+

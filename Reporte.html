@@ -1,0 +1,69 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Reporte Ventas</title>
+<style>
+  @page{ size:A4 landscape; margin:12mm; }
+  body{ font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; color:#111; }
+  h2{ margin:0 0 6px 0; }
+  .muted{ color:#555; font-size:12px; margin-bottom:10px; }
+  .kpi{ display:flex; gap:16px; margin:10px 0 14px 0; }
+  .kpi div{ padding:8px 12px; border:1px solid #ddd; border-radius:8px; font-weight:700; }
+  table{ width:100%; border-collapse:collapse; font-size:12px; }
+  th,td{ padding:8px 6px; border-bottom:1px solid #e5e7eb; }
+  thead th{ text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:.4px; background:#f6f7fb; }
+  tfoot th{ text-align:right; }
+</style>
+</head>
+<body onload="window.print(); setTimeout(()=>window.close(), 400)">
+  <h2>Reporte de Ventas</h2>
+  <div class="muted">Rango: <b>${desde}</b> a <b>${hasta}</b> · Cliente: <b>${cliente}</b> · Vendedor: <b>${vendedor}</b> · Generado: ${new Date().toLocaleString('es-DO')}</div>
+  <div class="kpi">
+    <div>Ventas: ${ventas.length.toLocaleString('es-DO')}</div>
+    <div>Ítems: ${totalItems.toLocaleString('es-DO')}</div>
+    <div>Total: $${total.toLocaleString('es-DO',{minimumFractionDigits:2})}</div>
+    <div>Ticket Prom.: $${(ventas.length? (total/ventas.length):0).toLocaleString('es-DO',{minimumFractionDigits:2})}</div>
+  </div>
+  <table>
+    <thead><tr>
+      <th>Fecha</th><th>Cliente</th><th>Vendedor</th><th style="text-align:right"># Ítems</th><th style="text-align:right">Total</th>
+    </tr></thead>
+    <tbody>${filas || '<tr><td colspan="5">Sin datos</td></tr>'}</tbody>
+    <tfoot><tr>
+      <th colspan="3">Totales</th>
+      <th style="text-align:right">${totalItems.toLocaleString('es-DO')}</th>
+      <th style="text-align:right">$${total.toLocaleString('es-DO',{minimumFractionDigits:2})}</th>
+    </tr></tfoot>
+  </table>
+</body>
+</html>`;
+    const w = window.open('', '_blank');
+    w.document.open(); w.document.write(html); w.document.close();
+  }
+  // ========= Init =========
+  let VENTAS = [];
+  (function init(){
+    VENTAS = leerVentas();
+    llenarFiltrosDinamicos(VENTAS);
+    const hoy = new Date();
+    const desde = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
+    $('fDesde').value = toISOdate(desde);
+    $('fHasta').value = toISOdate(hoy);
+    const lista = filtrar(VENTAS);
+    renderTabla(lista);
+    $('aplicar').onclick = ()=> renderTabla(filtrar(VENTAS));
+    $('limpiar').onclick  = ()=>{
+      $('fDesde').value = '';
+      $('fHasta').value = '';
+      $('fCliente').value = '';
+      $('fVendedor').value = '';
+      $('fTexto').value = '';
+      renderTabla(VENTAS);
+    };
+    $('csv').onclick = ()=> exportCSV(filtrar(VENTAS));
+    $('imprimir').onclick = ()=> imprimirPDF(); // botón Imprimir / PDF
+  })();
+</script>
+</body>
+</html>

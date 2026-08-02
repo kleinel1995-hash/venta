@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Perfil del Usuario</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    body { background: #f4f4f4; color: #333; }
+    header {
+      background-color: #000000; color: white; padding: 16px; text-align: center;
+      font-size: 20px; font-weight: bold; position: sticky; top: 0; z-index: 1000;
+    }
+    .back-arrow { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); font-size: 20px; cursor: pointer; color: white; }
+    .menu-container { padding: 20px; max-width: 500px; margin: auto; }
+    .menu-button {
+      display: flex; align-items: center; justify-content: flex-start;
+      background: white; padding: 12px 16px; margin-bottom: 10px; border-radius: 8px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1); cursor: pointer; transition: background 0.2s ease;
+      position: relative;
+    }
+    .menu-button:hover { background: #f0f0f0; }
+    .menu-button i { font-size: 20px; margin-right: 12px; width: 24px; text-align: center; }
+    .menu-button.clientes i { color: #2196F3; }
+    .menu-button.pedidos i { color: #FF9800; }
+    .menu-button.ventas i  { color: #4CAF50; }
+    .menu-button.producto i{ color: #9C27B0; }
+    .menu-button.nuevo-cliente i { color: #00bcd4; }
+    .menu-button.reporte i { color: #1e88e5; }
+    .menu-button.cerrar {
+      width: 150px; background: #fbe9e7; color: #e53935; font-size: 14px; box-shadow: none;
+    }
+    .menu-button.cerrar i { color: #e53935; }
+    .submenu { overflow: hidden; max-height: 0; transition: all 0.4s ease; padding-left: 36px; margin-bottom: 10px; }
+    .submenu.abierto { max-height: 150px; }
+    .submenu-btn {
+      display: flex; align-items: center; gap: 10px; background: #e9f5e9; border: 1px solid #c5e0c5;
+      margin: 6px 0; padding: 10px 14px; border-radius: 8px; cursor: pointer; font-size: 15px; width: 100%;
+      transition: all 0.2s ease;
+    }
+    .submenu-btn:hover { background-color: #d3f0d3; }
+    .submenu-btn i { width: 20px; text-align: center; color: #388e3c; }
+    /* ---- MENÚ INFERIOR ---- */
+    .bottom-nav{ position: fixed; bottom: 0; width: 100%; background:#fff; border-top:1px solid #ddd;
+      display:flex; justify-content:space-around; padding:10px 0; box-shadow:0 -2px 6px rgba(0,0,0,.05); z-index:999; }
+    .nav-item{ text-decoration:none; color:#666; font-size:13px; display:flex; flex-direction:column; align-items:center; min-width:60px; position:relative; }
+    .nav-item svg{ width:28px; height:28px; margin-bottom:3px; fill:#666; transition:fill .15s ease, transform .15s ease; }
+    .label{ margin-top:2px; font-size:12px; color:#666; transition: color .15s ease; }
+    .nav-item.active svg{ fill:#db7419; }
+    .nav-item.active .label{ color:#db7419; font-weight:700; }
+    .nav-item.active:hover svg{ transform: translateY(-2px); }
+    .badge{ width:20px; height:20px; position:absolute; top:-10px; right:1px; background:#25D366; color:white;
+      font-size:13px; font-weight:bold; padding:2px; border-radius:50%; display:none; }
+    /* Burbuja para el botón Pedidos (en la lista principal) */
+    .bubble-pedidos{
+      position: absolute; top: 10px; right: 12px;
+      min-width: 22px; height: 22px; padding: 0 6px;
+      background: #FF9800; color: #fff; border-radius: 999px;
+      font-size: 12px; font-weight: 700; line-height: 22px; text-align: center;
+      display: none;
+      box-shadow: 0 2px 6px rgba(0,0,0,.15);
+    }
+    /* Burbuja Usuario (igual que en Carrito.html) */
+    .badge-user{
+      position: absolute;
+      top: -8px;
+      right: 6px;
+      min-width: 18px;
+      height: 18px;
+      padding: 0 5px;
+      background: #FF9800;  /* mismo tono que usaste en Carrito */
+      color: #fff;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      line-height: 18px;
+      text-align: center;
+      display: none;
+      box-shadow: 0 2px 6px rgba(0,0,0,.15);
+    }
+  </style>
+</head>
+<body>
+<header>
+  <span class="back-arrow" onclick="volver()">
+    <i class="fas fa-arrow-left"></i>
+  </span>
+  Perfil del Usuario
+</header>
+<div class="menu-container">
+  <div class="menu-button clientes" onclick="irA('Clientes.html')">
+    <i class="fas fa-users"></i> Clientes
+  </div>
+  <div class="menu-button nuevo-cliente" onclick="irA('registrar-cliente.html')">
+    <i class="fas fa-user-plus"></i> Nuevo Cliente
+  </div>
+  <!-- Botón Pedidos con burbuja -->
+  <div class="menu-button pedidos" onclick="irA('Pedidos.html')">
+    <i class="fas fa-box"></i> Pedidos
+    <span class="bubble-pedidos" id="badgePedidos">0</span>
+  </div>
+  <div class="menu-button ventas" onclick="toggleSubmenu()">
+    <i class="fas fa-dollar-sign"></i> Ventas
+  </div>
+  <div class="submenu" id="submenuVentas">
+    <div class="submenu-btn" onclick="irA('ventas.html')">
+      <i class="fas fa-money-bill-wave"></i> Al contado
+    </div>
+    <div class="submenu-btn" onclick="irA('Cuentas.html')">
+      <i class="fas fa-credit-card"></i> A crédito
+    </div>
+  </div>
+  <div class="menu-button reporte" onclick="irA('Reporte.html')">
+    <i class="fas fa-chart-line"></i> Reporte
+  </div>
+  <div class="menu-button producto" onclick="irA('crearProducto.html')">
+    <i class="fas fa-tools"></i> Crear producto
+  </div>
+  <div class="menu-button cerrar" onclick="cerrarSesion()">
+    <i class="fas fa-sign-out-alt"></i> Cerrar sesión
+  </div>
+</div>
+<!-- MENÚ INFERIOR -->
+<nav class="bottom-nav">
+  <a href="menu.html" class="nav-item">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M240-200h120v-240h240v240h120v-360L480-740 240-560v360Zm-80 80v-480l320-240 320 240v480H520v-240h-80v240H160Zm320-350Z"/></svg>
+    <div class="label">Inicio</div>
+  </a>
+  <a href="inventario.html" class="nav-item">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M320-280q17 0 28.5-11.5T360-320q0-17-11.5-28.5T320-360q-17 0-28.5 11.5T280-320q0 17 11.5 28.5T320-280Zm0-160q17 0 28.5-11.5T360-480q0-17-11.5-28.5T320-520q-17 0-28.5 11.5T280-480q0 17 11.5 28.5T320-440Zm0-160q17 0 28.5-11.5T360-640q0-17-11.5-28.5T320-680q-17 0-28.5 11.5T280-640q0 17 11.5 28.5T320-600Zm120 320h240v-80H440v80Zm0-160h240v-80H440v80Zm0-160h240v-80H440v80ZM200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-560H200v560Zm0-560v560-560Z"/></svg>
+    <div class="label">Inventario</div>
+  </a>
+  <a href="Carrito.html" class="nav-item" id="nav-carrito">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+      <path d="M280-80q-33 0-56.5-23.5T200-160q0-33 23.5-56.5T280-240q33 0 56.5 23.5T360-160q0 33-23.5 56.5T280-80Zm400 0q-33 0-56.5-23.5T600-160q0-33 23.5-56.5T680-240q33 0 56.5 23.5T760-160q0 33-23.5 56.5T680-80ZM246-720l96 200h280l110-200H246Zm-38-80h590q23 0 35 20.5t1 41.5L692-482q-11 20-29.5 31T622-440H324l-44 80h480v80H280q-45 0-68-39.5t-2-78.5l54-98-144-304H40v-80h130l38 80Zm134 280h280-280Z"/>
+    </svg>
+    <span class="badge" id="cart-count">0</span>
+    <div class="label">Carrito</div>
+  </a>
+  <a href="Usuario.html" class="nav-item" id="nav-usuario">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+      <path d="m370-80-16-128q-13-5-24.5-12T307-235l-119 50L78-375l103-78q-1-7-1-13.5v-27q0-6.5 1-13.5L78-585l110-190 119 50q11-8 23-15t24-12l16-128h220l16 128q13 5 24.5 12t22.5 15l119-50 110 190-103 78q1 7 1 13.5v27q0 6.5-2 13.5l103 78-110 190-118-50q-11 8-23 15t-24 12L590-80H370Zm70-80h79l14-106q31-8 57.5-23.5T639-327l99 41 39-68-86-65q5-14 7-29.5t2-31.5q0-16-2-31.5t-7-29.5l86-65-39-68-99 42q-22-23-48.5-38.5T533-694l-13-106h-79l-14 106q-31 8-57.5 23.5T321-633l-99-41-39 68 86 64q-5 15-7 30t-2 32q0 16 2 31t7 30l-86 65 39 68 99-42q22 23 48.5 38.5T427-266l13 106Zm42-180q58 0 99-41t41-99q0-58-41-99t-99-41q-59 0-99.5 41T342-480q0 58 40.5 99t99.5 41Zm-2-140Z"/>
+    </svg>
+    <span class="badge-user" id="user-count">0</span> <!-- NUEVO: burbuja Usuario -->
+    <div class="label">Usuario</div>
+  </a>
+</nav>
+<script>
+  function irA(url) { window.location.href = url; }
+  function toggleSubmenu() { document.getElementById('submenuVentas').classList.toggle('abierto'); }
+  function cerrarSesion() {
+    if (confirm("¿Estás seguro que deseas cerrar sesión?")) {
+      alert("Sesión cerrada correctamente");
+      localStorage.removeItem("rol"); localStorage.removeItem("nombreUsuario");
+      window.location.href = "login.html";
+    }
+  }
+  function volver() { window.history.back(); }
+  // Badge del carrito ya existente
+  function actualizarContadorCarrito() {
+    const badge = document.getElementById("cart-count");
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const total = cart.reduce((sum, item) => sum + (item.quantity || 0), 0);
+    badge.textContent = total;
+    badge.style.display = total > 0 ? 'inline-block' : 'none';
+  }
+  // Burbuja Pedidos (botón de lista)
+  function actualizarBurbujaPedidos(){
+    const el = document.getElementById('badgePedidos');
+    const pedidos = JSON.parse(localStorage.getItem('historialPedidos')) || [];
+    const estadosPend = ['pendiente','en proceso','por entregar','no entregado'];
+    const pendientes = pedidos.filter(p => estadosPend.includes(String(p.estado||'').toLowerCase())).length;
+    const count = pendientes > 0 ? pendientes : pedidos.length;
+    el.textContent = count;
+    el.style.display = count > 0 ? 'inline-block' : 'none';
+  }
+  // NUEVO: Burbuja en ícono Usuario del bottom-nav
+  function actualizarBurbujaUsuario(){
+    const el = document.getElementById('user-count');
+    const pedidos = JSON.parse(localStorage.getItem('historialPedidos')) || [];
+    // mismo criterio: mostrar pendientes si existen, si no total
+    const estadosPend = ['pendiente','en proceso','por entregar','no entregado'];
+    const pendientes = pedidos.filter(p => estadosPend.includes(String(p.estado||'').toLowerCase())).length;
+    const count = pendientes > 0 ? pendientes : pedidos.length;
+    el.textContent = count;
+    el.style.display = count > 0 ? 'inline-block' : 'none';
+  }
+  document.addEventListener("DOMContentLoaded", () => {
+    actualizarContadorCarrito();
+    actualizarBurbujaPedidos();
+    actualizarBurbujaUsuario();          // NUEVO: actualizar burbuja Usuario al cargar
+  });
+  // Actualizar burbujas si cambian datos en otras pestañas
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'cart') actualizarContadorCarrito();
+    if (e.key === 'historialPedidos') {
+      actualizarBurbujaPedidos();
+      actualizarBurbujaUsuario();        // NUEVO
+    }
+  });
+  // Marcar icono activo según página
+  (function marcarActivo(){
+    const current = location.pathname.split('/').pop();
+    document.querySelectorAll('.bottom-nav .nav-item').forEach(link=>{
+      const href = link.getAttribute('href');
+      if (href && href === current) link.classList.add('active');
+    });
+  })();
+</script>
+</body>
+</html>

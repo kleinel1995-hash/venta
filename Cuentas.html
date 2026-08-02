@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cuentas por Cobrar</title>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #f4f4f4;
+      padding-top: 70px;
+    }
+    header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      background-color: #000000;
+      color: white;
+      padding: 16px;
+      font-size: 20px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 999;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+    .back-btn {
+      font-size: 22px;
+      color: white;
+      text-decoration: none;
+      margin-right: 10px;
+    }
+    .title {
+      flex: 1;
+      text-align: center;
+      margin-left: -30px;
+    }
+    .cuenta {
+      background: white;
+      margin: 15px;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .cliente-info {
+      background: #e0f7fa;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 12px;
+    }
+    .cliente-info p {
+      margin: 4px 0;
+      font-size: 14px;
+    }
+    .fecha {
+      font-size: 13px;
+      color: #666;
+      margin-bottom: 10px;
+    }
+    .producto {
+      padding: 8px 0;
+      border-bottom: 1px solid #eee;
+      font-size: 14px;
+    }
+    .producto:last-child {
+      border-bottom: none;
+    }
+    .total {
+      margin-top: 12px;
+      font-weight: bold;
+      color: #00796b;
+    }
+    .saldar-btn, .abonar-btn {
+      margin-top: 12px;
+      background-color: #4CAF50;
+      color: white;
+      padding: 10px 14px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      width: 48%;
+    }
+    .abonar-btn {
+      background-color: #ff9800;
+    }
+    .abonos {
+      background: #fff3e0;
+      padding: 10px;
+      border-radius: 8px;
+      margin-top: 10px;
+      font-size: 13px;
+    }
+    .volver-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: #000000;
+      color: white;
+      padding: 12px 16px;
+      border: none;
+      border-radius: 30px;
+      font-weight: bold;
+      font-size: 14px;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+    .button-row {
+      display: flex;
+      gap: 10px;
+    }
+  </style>
+</head>
+<body>
+<header>
+  <a href="Usuario.html" class="back-btn">←</a>
+  <div class="title">Cuentas por Cobrar</div>
+</header>
+<main id="cuentasContainer"></main>
+<button class="volver-btn" onclick="window.location.href='Usuario.html'">← Volver</button>
+<script>
+  let cuentas = JSON.parse(localStorage.getItem('cuentasPorCobrar')) || [];
+  let ventas = JSON.parse(localStorage.getItem('ventasRealizadas')) || [];
+  const container = document.getElementById('cuentasContainer');
+  function renderCuentas() {
+    container.innerHTML = '';
+    if (cuentas.length === 0) {
+      container.innerHTML = '<p style="text-align:center; padding: 20px;">No hay cuentas por cobrar.</p>';
+      return;
+    }
+    cuentas.forEach((cuenta, index) => {
+      const cliente = cuenta.clienteInfo || {
+        nombre: 'No disponible',
+        telefono: '-',
+        direccion: '-',
+        correo: '-'
+      };
+      const abonos = cuenta.abonos || [];
+      const productosHtml = cuenta.productos.map(p => `
+        <div class="producto">
+          <strong>${p.nombre}</strong><br>
+          Cantidad: ${p.cantidad} | Precio: $${p.precio.toFixed(2)} | Subtotal: $${p.subtotal.toFixed(2)}
+        </div>
+      `).join('');
+      const abonosHtml = abonos.map((abono, i) => `
+        <div>Abono ${i + 1}: $${abono.monto.toFixed(2)} - ${abono.fecha}</div>
+      `).join('');
+      const div = document.createElement('div');
+      div.className = 'cuenta';
+      div.innerHTML = `
+        <div class="cliente-info">
+          <p><strong>Cliente:</strong> ${cliente.negocio}</p>
+          <p><strong>Teléfono:</strong> ${cliente.telefono}</p>
+          <p><strong>Dirección:</strong> ${cliente.direccion}</p>
+          <p><strong>Correo:</strong> ${cliente.correo}</p>
+        </div>
+        <div class="fecha">🗓️ ${cuenta.fecha}</div>
+        ${productosHtml}
+        <div class="total">Total adeudado: $${cuenta.total.toFixed(2)}</div>
+        <div class="button-row">
+          <button class="saldar-btn" onclick="saldarCuenta(${index})">Saldar</button>
+          <button class="abonar-btn" onclick="abonarCuenta(${index})">Abonar</button>
+        </div>
+        ${abonosHtml ? `<div class="abonos"><strong>Historial de abonos:</strong>${abonosHtml}</div>` : ''}
+      `;
+      container.appendChild(div);
+    });
+  }
+  function saldarCuenta(index) {
+    const cuenta = cuentas[index];
+    ventas.push(cuenta);
+    cuentas.splice(index, 1);
+    localStorage.setItem('cuentasPorCobrar', JSON.stringify(cuentas));
+    localStorage.setItem('ventasRealizadas', JSON.stringify(ventas));
+    Swal.fire({
+      icon: 'success',
+      title: 'Cuenta saldada',
+      text: 'El pedido ha sido saldado y movido a ventas.',
+      timer: 2500,
+      showConfirmButton: false
+    });
+    renderCuentas();
+  }
+  function abonarCuenta(index) {
+    const cuenta = cuentas[index];
+    Swal.fire({
+      title: 'Abonar a la cuenta',
+      input: 'number',
+      inputLabel: 'Ingrese el monto a abonar:',
+      inputPlaceholder: 'Monto en $',
+      inputAttributes: {
+        min: 1,
+        step: 0.01
+      },
+      showCancelButton: true,
+      confirmButtonText: 'Abonar',
+      cancelButtonText: 'Cancelar',
+      inputValidator: (value) => {
+        if (!value || isNaN(value) || parseFloat(value) <= 0) {
+          return 'Ingrese un monto válido';
+        }
+      }
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const monto = parseFloat(result.value);
+        if (monto >= cuenta.total) {
+          cuenta.abonos = cuenta.abonos || [];
+          cuenta.abonos.push({ monto: cuenta.total, fecha: new Date().toLocaleString() });
+          // Calcular total de abonos
+          const totalAbonado = cuenta.abonos.reduce((sum, a) => sum + a.monto, 0).toFixed(2);
+          const detalles = cuenta.abonos.map((a, i) =>
+            `Abono ${i + 1}: $${a.monto.toFixed(2)} - ${a.fecha}`
+          ).join('<br>');
+          ventas.push(cuenta);
+          cuentas.splice(index, 1);
+          Swal.fire({
+            icon: 'success',
+            title: 'Cuenta saldada',
+            html: `
+              <p><strong>Total Abonado:</strong> $${totalAbonado}</p>
+              <p><strong>Detalle de abonos:</strong></p>
+              <div style="text-align:left">${detalles}</div>
+            `,
+            width: 400,
+            showConfirmButton: true
+          });
+        } else {
+          cuenta.total -= monto;
+          cuenta.abonos = cuenta.abonos || [];
+          cuenta.abonos.push({ monto, fecha: new Date().toLocaleString() });
+          Swal.fire({
+            icon: 'success',
+            title: 'Abono registrado',
+            text: `Se abonó $${monto.toFixed(2)}. Restan $${cuenta.total.toFixed(2)}.`,
+            timer: 2000,
+            showConfirmButton: false
+          });
+        }
+        localStorage.setItem('cuentasPorCobrar', JSON.stringify(cuentas));
+        localStorage.setItem('ventasRealizadas', JSON.stringify(ventas));
+        renderCuentas();
+      }
+    });
+  }
+  renderCuentas();
+</script>
+</body>
+</html>

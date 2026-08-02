@@ -1,0 +1,272 @@
+ <!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Registrar Cliente</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f4f4f4;
+      margin: 0;
+      color: white;
+    }
+    header {
+      background-color: #000000;
+      color: #ffffff;
+      text-align: center;
+      padding: 18px;
+      font-size: 22px;
+      font-weight: bold;
+      position: relative;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+    .back-arrow {
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 22px;
+      color: white;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .container {
+      max-width: 450px;
+      margin: 40px auto;
+      padding: 30px;
+      background-color: #ffffff10;
+      border-radius: 15px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.3);
+    }
+    input, select {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      background-color: #fff;
+      color: #000;
+      transition: 0.3s;
+    }
+    input:focus, select:focus {
+      outline: none;
+      border-color: #0dcaf0;
+      box-shadow: 0 0 5px #0dcaf0;
+    }
+    .file-input-label {
+      background-color: #0dcaf0;
+      color: black;
+      padding: 10px;
+      border-radius: 8px;
+      margin-top: 10px;
+      display: block;
+      text-align: center;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    input[type="file"] {
+      display: none;
+    }
+    .step-container {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    .step {
+      width: 35px;
+      height: 35px;
+      background-color: #0dcaf0;
+      color: black;
+      font-weight: bold;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 10px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.2);
+    }
+    .step.active {
+      background-color: #ffc107;
+      color: black;
+    }
+    .nav-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+    button {
+      background-color: #ffc107;
+      color: black;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      width: 48%;
+      font-size: 15px;
+      box-shadow: 0 3px 5px rgba(0,0,0,0.3);
+    }
+    button:disabled {
+      background-color: #888;
+      cursor: not-allowed;
+    }
+    .btn-gps {
+      margin-top: 10px;
+      background-color: #0dcaf0;
+      width: 100%;
+    }
+    .custom-alert {
+      background-color: #ffc107;
+      color: black;
+      padding: 15px;
+      font-weight: bold;
+      border-radius: 8px;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 9999;
+      box-shadow: 0 0 15px rgba(0,0,0,0.6);
+      text-align: center;
+    }
+    .form-step {
+      display: none;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+    .form-step.active {
+      display: block;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+<header>
+  <a href="Clientes.html" class="back-arrow">←</a>
+  📋 Registro de Cliente
+</header>
+<div class="container">
+  <div class="step-container">
+    <div class="step active">1</div>
+    <div class="step">2</div>
+    <div class="step">3</div>
+  </div>
+  <div id="form-steps">
+    <div class="form-step active">
+      <input type="text" id="nombre" placeholder="Nombre">
+      <input type="text" id="apellido" placeholder="Apellido">
+      <input type="text" id="cedula" placeholder="Cédula">
+      <label for="fotoFrontal" class="file-input-label">📸 Subir Foto Frontal</label>
+      <input type="file" id="fotoFrontal" accept="image/*">
+      <label for="fotoTrasera" class="file-input-label">📸 Subir Foto Trasera</label>
+      <input type="file" id="fotoTrasera" accept="image/*">
+    </div>
+    <div class="form-step">
+      <input type="tel" id="telefono" placeholder="Teléfono (809, 829 o 849)">
+      <input type="text" id="direccion" placeholder="Dirección">
+      <input type="text" id="negocio" placeholder="Nombre del Negocio">
+      <input type="text" id="ruta" placeholder="Ruta">
+    </div>
+    <div class="form-step">
+      <input type="text" id="ubicacion" placeholder="Latitud y Longitud (ej: 18.5,-70.3)">
+      <button type="button" class="btn-gps" onclick="obtenerUbicacion()">📍 Usar mi ubicación actual</button>
+    </div>
+  </div>
+  <div class="nav-buttons">
+    <button id="btn-prev" onclick="cambiarPaso(-1)" disabled>Atrás</button>
+    <button id="btn-next" onclick="cambiarPaso(1)">Siguiente</button>
+  </div>
+</div>
+<script>
+  const pasos = document.querySelectorAll('.form-step');
+  const circulos = document.querySelectorAll('.step');
+  const btnPrev = document.getElementById('btn-prev');
+  const btnNext = document.getElementById('btn-next');
+  let pasoActual = 0;
+  function cambiarPaso(dir) {
+    pasos[pasoActual].classList.remove('active');
+    circulos[pasoActual].classList.remove('active');
+    pasoActual += dir;
+    pasos[pasoActual].classList.add('active');
+    circulos[pasoActual].classList.add('active');
+    btnPrev.disabled = pasoActual === 0;
+    btnNext.innerText = pasoActual === pasos.length - 1 ? "Guardar" : "Siguiente";
+    if (pasoActual === pasos.length - 1) {
+      btnNext.onclick = guardarCliente;
+    } else {
+      btnNext.onclick = () => cambiarPaso(1);
+    }
+  }
+  function mostrarAlerta(msg) {
+    const alerta = document.createElement('div');
+    alerta.className = 'custom-alert';
+    alerta.innerText = msg;
+    document.body.appendChild(alerta);
+    setTimeout(() => alerta.remove(), 3000);
+  }
+  function obtenerUbicacion() {
+    if (!navigator.geolocation) {
+      mostrarAlerta("❌ Tu navegador no admite geolocalización.");
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const lat = pos.coords.latitude.toFixed(6);
+        const lon = pos.coords.longitude.toFixed(6);
+        document.getElementById("ubicacion").value = `${lat},${lon}`;
+        mostrarAlerta("📍 Ubicación cargada.");
+      },
+      (err) => {
+        mostrarAlerta("⚠️ No se pudo obtener la ubicación.");
+      }
+    );
+  }
+  function guardarCliente() {
+    const campos = ['nombre','apellido','cedula','telefono','direccion','negocio','ruta','ubicacion'];
+    const datos = {};
+    for (let id of campos) {
+      const valor = document.getElementById(id).value.trim();
+      if (!valor) {
+        mostrarAlerta("⚠️ Completa todos los campos.");
+        return;
+      }
+      datos[id] = valor;
+    }
+    if (!/^(809|829|849)\d{7}$/.test(datos.telefono)) {
+      mostrarAlerta("⚠️ Teléfono inválido.");
+      return;
+    }
+    if (!/^[-+]?[0-9]*\.?[0-9]+,\s*[-+]?[0-9]*\.?[0-9]+$/.test(datos.ubicacion)) {
+      mostrarAlerta("⚠️ Coordenadas inválidas. Usa formato: latitud,longitud");
+      return;
+    }
+    const [latitud, longitud] = datos.ubicacion.split(',').map(n => n.trim());
+    const clientes = JSON.parse(localStorage.getItem('clientes')) || [];
+    if (clientes.some(c => c.cedula === datos.cedula)) {
+      mostrarAlerta("⚠️ La cédula ya está registrada.");
+      return;
+    }
+    clientes.push({
+      nombre: datos.nombre,
+      apellido: datos.apellido,
+      cedula: datos.cedula,
+      telefono: datos.telefono,
+      direccion: datos.direccion,
+      negocio: datos.negocio,
+      ruta: datos.ruta,
+      latitud,
+      longitud,
+      historial: []
+    });
+    localStorage.setItem('clientes', JSON.stringify(clientes));
+    alert("✅ Cliente guardado con éxito.");
+    location.href = "Clientes.html";
+  }
+</script>
+</body>
+</html>
