@@ -64,12 +64,17 @@
     }
 
     button,
-    a {
+    a,
+    input {
       -webkit-tap-highlight-color: transparent;
     }
 
     button {
       cursor: pointer;
+    }
+
+    button:disabled {
+      cursor: not-allowed;
     }
 
     img {
@@ -162,6 +167,7 @@
     }
 
     .orders-count {
+      max-width: 60%;
       padding: 8px 12px;
       border-radius: 999px;
       background: var(--orange-light);
@@ -169,6 +175,8 @@
       font-size: 12px;
       font-weight: 800;
       white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     /* LISTA DE PEDIDOS */
@@ -402,6 +410,7 @@
 
     .dispatched-item strong {
       color: #174c25;
+      overflow-wrap: anywhere;
     }
 
     /* RESUMEN */
@@ -433,6 +442,7 @@
       color: var(--orange);
       font-size: 20px;
       line-height: 1.2;
+      overflow-wrap: anywhere;
     }
 
     .seller-pill {
@@ -539,7 +549,7 @@
       line-height: 1.5;
     }
 
-    /* MODAL ENTREGA */
+    /* MODAL DE ENTREGA */
 
     .modal {
       position: fixed;
@@ -623,8 +633,9 @@
     /* LISTA DE DESPACHO */
 
     .dispatch-list {
-      max-height: 360px;
+      max-height: 390px;
       margin-top: 10px;
+      padding-right: 2px;
       overflow-y: auto;
       display: grid;
       gap: 10px;
@@ -671,7 +682,7 @@
       overflow-wrap: anywhere;
     }
 
-    .dispatch-details span {
+    .dispatch-details > span {
       color: var(--muted);
       font-size: 11px;
     }
@@ -717,6 +728,43 @@
       font-size: 12px;
       font-weight: 800;
       text-align: center;
+    }
+
+    .dispatch-quantity-box {
+      margin-top: 8px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .dispatch-quantity-box label {
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .dispatch-quantity-input {
+      width: 78px;
+      height: 34px;
+      padding: 0 8px;
+      border: 1px solid #d9dce1;
+      border-radius: 10px;
+      background: #fff;
+      color: #111;
+      font-size: 12px;
+      font-weight: 800;
+      text-align: center;
+      outline: none;
+    }
+
+    .dispatch-quantity-input:focus {
+      border-color: var(--orange);
+      box-shadow: 0 0 0 3px rgba(242, 106, 33, 0.12);
+    }
+
+    .dispatch-quantity-input:disabled {
+      background: #eceef1;
+      color: #9ca1a9;
     }
 
     /* RESPONSIVE */
@@ -797,9 +845,29 @@
         font-size: 16px;
       }
 
+      .page-heading {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .orders-count {
+        max-width: 100%;
+      }
+
       .order-actions,
       .payment-buttons {
         grid-template-columns: 1fr;
+      }
+
+      .dispatch-item {
+        grid-template-columns: 44px minmax(0, 1fr) 30px;
+        padding: 10px;
+        gap: 8px;
+      }
+
+      .dispatch-image {
+        width: 44px;
+        height: 44px;
       }
     }
   </style>
@@ -862,22 +930,29 @@
       document.getElementById("ordersCount");
 
     let historial =
-      cargarArregloLocalStorage("historialPedidos");
+      cargarArregloLocalStorage(
+        "historialPedidos"
+      );
 
     let ventasRealizadas =
-      cargarArregloLocalStorage("ventasRealizadas");
+      cargarArregloLocalStorage(
+        "ventasRealizadas"
+      );
 
     let cuentasPorCobrar =
-      cargarArregloLocalStorage("cuentasPorCobrar");
+      cargarArregloLocalStorage(
+        "cuentasPorCobrar"
+      );
 
-    const clienteSeleccionado =
-      cargarObjetoLocalStorage("clienteSeleccionado");
+    let procesandoEntrega = false;
 
     function cargarArregloLocalStorage(key) {
       try {
-        const datos = JSON.parse(
-          localStorage.getItem(key) || "[]"
-        );
+        const datos =
+          JSON.parse(
+            localStorage.getItem(key) ||
+            "[]"
+          );
 
         return Array.isArray(datos)
           ? datos
@@ -892,25 +967,15 @@
       }
     }
 
-    function cargarObjetoLocalStorage(key) {
-      try {
-        return JSON.parse(
-          localStorage.getItem(key) || "null"
-        );
-      } catch (error) {
-        return null;
-      }
-    }
-
-    function guardarLS(key, data) {
+    function guardarLS(key, datos) {
       localStorage.setItem(
         key,
-        JSON.stringify(data)
+        JSON.stringify(datos)
       );
     }
 
     function escaparHTML(valor) {
-      return String(valor || "")
+      return String(valor ?? "")
         .replaceAll("&", "&amp;")
         .replaceAll("<", "&lt;")
         .replaceAll(">", "&gt;")
@@ -919,80 +984,244 @@
     }
 
     function formatearMoneda(valor) {
-      return Number(valor || 0).toLocaleString(
-        "es-DO",
-        {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2
-        }
-      );
+      return Number(valor || 0)
+        .toLocaleString(
+          "es-DO",
+          {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+          }
+        );
     }
 
-    function calcularSubtotalProducto(producto) {
-      if (producto.subtotal != null) {
-        return Number(producto.subtotal || 0);
+    function generarId() {
+      if (
+        window.crypto &&
+        typeof crypto.randomUUID ===
+          "function"
+      ) {
+        return crypto.randomUUID();
       }
 
       return (
-        Number(producto.precio || 0) *
-        Number(producto.cantidad || 0)
+        Date.now().toString(36) +
+        Math.random()
+          .toString(36)
+          .slice(2)
       );
     }
 
-    function calcularTotalProductos(productos) {
-      return (productos || []).reduce(
+    function clonarObjeto(valor) {
+      try {
+        return JSON.parse(
+          JSON.stringify(valor)
+        );
+      } catch (error) {
+        return valor;
+      }
+    }
+
+    function obtenerCantidadProducto(
+      producto
+    ) {
+      return Math.max(
+        0,
+        Number(
+          producto?.cantidad ??
+          producto?.quantity ??
+          0
+        )
+      );
+    }
+
+    function obtenerPrecioProducto(
+      producto
+    ) {
+      return Math.max(
+        0,
+        Number(
+          producto?.precio ??
+          producto?.price ??
+          0
+        )
+      );
+    }
+
+    function obtenerNombreProducto(
+      producto
+    ) {
+      return String(
+        producto?.nombre ??
+        producto?.name ??
+        "Producto"
+      );
+    }
+
+    function obtenerImagenProducto(
+      producto
+    ) {
+      return String(
+        producto?.imagen ??
+        producto?.image ??
+        ""
+      );
+    }
+
+    function calcularSubtotalProducto(
+      producto
+    ) {
+      const cantidad =
+        obtenerCantidadProducto(
+          producto
+        );
+
+      const precio =
+        obtenerPrecioProducto(
+          producto
+        );
+
+      if (
+        producto?.subtotal != null &&
+        Number.isFinite(
+          Number(producto.subtotal)
+        )
+      ) {
+        return Number(
+          producto.subtotal
+        );
+      }
+
+      return precio * cantidad;
+    }
+
+    function calcularTotalProductos(
+      productos
+    ) {
+      return (
+        Array.isArray(productos)
+          ? productos
+          : []
+      ).reduce(
         (total, producto) =>
-          total + calcularSubtotalProducto(producto),
+          total +
+          calcularSubtotalProducto(
+            producto
+          ),
         0
       );
     }
 
-    function getVendedorSesionLegible() {
-      try {
-        const usuario = JSON.parse(
-          localStorage.getItem("usuarioSesion") || "null"
+    function crearParteProducto(
+      producto,
+      cantidad
+    ) {
+      const cantidadOriginal =
+        obtenerCantidadProducto(
+          producto
         );
 
+      const cantidadParte =
+        Math.max(
+          0,
+          Math.min(
+            Number(cantidad || 0),
+            cantidadOriginal
+          )
+        );
+
+      const precio =
+        obtenerPrecioProducto(
+          producto
+        );
+
+      return {
+        ...clonarObjeto(producto),
+        cantidad: cantidadParte,
+        precio,
+        subtotal:
+          precio * cantidadParte
+      };
+    }
+
+    function getVendedorSesionLegible() {
+      try {
+        const usuario =
+          JSON.parse(
+            localStorage.getItem(
+              "usuarioSesion"
+            ) || "null"
+          );
+
         if (usuario?.nombre) {
-          return String(usuario.nombre);
+          return String(
+            usuario.nombre
+          );
         }
 
         if (usuario?.usuario) {
-          return String(usuario.usuario);
+          return String(
+            usuario.usuario
+          );
         }
       } catch (error) {}
 
       try {
-        const usuario = JSON.parse(
-          localStorage.getItem("currentUser") || "null"
-        );
+        const usuario =
+          JSON.parse(
+            localStorage.getItem(
+              "currentUser"
+            ) || "null"
+          );
 
         if (usuario?.name) {
-          return String(usuario.name);
+          return String(
+            usuario.name
+          );
         }
 
         if (usuario?.username) {
-          return String(usuario.username);
+          return String(
+            usuario.username
+          );
         }
 
         if (usuario?.role) {
-          return String(usuario.role);
+          return String(
+            usuario.role
+          );
         }
       } catch (error) {}
 
       return (
-        localStorage.getItem("nombreUsuario") ||
-        localStorage.getItem("rol") ||
+        localStorage.getItem(
+          "nombreUsuario"
+        ) ||
+        localStorage.getItem(
+          "rol"
+        ) ||
         "No definido"
       );
     }
 
-    function normalizaClienteObj(cliente) {
-      if (!cliente) return null;
+    function normalizaClienteObj(
+      cliente
+    ) {
+      if (
+        !cliente ||
+        typeof cliente !== "object"
+      ) {
+        return null;
+      }
 
       const obj = {
         ...cliente
       };
+
+      obj.nombre =
+        obj.nombre || "";
+
+      obj.apellido =
+        obj.apellido || "";
 
       obj.negocio =
         obj.negocio ||
@@ -1009,10 +1238,17 @@
         obj.tel ||
         "";
 
+      obj.correo =
+        obj.correo ||
+        obj.email ||
+        "";
+
       return obj;
     }
 
-    function obtenerClienteParaPedido(pedido) {
+    function obtenerClienteParaPedido(
+      pedido
+    ) {
       if (pedido?.clienteInfo) {
         return normalizaClienteObj(
           pedido.clienteInfo
@@ -1021,22 +1257,22 @@
 
       if (
         pedido?.cliente &&
-        typeof pedido.cliente === "object"
+        typeof pedido.cliente ===
+          "object"
       ) {
         return normalizaClienteObj(
           pedido.cliente
         );
       }
 
-      if (pedido?.clienteSeleccionado) {
+      if (
+        pedido?.clienteSeleccionado &&
+        typeof pedido
+          .clienteSeleccionado ===
+          "object"
+      ) {
         return normalizaClienteObj(
           pedido.clienteSeleccionado
-        );
-      }
-
-      if (clienteSeleccionado) {
-        return normalizaClienteObj(
-          clienteSeleccionado
         );
       }
 
@@ -1044,7 +1280,8 @@
         pedido?.negocio ||
         pedido?.nombreNegocio ||
         (
-          typeof pedido?.cliente === "string"
+          typeof pedido?.cliente ===
+            "string"
             ? pedido.cliente
             : ""
         );
@@ -1059,105 +1296,298 @@
         pedido?.tel ||
         "";
 
-      if (negocio || direccion || telefono) {
+      const correo =
+        pedido?.correo ||
+        pedido?.email ||
+        "";
+
+      if (
+        negocio ||
+        direccion ||
+        telefono ||
+        correo
+      ) {
         return normalizaClienteObj({
           negocio,
           direccion,
-          telefono
+          telefono,
+          correo
         });
       }
 
       return null;
     }
 
-    function mostrarListaDespacho(index) {
-      const pedido = historial[index];
+    function migrarPedidosAntiguos() {
+      let huboCambios = false;
 
-      if (!pedido) return;
+      historial.forEach(pedido => {
+        if (!pedido.id) {
+          pedido.id = generarId();
+          huboCambios = true;
+        }
 
-      const productos = Array.isArray(pedido.productos)
-        ? pedido.productos
-        : [];
+        if (
+          !Array.isArray(
+            pedido.productos
+          )
+        ) {
+          pedido.productos = [];
+          huboCambios = true;
+        }
+
+        if (
+          !Array.isArray(
+            pedido.productosDespachados
+          )
+        ) {
+          pedido.productosDespachados =
+            [];
+
+          huboCambios = true;
+        }
+
+        if (
+          !Array.isArray(
+            pedido.despachosParciales
+          )
+        ) {
+          pedido.despachosParciales =
+            [];
+
+          huboCambios = true;
+        }
+
+        if (
+          pedido.totalOriginal ==
+          null
+        ) {
+          pedido.totalOriginal =
+            Number(
+              pedido.total ||
+              calcularTotalProductos(
+                pedido.productos
+              ) ||
+              0
+            );
+
+          huboCambios = true;
+        }
+
+        /*
+          Corrige pedidos antiguos que estaban
+          marcados como despachados, pero todavía
+          mantenían los productos en pedido.productos.
+        */
+
+        if (
+          pedido.despachado === true &&
+          pedido.productos.length > 0 &&
+          pedido.productosDespachados
+            .length === 0
+        ) {
+          pedido.productosDespachados =
+            clonarObjeto(
+              pedido.productos
+            );
+
+          pedido.productos = [];
+
+          pedido.estado =
+            "despachado";
+
+          pedido.totalPendiente = 0;
+
+          huboCambios = true;
+        }
+
+        if (!pedido.clienteInfo) {
+          const cliente =
+            obtenerClienteParaPedido(
+              pedido
+            );
+
+          if (cliente) {
+            pedido.clienteInfo =
+              cliente;
+
+            huboCambios = true;
+          }
+        }
+
+        if (!pedido.vendedor) {
+          pedido.vendedor =
+            getVendedorSesionLegible();
+
+          huboCambios = true;
+        }
+
+        pedido.totalPendiente =
+          calcularTotalProductos(
+            pedido.productos
+          );
+      });
+
+      if (huboCambios) {
+        guardarLS(
+          "historialPedidos",
+          historial
+        );
+      }
+    }
+
+    function mostrarListaDespacho(
+      index
+    ) {
+      const pedido =
+        historial[index];
+
+      if (!pedido) {
+        return;
+      }
+
+      const productos =
+        Array.isArray(
+          pedido.productos
+        )
+          ? pedido.productos
+          : [];
 
       if (productos.length === 0) {
         Swal.fire({
           position: "center",
-          title: "Sin artículos pendientes",
-          text: "Este pedido ya no tiene artículos pendientes para despachar.",
+
+          title:
+            "Sin artículos pendientes",
+
+          text:
+            "Este pedido no tiene artículos pendientes para despachar.",
+
           icon: "info",
-          confirmButtonColor: "#f26a21"
+
+          confirmButtonColor:
+            "#f26a21"
         });
 
         return;
       }
 
-      const listaHTML = productos.map(
-        (producto, productoIndex) => `
-          <label
-            class="dispatch-item"
-            id="dispatchItem-${productoIndex}"
-          >
+      const listaHTML =
+        productos.map(
+          (
+            producto,
+            productoIndex
+          ) => {
+            const cantidad =
+              obtenerCantidadProducto(
+                producto
+              );
 
-            <img
-              class="dispatch-image"
-              src="${escaparHTML(
-                producto.imagen ||
-                "https://via.placeholder.com/48?text=P"
-              )}"
-              alt="${escaparHTML(
-                producto.nombre || "Producto"
-              )}"
-              onerror="
-                this.onerror=null;
-                this.src='https://via.placeholder.com/48?text=P';
-              "
-            >
-
-            <div class="dispatch-details">
-
-              <strong>
-                ${escaparHTML(
-                  producto.nombre || "Producto"
-                )}
-              </strong>
-
-              <span>
-                Cantidad:
-                ${Number(
-                  producto.cantidad || 0
-                ).toLocaleString("es-DO")}
-              </span>
-
-            </div>
-
-            <span class="dispatch-check">
-
-              <input
-                type="checkbox"
-                class="dispatch-checkbox"
-                data-index="${productoIndex}"
+            return `
+              <label
+                class="dispatch-item"
+                id="dispatchItem-${productoIndex}"
               >
 
-              <span class="custom-check">
-                <i class="fa-solid fa-check"></i>
-              </span>
+                <img
+                  class="dispatch-image"
+                  src="${escaparHTML(
+                    obtenerImagenProducto(
+                      producto
+                    ) ||
+                    "https://via.placeholder.com/48?text=P"
+                  )}"
+                  alt="${escaparHTML(
+                    obtenerNombreProducto(
+                      producto
+                    )
+                  )}"
+                  onerror="
+                    this.onerror=null;
+                    this.src='https://via.placeholder.com/48?text=P';
+                  "
+                >
 
-            </span>
+                <div class="dispatch-details">
 
-          </label>
-        `
-      ).join("");
+                  <strong>
+                    ${escaparHTML(
+                      obtenerNombreProducto(
+                        producto
+                      )
+                    )}
+                  </strong>
+
+                  <span>
+                    Disponible para despachar:
+                    ${cantidad.toLocaleString(
+                      "es-DO"
+                    )}
+                  </span>
+
+                  <div
+                    class="dispatch-quantity-box"
+                  >
+
+                    <label
+                      for="dispatchQuantity-${productoIndex}"
+                    >
+                      Cantidad:
+                    </label>
+
+                    <input
+                      type="number"
+                      class="dispatch-quantity-input"
+                      id="dispatchQuantity-${productoIndex}"
+                      data-index="${productoIndex}"
+                      min="1"
+                      max="${cantidad}"
+                      step="1"
+                      value="${cantidad}"
+                      disabled
+                    >
+
+                  </div>
+
+                </div>
+
+                <span
+                  class="dispatch-check"
+                >
+
+                  <input
+                    type="checkbox"
+                    class="dispatch-checkbox"
+                    data-index="${productoIndex}"
+                  >
+
+                  <span
+                    class="custom-check"
+                  >
+                    <i
+                      class="fa-solid fa-check"
+                    ></i>
+                  </span>
+
+                </span>
+
+              </label>
+            `;
+          }
+        ).join("");
 
       Swal.fire({
         position: "center",
-        title: "Seleccionar artículos",
+
+        title:
+          "Seleccionar artículos",
 
         html: `
           <div
             class="dispatch-progress"
             id="dispatchProgress"
           >
-            0 de ${productos.length} artículos aprobados
+            0 artículos seleccionados
           </div>
 
           <div class="dispatch-list">
@@ -1165,12 +1595,22 @@
           </div>
         `,
 
-        width: 520,
+        width: 540,
+
         showCancelButton: true,
-        confirmButtonText: "Enviar aprobados",
-        cancelButtonText: "Cancelar",
-        confirmButtonColor: "#f26a21",
-        cancelButtonColor: "#737985",
+
+        confirmButtonText:
+          "Enviar aprobados",
+
+        cancelButtonText:
+          "Cancelar",
+
+        confirmButtonColor:
+          "#f26a21",
+
+        cancelButtonColor:
+          "#737985",
+
         focusConfirm: false,
 
         didOpen: () => {
@@ -1180,26 +1620,51 @@
             );
 
           function actualizarEstado() {
-            let aprobados = 0;
+            let seleccionados = 0;
+            let unidades = 0;
 
-            checkboxes.forEach(checkbox => {
-              const indice =
-                Number(checkbox.dataset.index);
+            checkboxes.forEach(
+              checkbox => {
+                const indice =
+                  Number(
+                    checkbox.dataset
+                      .index
+                  );
 
-              const item =
-                document.getElementById(
-                  `dispatchItem-${indice}`
+                const item =
+                  document.getElementById(
+                    `dispatchItem-${indice}`
+                  );
+
+                const inputCantidad =
+                  document.getElementById(
+                    `dispatchQuantity-${indice}`
+                  );
+
+                item?.classList.toggle(
+                  "approved",
+                  checkbox.checked
                 );
 
-              item?.classList.toggle(
-                "approved",
-                checkbox.checked
-              );
+                if (inputCantidad) {
+                  inputCantidad.disabled =
+                    !checkbox.checked;
+                }
 
-              if (checkbox.checked) {
-                aprobados++;
+                if (
+                  checkbox.checked
+                ) {
+                  seleccionados++;
+
+                  unidades +=
+                    Number(
+                      inputCantidad
+                        ?.value ||
+                      0
+                    );
+                }
               }
-            });
+            );
 
             const progreso =
               document.getElementById(
@@ -1208,54 +1673,116 @@
 
             if (progreso) {
               progreso.textContent =
-                `${aprobados} de ${productos.length} artículos aprobados`;
+                `${seleccionados} artículos seleccionados · ${unidades} unidades`;
             }
           }
 
-          checkboxes.forEach(checkbox => {
-            checkbox.addEventListener(
-              "change",
-              actualizarEstado
-            );
-          });
+          checkboxes.forEach(
+            checkbox => {
+              checkbox.addEventListener(
+                "change",
+                actualizarEstado
+              );
+            }
+          );
+
+          document
+            .querySelectorAll(
+              ".dispatch-quantity-input"
+            )
+            .forEach(input => {
+              input.addEventListener(
+                "input",
+                actualizarEstado
+              );
+            });
 
           actualizarEstado();
         },
 
         preConfirm: () => {
-          const checkboxes = Array.from(
-            document.querySelectorAll(
-              ".dispatch-checkbox"
-            )
+          const seleccionados = [];
+
+          const checkboxes =
+            Array.from(
+              document.querySelectorAll(
+                ".dispatch-checkbox"
+              )
+            );
+
+          checkboxes.forEach(
+            checkbox => {
+              if (!checkbox.checked) {
+                return;
+              }
+
+              const indice =
+                Number(
+                  checkbox.dataset.index
+                );
+
+              const producto =
+                productos[indice];
+
+              const inputCantidad =
+                document.getElementById(
+                  `dispatchQuantity-${indice}`
+                );
+
+              const cantidad =
+                Number(
+                  inputCantidad?.value ||
+                  0
+                );
+
+              const maximo =
+                obtenerCantidadProducto(
+                  producto
+                );
+
+              seleccionados.push({
+                indice,
+                cantidad,
+                maximo
+              });
+            }
           );
 
-          const indicesAprobados =
-            checkboxes
-              .filter(
-                checkbox =>
-                  checkbox.checked
-              )
-              .map(
-                checkbox =>
-                  Number(
-                    checkbox.dataset.index
-                  )
-              );
-
           if (
-            indicesAprobados.length === 0
+            seleccionados.length === 0
           ) {
             Swal.showValidationMessage(
-              "Debes aprobar al menos un artículo."
+              "Debes seleccionar al menos un artículo."
             );
 
             return false;
           }
 
-          return indicesAprobados;
+          const cantidadInvalida =
+            seleccionados.find(
+              item =>
+                !Number.isInteger(
+                  item.cantidad
+                ) ||
+                item.cantidad <= 0 ||
+                item.cantidad >
+                  item.maximo
+            );
+
+          if (cantidadInvalida) {
+            Swal.showValidationMessage(
+              "Revisa las cantidades. No pueden ser mayores que las disponibles."
+            );
+
+            return false;
+          }
+
+          return seleccionados;
         }
       }).then(resultado => {
-        if (!resultado.isConfirmed) {
+        if (
+          !resultado.isConfirmed
+        ) {
           return;
         }
 
@@ -1268,51 +1795,178 @@
 
     function confirmarDespachoParcial(
       index,
-      indicesAprobados
+      selecciones
     ) {
-      const pedido = historial[index];
+      const pedido =
+        historial[index];
 
       if (
         !pedido ||
-        !Array.isArray(indicesAprobados) ||
-        indicesAprobados.length === 0
+        !Array.isArray(
+          selecciones
+        ) ||
+        selecciones.length === 0
       ) {
         return;
       }
 
       const productosOriginales =
-        Array.isArray(pedido.productos)
+        Array.isArray(
+          pedido.productos
+        )
           ? pedido.productos
           : [];
 
-      const articulosAprobados =
-        productosOriginales.filter(
-          (producto, productoIndex) =>
-            indicesAprobados.includes(
-              productoIndex
-            )
-        );
+      const seleccionesValidas =
+        selecciones
+          .filter(seleccion => {
+            const indice =
+              Number(
+                seleccion.indice
+              );
 
-      const articulosPendientes =
-        productosOriginales.filter(
-          (producto, productoIndex) =>
-            !indicesAprobados.includes(
-              productoIndex
-            )
-        );
+            const cantidad =
+              Number(
+                seleccion.cantidad
+              );
+
+            return (
+              Number.isInteger(
+                indice
+              ) &&
+              indice >= 0 &&
+              indice <
+                productosOriginales
+                  .length &&
+              Number.isInteger(
+                cantidad
+              ) &&
+              cantidad > 0 &&
+              cantidad <=
+                obtenerCantidadProducto(
+                  productosOriginales[
+                    indice
+                  ]
+                )
+            );
+          })
+          .reduce(
+            (
+              resultado,
+              seleccion
+            ) => {
+              if (
+                !resultado.some(
+                  item =>
+                    item.indice ===
+                    seleccion.indice
+                )
+              ) {
+                resultado.push(
+                  seleccion
+                );
+              }
+
+              return resultado;
+            },
+            []
+          );
 
       if (
-        articulosAprobados.length === 0
+        seleccionesValidas.length ===
+        0
       ) {
         Swal.fire({
           position: "center",
-          title: "Sin artículos aprobados",
-          text: "No se seleccionó ningún artículo para enviar.",
+
+          title:
+            "Selección inválida",
+
+          text:
+            "No se encontraron artículos válidos para despachar.",
+
           icon: "warning",
-          confirmButtonColor: "#f26a21"
+
+          confirmButtonColor:
+            "#f26a21"
         });
 
         return;
+      }
+
+      const mapaSelecciones =
+        new Map(
+          seleccionesValidas.map(
+            seleccion => [
+              seleccion.indice,
+              seleccion.cantidad
+            ]
+          )
+        );
+
+      const articulosAprobados = [];
+      const articulosPendientes = [];
+
+      productosOriginales.forEach(
+        (
+          producto,
+          productoIndex
+        ) => {
+          const cantidadOriginal =
+            obtenerCantidadProducto(
+              producto
+            );
+
+          const cantidadDespachar =
+            mapaSelecciones.get(
+              productoIndex
+            ) || 0;
+
+          if (
+            cantidadDespachar > 0
+          ) {
+            articulosAprobados.push(
+              crearParteProducto(
+                producto,
+                cantidadDespachar
+              )
+            );
+          }
+
+          const restante =
+            cantidadOriginal -
+            cantidadDespachar;
+
+          if (restante > 0) {
+            articulosPendientes.push(
+              crearParteProducto(
+                producto,
+                restante
+              )
+            );
+          }
+        }
+      );
+
+      if (
+        articulosAprobados.length ===
+        0
+      ) {
+        return;
+      }
+
+      if (
+        pedido.totalOriginal ==
+        null
+      ) {
+        pedido.totalOriginal =
+          Number(
+            pedido.total ||
+            calcularTotalProductos(
+              productosOriginales
+            ) ||
+            0
+          );
       }
 
       const fechaDespacho =
@@ -1330,13 +1984,24 @@
           pedido.despachosParciales
         )
       ) {
-        pedido.despachosParciales = [];
+        pedido.despachosParciales =
+          [];
       }
 
       pedido.despachosParciales.push({
-        fecha: fechaDespacho,
-        productos: articulosAprobados,
-        total: totalDespachado,
+        id: generarId(),
+
+        fecha:
+          fechaDespacho,
+
+        productos:
+          clonarObjeto(
+            articulosAprobados
+          ),
+
+        total:
+          totalDespachado,
+
         vendedor:
           pedido.vendedor ||
           getVendedorSesionLegible()
@@ -1350,7 +2015,10 @@
             ? pedido.productosDespachados
             : []
         ),
-        ...articulosAprobados
+
+        ...clonarObjeto(
+          articulosAprobados
+        )
       ];
 
       pedido.productos =
@@ -1364,10 +2032,9 @@
       pedido.fechaUltimoDespacho =
         fechaDespacho;
 
-      if (!pedido.vendedor) {
-        pedido.vendedor =
-          getVendedorSesionLegible();
-      }
+      pedido.vendedor =
+        pedido.vendedor ||
+        getVendedorSesionLegible();
 
       if (!pedido.clienteInfo) {
         const cliente =
@@ -1382,10 +2049,13 @@
       }
 
       if (
-        articulosPendientes.length === 0
+        articulosPendientes.length ===
+        0
       ) {
         pedido.despachado = true;
-        pedido.estado = "despachado";
+        pedido.estado =
+          "despachado";
+
         pedido.fechaDespacho =
           fechaDespacho;
       } else {
@@ -1401,12 +2071,34 @@
 
       renderHistorial();
 
+      const unidadesEnviadas =
+        articulosAprobados.reduce(
+          (total, producto) =>
+            total +
+            obtenerCantidadProducto(
+              producto
+            ),
+          0
+        );
+
+      const unidadesPendientes =
+        articulosPendientes.reduce(
+          (total, producto) =>
+            total +
+            obtenerCantidadProducto(
+              producto
+            ),
+          0
+        );
+
       Swal.fire({
         position: "center",
+
         icon: "success",
 
         title:
-          articulosPendientes.length === 0
+          articulosPendientes.length ===
+          0
             ? "Pedido despachado"
             : "Despacho parcial realizado",
 
@@ -1415,22 +2107,19 @@
             color:#4b5563;
             line-height:1.7;
           ">
+
             Se enviaron
 
             <strong style="
               color:#159638;
             ">
-              ${articulosAprobados.length}
+              ${unidadesEnviadas}
             </strong>
 
-            ${
-              articulosAprobados.length === 1
-                ? "artículo aprobado"
-                : "artículos aprobados"
-            }.
+            unidades aprobadas.
 
             ${
-              articulosPendientes.length > 0
+              unidadesPendientes > 0
                 ? `
                   <br>
 
@@ -1439,7 +2128,8 @@
                   <strong style="
                     color:#e52424;
                   ">
-                    ${articulosPendientes.length}
+                    ${unidadesPendientes}
+                    unidades
                   </strong>
                 `
                 : `
@@ -1447,6 +2137,7 @@
                   No quedan artículos pendientes.
                 `
             }
+
           </div>
         `,
 
@@ -1455,28 +2146,90 @@
       });
     }
 
-    window.despachar = function(index) {
-      mostrarListaDespacho(index);
-    };
+    window.despachar =
+      function(index) {
+        mostrarListaDespacho(
+          index
+        );
+      };
 
-    function mostrarModal(pedido, index) {
+    function mostrarModal(
+      pedido,
+      index
+    ) {
+      const pendientes =
+        Array.isArray(
+          pedido.productos
+        )
+          ? pedido.productos
+          : [];
+
       if (
-        !pedido.despachado ||
-        (pedido.productos || []).length > 0
+        pedido.despachado !== true ||
+        pendientes.length > 0
       ) {
         Swal.fire({
           position: "center",
-          title: "Pedido pendiente",
-          text: "Debes despachar todos los artículos antes de registrar la entrega.",
+
+          title:
+            "Pedido pendiente",
+
+          text:
+            "Debes despachar todos los artículos antes de registrar la entrega.",
+
           icon: "warning",
-          confirmButtonColor: "#f26a21"
+
+          confirmButtonColor:
+            "#f26a21"
         });
 
         return;
       }
 
+      const productosEntregados =
+        (
+          Array.isArray(
+            pedido.productosDespachados
+          ) &&
+          pedido.productosDespachados
+            .length > 0
+        )
+          ? clonarObjeto(
+              pedido
+                .productosDespachados
+            )
+          : clonarObjeto(
+              pedido.productos || []
+            );
+
+      if (
+        productosEntregados.length ===
+        0
+      ) {
+        Swal.fire({
+          position: "center",
+
+          title:
+            "Entrega sin productos",
+
+          text:
+            "No se encontraron artículos despachados para registrar la venta.",
+
+          icon: "warning",
+
+          confirmButtonColor:
+            "#f26a21"
+        });
+
+        return;
+      }
+
+      procesandoEntrega = false;
+
       const modal =
-        document.createElement("div");
+        document.createElement(
+          "div"
+        );
 
       modal.className = "modal";
 
@@ -1487,7 +2240,9 @@
             <i class="fa-solid fa-hand-holding-dollar"></i>
           </div>
 
-          <h3>Registrar entrega</h3>
+          <h3>
+            Registrar entrega
+          </h3>
 
           <p>
             Selecciona cómo deseas registrar esta venta.
@@ -1529,26 +2284,45 @@
         );
 
       const vendedor =
+        pedido.vendedor ||
         getVendedorSesionLegible();
 
-      const productosEntregados =
-        Array.isArray(
-          pedido.productosDespachados
-        )
-          ? pedido.productosDespachados
-          : [];
+      /*
+        Conserva el total original para no perder
+        descuentos, impuestos, cargos o redondeos.
+      */
 
       const totalEntregado =
+        Number(
+          pedido.totalOriginal ??
+          pedido.total
+        ) ||
         calcularTotalProductos(
           productosEntregados
         );
+
+      function desactivarBotones() {
+        procesandoEntrega = true;
+
+        modal
+          .querySelectorAll(
+            "button"
+          )
+          .forEach(boton => {
+            boton.disabled = true;
+          });
+      }
 
       modal
         .querySelector(
           ".cancelar"
         )
         .onclick = () => {
-          modal.remove();
+          if (
+            !procesandoEntrega
+          ) {
+            modal.remove();
+          }
         };
 
       modal
@@ -1556,8 +2330,32 @@
           ".contado"
         )
         .onclick = () => {
+          if (
+            procesandoEntrega
+          ) {
+            return;
+          }
+
+          desactivarBotones();
+
           const venta = {
-            ...pedido,
+            id: generarId(),
+
+            pedidoId:
+              pedido.id || "",
+
+            fecha:
+              pedido.fecha ||
+              new Date()
+                .toLocaleString(
+                  "es-DO"
+                ),
+
+            fechaEntrega:
+              new Date()
+                .toLocaleString(
+                  "es-DO"
+                ),
 
             productos:
               productosEntregados,
@@ -1568,17 +2366,13 @@
             clienteInfo:
               clienteFinal,
 
-            vendedor:
-              pedido.vendedor ||
-              vendedor,
+            vendedor,
 
             estado:
               "entregado",
 
-            fechaEntrega:
-              new Date().toLocaleString(
-                "es-DO"
-              )
+            tipoPago:
+              "contado"
           };
 
           ventasRealizadas.push(
@@ -1601,14 +2395,24 @@
           );
 
           modal.remove();
+
+          procesandoEntrega = false;
+
           renderHistorial();
 
           Swal.fire({
             position: "center",
+
             icon: "success",
-            title: "Venta registrada",
-            text: "La entrega fue registrada al contado.",
-            confirmButtonColor: "#f26a21"
+
+            title:
+              "Venta registrada",
+
+            text:
+              "La entrega fue registrada al contado.",
+
+            confirmButtonColor:
+              "#f26a21"
           });
         };
 
@@ -1617,8 +2421,36 @@
           ".credito"
         )
         .onclick = () => {
+          if (
+            procesandoEntrega
+          ) {
+            return;
+          }
+
+          desactivarBotones();
+
           const cuenta = {
-            ...pedido,
+            id: generarId(),
+
+            pedidoId:
+              pedido.id || "",
+
+            fecha:
+              pedido.fecha ||
+              new Date()
+                .toLocaleString(
+                  "es-DO"
+                ),
+
+            fechaEntrega:
+              new Date()
+                .toLocaleString(
+                  "es-DO"
+                ),
+
+            creadoEn:
+              new Date()
+                .toISOString(),
 
             productos:
               productosEntregados,
@@ -1626,23 +2458,24 @@
             total:
               totalEntregado,
 
+            totalOriginal:
+              totalEntregado,
+
+            saldoPendiente:
+              totalEntregado,
+
+            abonos: [],
+
             clienteInfo:
               clienteFinal,
 
-            vendedor:
-              pedido.vendedor ||
-              vendedor,
+            vendedor,
 
             estado:
               "pendiente",
 
-            creadoEn:
-              new Date().toISOString(),
-
-            fechaEntrega:
-              new Date().toLocaleString(
-                "es-DO"
-              )
+            tipoPago:
+              "credito"
           };
 
           cuentasPorCobrar.push(
@@ -1665,14 +2498,24 @@
           );
 
           modal.remove();
+
+          procesandoEntrega = false;
+
           renderHistorial();
 
           Swal.fire({
             position: "center",
+
             icon: "success",
-            title: "Crédito registrado",
-            text: "La cuenta por cobrar fue creada correctamente.",
-            confirmButtonColor: "#f26a21"
+
+            title:
+              "Crédito registrado",
+
+            text:
+              "La cuenta por cobrar fue creada correctamente.",
+
+            confirmButtonColor:
+              "#f26a21"
           });
         };
 
@@ -1680,7 +2523,8 @@
         "click",
         event => {
           if (
-            event.target === modal
+            event.target === modal &&
+            !procesandoEntrega
           ) {
             modal.remove();
           }
@@ -1697,18 +2541,24 @@
         const pedido =
           historial[index];
 
-        if (!pedido) return;
-
-        if (!pedido.vendedor) {
-          pedido.vendedor =
-            getVendedorSesionLegible();
+        if (!pedido) {
+          return;
         }
 
+        pedido.vendedor =
+          pedido.vendedor ||
+          getVendedorSesionLegible();
+
         if (!pedido.clienteInfo) {
-          pedido.clienteInfo =
+          const cliente =
             obtenerClienteParaPedido(
               pedido
             );
+
+          if (cliente) {
+            pedido.clienteInfo =
+              cliente;
+          }
         }
 
         guardarLS(
@@ -1743,13 +2593,13 @@
       return productos.map(
         producto => {
           const cantidad =
-            Number(
-              producto.cantidad || 0
+            obtenerCantidadProducto(
+              producto
             );
 
           const precio =
-            Number(
-              producto.precio || 0
+            obtenerPrecioProducto(
+              producto
             );
 
           const subtotal =
@@ -1764,12 +2614,15 @@
 
                 <img
                   src="${escaparHTML(
-                    producto.imagen ||
+                    obtenerImagenProducto(
+                      producto
+                    ) ||
                     "https://via.placeholder.com/58?text=P"
                   )}"
                   alt="${escaparHTML(
-                    producto.nombre ||
-                    "Producto"
+                    obtenerNombreProducto(
+                      producto
+                    )
                   )}"
                   onerror="
                     this.onerror=null;
@@ -1784,8 +2637,9 @@
                 <p>
                   <strong>
                     ${escaparHTML(
-                      producto.nombre ||
-                      "Producto"
+                      obtenerNombreProducto(
+                        producto
+                      )
                     )}
                   </strong>
                 </p>
@@ -1816,7 +2670,9 @@
               ${
                 mostrarPendiente
                   ? `
-                    <span class="pending-label">
+                    <span
+                      class="pending-label"
+                    >
                       Pendiente
                     </span>
                   `
@@ -1842,26 +2698,31 @@
       return `
         <div class="dispatched-section">
 
-          <div class="dispatched-section-title">
+          <div
+            class="dispatched-section-title"
+          >
             <i class="fa-solid fa-circle-check"></i>
             Artículos despachados
           </div>
 
           ${productos.map(
             producto => `
-              <div class="dispatched-item">
+              <div
+                class="dispatched-item"
+              >
 
                 <strong>
                   ${escaparHTML(
-                    producto.nombre ||
-                    "Producto"
+                    obtenerNombreProducto(
+                      producto
+                    )
                   )}
                 </strong>
 
                 <span>
                   Cantidad:
-                  ${Number(
-                    producto.cantidad || 0
+                  ${obtenerCantidadProducto(
+                    producto
                   ).toLocaleString(
                     "es-DO"
                   )}
@@ -1879,10 +2740,38 @@
       historialContainer.innerHTML =
         "";
 
+      const articulosPendientes =
+        historial.reduce(
+          (total, pedido) => {
+            const productos =
+              Array.isArray(
+                pedido.productos
+              )
+                ? pedido.productos
+                : [];
+
+            return (
+              total +
+              productos.reduce(
+                (
+                  suma,
+                  producto
+                ) =>
+                  suma +
+                  obtenerCantidadProducto(
+                    producto
+                  ),
+                0
+              )
+            );
+          },
+          0
+        );
+
       ordersCount.textContent =
         historial.length === 1
-          ? "1 pedido"
-          : `${historial.length} pedidos`;
+          ? `1 pedido · ${articulosPendientes} pendientes`
+          : `${historial.length} pedidos · ${articulosPendientes} pendientes`;
 
       if (
         historial.length === 0
@@ -1894,7 +2783,9 @@
               <i class="fa-solid fa-box-open"></i>
             </div>
 
-            <h3>No hay pedidos pendientes</h3>
+            <h3>
+              No hay pedidos pendientes
+            </h3>
 
             <p>
               Los nuevos pedidos aparecerán en esta sección.
@@ -1907,7 +2798,10 @@
       }
 
       historial.forEach(
-        (pedido, index) => {
+        (
+          pedido,
+          index
+        ) => {
           const cliente =
             obtenerClienteParaPedido(
               pedido
@@ -1929,11 +2823,13 @@
 
           const totalmenteDespachado =
             pedido.despachado === true &&
-            productosPendientes.length === 0;
+            productosPendientes.length ===
+              0;
 
           const parcialmenteDespachado =
             !totalmenteDespachado &&
-            productosDespachados.length > 0;
+            productosDespachados.length >
+              0;
 
           let claseEstado =
             "pendiente";
@@ -1941,7 +2837,9 @@
           let textoEstado =
             "Pendiente";
 
-          if (totalmenteDespachado) {
+          if (
+            totalmenteDespachado
+          ) {
             claseEstado =
               "despachado";
 
@@ -1958,12 +2856,19 @@
           }
 
           const totalMostrado =
-            productosPendientes.length > 0
+            productosPendientes.length >
+            0
               ? calcularTotalProductos(
                   productosPendientes
                 )
-              : calcularTotalProductos(
-                  productosDespachados
+              : (
+                  Number(
+                    pedido.totalOriginal ??
+                    pedido.total
+                  ) ||
+                  calcularTotalProductos(
+                    productosDespachados
+                  )
                 );
 
           const tarjeta =
@@ -1983,7 +2888,9 @@
                   <i class="fa-solid fa-box"></i>
                 </div>
 
-                <div class="venta-heading-text">
+                <div
+                  class="venta-heading-text"
+                >
 
                   <strong>
                     ${escaparHTML(
@@ -2003,7 +2910,9 @@
 
               </div>
 
-              <span class="status-badge ${claseEstado}">
+              <span
+                class="status-badge ${claseEstado}"
+              >
                 ${textoEstado}
               </span>
 
@@ -2015,7 +2924,9 @@
                 <i class="fa-solid fa-store"></i>
 
                 <span>
-                  <strong>Negocio:</strong>
+                  <strong>
+                    Negocio:
+                  </strong>
 
                   ${escaparHTML(
                     cliente?.negocio ||
@@ -2028,7 +2939,9 @@
                 <i class="fa-solid fa-phone"></i>
 
                 <span>
-                  <strong>Teléfono:</strong>
+                  <strong>
+                    Teléfono:
+                  </strong>
 
                   ${escaparHTML(
                     cliente?.telefono ||
@@ -2041,7 +2954,9 @@
                 <i class="fa-solid fa-location-dot"></i>
 
                 <span>
-                  <strong>Dirección:</strong>
+                  <strong>
+                    Dirección:
+                  </strong>
 
                   ${escaparHTML(
                     cliente?.direccion ||
@@ -2054,7 +2969,8 @@
 
             <div class="products-title">
               ${
-                productosPendientes.length > 0
+                productosPendientes.length >
+                0
                   ? "Artículos pendientes"
                   : "Pedido preparado"
               }
@@ -2075,9 +2991,10 @@
 
                 <span>
                   ${
-                    productosPendientes.length > 0
+                    productosPendientes
+                      .length > 0
                       ? "Total pendiente"
-                      : "Total despachado"
+                      : "Total del pedido"
                   }
                 </span>
 
@@ -2166,13 +3083,19 @@
           "cuentasPorCobrar"
         );
 
+      migrarPedidosAntiguos();
       renderHistorial();
 
       Swal.fire({
         position: "center",
+
         icon: "success",
-        title: "Pedidos actualizados",
+
+        title:
+          "Pedidos actualizados",
+
         showConfirmButton: false,
+
         timer: 1200
       });
     }
@@ -2189,6 +3112,7 @@
               "historialPedidos"
             );
 
+          migrarPedidosAntiguos();
           renderHistorial();
         }
 
@@ -2233,11 +3157,13 @@
               "cuentasPorCobrar"
             );
 
+          migrarPedidosAntiguos();
           renderHistorial();
         }
       }
     );
 
+    migrarPedidosAntiguos();
     renderHistorial();
   </script>
 
