@@ -2,18 +2,11 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Pedidos</title>
 
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
-  >
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
@@ -123,7 +116,6 @@
     }
 
     .header-button {
-      position: relative;
       width: 48px;
       height: 48px;
       border: 1px solid #373737;
@@ -167,7 +159,7 @@
     }
 
     .orders-count {
-      max-width: 60%;
+      max-width: 65%;
       padding: 8px 12px;
       border-radius: 999px;
       background: var(--orange-light);
@@ -178,8 +170,6 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
-
-    /* LISTA DE PEDIDOS */
 
     #historialContainer {
       display: grid;
@@ -273,8 +263,6 @@
       color: var(--blue);
     }
 
-    /* CLIENTE */
-
     .cliente-info {
       margin-bottom: 15px;
       padding: 14px;
@@ -307,8 +295,6 @@
     .cliente-info strong {
       color: #111;
     }
-
-    /* PRODUCTOS */
 
     .products-title {
       margin-bottom: 9px;
@@ -376,8 +362,6 @@
       white-space: nowrap;
     }
 
-    /* DESPACHADOS */
-
     .dispatched-section {
       margin-top: 15px;
       padding: 13px;
@@ -412,8 +396,6 @@
       color: #174c25;
       overflow-wrap: anywhere;
     }
-
-    /* RESUMEN */
 
     .order-summary {
       margin-top: 14px;
@@ -458,8 +440,6 @@
       text-overflow: ellipsis;
     }
 
-    /* BOTONES */
-
     .order-actions {
       margin-top: 14px;
       display: grid;
@@ -493,7 +473,6 @@
     .dispatch-btn:disabled {
       background: #a5a9b0;
       color: #fff;
-      cursor: not-allowed;
       box-shadow: none;
     }
 
@@ -505,8 +484,6 @@
     .deliver-btn.hidden {
       display: none;
     }
-
-    /* SIN PEDIDOS */
 
     .empty-state {
       grid-column: 1 / -1;
@@ -630,7 +607,7 @@
       color: #4b5563;
     }
 
-    /* LISTA DE DESPACHO */
+    /* LISTA DE DESPACHO CORREGIDA */
 
     .dispatch-list {
       max-height: 390px;
@@ -654,11 +631,16 @@
       align-items: center;
       cursor: pointer;
       transition: background 0.2s, border-color 0.2s;
+      user-select: none;
     }
 
     .dispatch-item.approved {
       border-color: #a9dfb4;
       background: var(--green-light);
+    }
+
+    .dispatch-item:focus {
+      outline: 3px solid rgba(242, 106, 33, 0.15);
     }
 
     .dispatch-image {
@@ -689,19 +671,28 @@
 
     .dispatch-check {
       position: relative;
-      width: 29px;
-      height: 29px;
+      width: 32px;
+      height: 32px;
+      display: block;
+      cursor: pointer;
     }
 
     .dispatch-check input {
       position: absolute;
+      inset: 0;
+      z-index: 3;
+      width: 32px;
+      height: 32px;
+      margin: 0;
       opacity: 0;
-      pointer-events: none;
+      cursor: pointer;
     }
 
     .custom-check {
-      width: 29px;
-      height: 29px;
+      position: absolute;
+      inset: 0;
+      width: 32px;
+      height: 32px;
       border: 2px solid #c8ccd2;
       border-radius: 9px;
       background: #fff;
@@ -710,6 +701,7 @@
       justify-content: center;
       color: transparent;
       font-size: 14px;
+      pointer-events: none;
       transition: all 0.2s;
     }
 
@@ -737,7 +729,7 @@
       gap: 7px;
     }
 
-    .dispatch-quantity-box label {
+    .dispatch-quantity-box span {
       color: var(--muted);
       font-size: 10px;
       font-weight: 700;
@@ -755,6 +747,7 @@
       font-weight: 800;
       text-align: center;
       outline: none;
+      user-select: auto;
     }
 
     .dispatch-quantity-input:focus {
@@ -766,8 +759,6 @@
       background: #eceef1;
       color: #9ca1a9;
     }
-
-    /* RESPONSIVE */
 
     @media (max-width: 820px) {
       #historialContainer {
@@ -860,7 +851,7 @@
       }
 
       .dispatch-item {
-        grid-template-columns: 44px minmax(0, 1fr) 30px;
+        grid-template-columns: 44px minmax(0, 1fr) 32px;
         padding: 10px;
         gap: 8px;
       }
@@ -876,7 +867,6 @@
 <body>
 
   <header class="header">
-
     <button
       type="button"
       class="header-button"
@@ -900,26 +890,18 @@
     >
       <i class="fa-solid fa-rotate"></i>
     </button>
-
   </header>
 
   <main class="container">
-
     <div class="page-heading">
-
       <h1>Pedidos registrados</h1>
 
-      <span
-        class="orders-count"
-        id="ordersCount"
-      >
+      <span class="orders-count" id="ordersCount">
         0 pedidos
       </span>
-
     </div>
 
     <div id="historialContainer"></div>
-
   </main>
 
   <script>
@@ -930,29 +912,21 @@
       document.getElementById("ordersCount");
 
     let historial =
-      cargarArregloLocalStorage(
-        "historialPedidos"
-      );
+      cargarArregloLocalStorage("historialPedidos");
 
     let ventasRealizadas =
-      cargarArregloLocalStorage(
-        "ventasRealizadas"
-      );
+      cargarArregloLocalStorage("ventasRealizadas");
 
     let cuentasPorCobrar =
-      cargarArregloLocalStorage(
-        "cuentasPorCobrar"
-      );
+      cargarArregloLocalStorage("cuentasPorCobrar");
 
     let procesandoEntrega = false;
 
     function cargarArregloLocalStorage(key) {
       try {
-        const datos =
-          JSON.parse(
-            localStorage.getItem(key) ||
-            "[]"
-          );
+        const datos = JSON.parse(
+          localStorage.getItem(key) || "[]"
+        );
 
         return Array.isArray(datos)
           ? datos
@@ -984,30 +958,26 @@
     }
 
     function formatearMoneda(valor) {
-      return Number(valor || 0)
-        .toLocaleString(
-          "es-DO",
-          {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-          }
-        );
+      return Number(valor || 0).toLocaleString(
+        "es-DO",
+        {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        }
+      );
     }
 
     function generarId() {
       if (
         window.crypto &&
-        typeof crypto.randomUUID ===
-          "function"
+        typeof crypto.randomUUID === "function"
       ) {
         return crypto.randomUUID();
       }
 
       return (
         Date.now().toString(36) +
-        Math.random()
-          .toString(36)
-          .slice(2)
+        Math.random().toString(36).slice(2)
       );
     }
 
@@ -1021,9 +991,7 @@
       }
     }
 
-    function obtenerCantidadProducto(
-      producto
-    ) {
+    function obtenerCantidadProducto(producto) {
       return Math.max(
         0,
         Number(
@@ -1034,9 +1002,7 @@
       );
     }
 
-    function obtenerPrecioProducto(
-      producto
-    ) {
+    function obtenerPrecioProducto(producto) {
       return Math.max(
         0,
         Number(
@@ -1047,9 +1013,7 @@
       );
     }
 
-    function obtenerNombreProducto(
-      producto
-    ) {
+    function obtenerNombreProducto(producto) {
       return String(
         producto?.nombre ??
         producto?.name ??
@@ -1057,9 +1021,7 @@
       );
     }
 
-    function obtenerImagenProducto(
-      producto
-    ) {
+    function obtenerImagenProducto(producto) {
       return String(
         producto?.imagen ??
         producto?.image ??
@@ -1067,18 +1029,12 @@
       );
     }
 
-    function calcularSubtotalProducto(
-      producto
-    ) {
+    function calcularSubtotalProducto(producto) {
       const cantidad =
-        obtenerCantidadProducto(
-          producto
-        );
+        obtenerCantidadProducto(producto);
 
       const precio =
-        obtenerPrecioProducto(
-          producto
-        );
+        obtenerPrecioProducto(producto);
 
       if (
         producto?.subtotal != null &&
@@ -1086,17 +1042,13 @@
           Number(producto.subtotal)
         )
       ) {
-        return Number(
-          producto.subtotal
-        );
+        return Number(producto.subtotal);
       }
 
       return precio * cantidad;
     }
 
-    function calcularTotalProductos(
-      productos
-    ) {
+    function calcularTotalProductos(productos) {
       return (
         Array.isArray(productos)
           ? productos
@@ -1104,9 +1056,7 @@
       ).reduce(
         (total, producto) =>
           total +
-          calcularSubtotalProducto(
-            producto
-          ),
+          calcularSubtotalProducto(producto),
         0
       );
     }
@@ -1116,9 +1066,7 @@
       cantidad
     ) {
       const cantidadOriginal =
-        obtenerCantidadProducto(
-          producto
-        );
+        obtenerCantidadProducto(producto);
 
       const cantidadParte =
         Math.max(
@@ -1130,9 +1078,7 @@
         );
 
       const precio =
-        obtenerPrecioProducto(
-          producto
-        );
+        obtenerPrecioProducto(producto);
 
       return {
         ...clonarObjeto(producto),
@@ -1145,67 +1091,49 @@
 
     function getVendedorSesionLegible() {
       try {
-        const usuario =
-          JSON.parse(
-            localStorage.getItem(
-              "usuarioSesion"
-            ) || "null"
-          );
+        const usuario = JSON.parse(
+          localStorage.getItem(
+            "usuarioSesion"
+          ) || "null"
+        );
 
         if (usuario?.nombre) {
-          return String(
-            usuario.nombre
-          );
+          return String(usuario.nombre);
         }
 
         if (usuario?.usuario) {
-          return String(
-            usuario.usuario
-          );
+          return String(usuario.usuario);
         }
       } catch (error) {}
 
       try {
-        const usuario =
-          JSON.parse(
-            localStorage.getItem(
-              "currentUser"
-            ) || "null"
-          );
+        const usuario = JSON.parse(
+          localStorage.getItem(
+            "currentUser"
+          ) || "null"
+        );
 
         if (usuario?.name) {
-          return String(
-            usuario.name
-          );
+          return String(usuario.name);
         }
 
         if (usuario?.username) {
-          return String(
-            usuario.username
-          );
+          return String(usuario.username);
         }
 
         if (usuario?.role) {
-          return String(
-            usuario.role
-          );
+          return String(usuario.role);
         }
       } catch (error) {}
 
       return (
-        localStorage.getItem(
-          "nombreUsuario"
-        ) ||
-        localStorage.getItem(
-          "rol"
-        ) ||
+        localStorage.getItem("nombreUsuario") ||
+        localStorage.getItem("rol") ||
         "No definido"
       );
     }
 
-    function normalizaClienteObj(
-      cliente
-    ) {
+    function normalizaClienteObj(cliente) {
       if (
         !cliente ||
         typeof cliente !== "object"
@@ -1246,9 +1174,7 @@
       return obj;
     }
 
-    function obtenerClienteParaPedido(
-      pedido
-    ) {
+    function obtenerClienteParaPedido(pedido) {
       if (pedido?.clienteInfo) {
         return normalizaClienteObj(
           pedido.clienteInfo
@@ -1257,8 +1183,7 @@
 
       if (
         pedido?.cliente &&
-        typeof pedido.cliente ===
-          "object"
+        typeof pedido.cliente === "object"
       ) {
         return normalizaClienteObj(
           pedido.cliente
@@ -1267,8 +1192,7 @@
 
       if (
         pedido?.clienteSeleccionado &&
-        typeof pedido
-          .clienteSeleccionado ===
+        typeof pedido.clienteSeleccionado ===
           "object"
       ) {
         return normalizaClienteObj(
@@ -1280,8 +1204,7 @@
         pedido?.negocio ||
         pedido?.nombreNegocio ||
         (
-          typeof pedido?.cliente ===
-            "string"
+          typeof pedido?.cliente === "string"
             ? pedido.cliente
             : ""
         );
@@ -1327,11 +1250,7 @@
           huboCambios = true;
         }
 
-        if (
-          !Array.isArray(
-            pedido.productos
-          )
-        ) {
+        if (!Array.isArray(pedido.productos)) {
           pedido.productos = [];
           huboCambios = true;
         }
@@ -1341,9 +1260,7 @@
             pedido.productosDespachados
           )
         ) {
-          pedido.productosDespachados =
-            [];
-
+          pedido.productosDespachados = [];
           huboCambios = true;
         }
 
@@ -1352,15 +1269,12 @@
             pedido.despachosParciales
           )
         ) {
-          pedido.despachosParciales =
-            [];
-
+          pedido.despachosParciales = [];
           huboCambios = true;
         }
 
         if (
-          pedido.totalOriginal ==
-          null
+          pedido.totalOriginal == null
         ) {
           pedido.totalOriginal =
             Number(
@@ -1374,43 +1288,26 @@
           huboCambios = true;
         }
 
-        /*
-          Corrige pedidos antiguos que estaban
-          marcados como despachados, pero todavía
-          mantenían los productos en pedido.productos.
-        */
-
         if (
           pedido.despachado === true &&
           pedido.productos.length > 0 &&
-          pedido.productosDespachados
-            .length === 0
+          pedido.productosDespachados.length === 0
         ) {
           pedido.productosDespachados =
-            clonarObjeto(
-              pedido.productos
-            );
+            clonarObjeto(pedido.productos);
 
           pedido.productos = [];
-
-          pedido.estado =
-            "despachado";
-
+          pedido.estado = "despachado";
           pedido.totalPendiente = 0;
-
           huboCambios = true;
         }
 
         if (!pedido.clienteInfo) {
           const cliente =
-            obtenerClienteParaPedido(
-              pedido
-            );
+            obtenerClienteParaPedido(pedido);
 
           if (cliente) {
-            pedido.clienteInfo =
-              cliente;
-
+            pedido.clienteInfo = cliente;
             huboCambios = true;
           }
         }
@@ -1436,151 +1333,122 @@
       }
     }
 
-    function mostrarListaDespacho(
-      index
-    ) {
-      const pedido =
-        historial[index];
+    /* DESPACHO CORREGIDO */
+
+    function mostrarListaDespacho(index) {
+      const pedido = historial[index];
 
       if (!pedido) {
         return;
       }
 
       const productos =
-        Array.isArray(
-          pedido.productos
-        )
+        Array.isArray(pedido.productos)
           ? pedido.productos
           : [];
 
       if (productos.length === 0) {
         Swal.fire({
           position: "center",
-
-          title:
-            "Sin artículos pendientes",
-
-          text:
-            "Este pedido no tiene artículos pendientes para despachar.",
-
+          title: "Sin artículos pendientes",
+          text: "Este pedido no tiene artículos pendientes para despachar.",
           icon: "info",
-
-          confirmButtonColor:
-            "#f26a21"
+          confirmButtonColor: "#f26a21"
         });
 
         return;
       }
 
-      const listaHTML =
-        productos.map(
-          (
-            producto,
-            productoIndex
-          ) => {
-            const cantidad =
-              obtenerCantidadProducto(
-                producto
-              );
+      const listaHTML = productos.map(
+        (producto, productoIndex) => {
+          const cantidad =
+            obtenerCantidadProducto(producto);
 
-            return `
-              <label
-                class="dispatch-item"
-                id="dispatchItem-${productoIndex}"
+          return `
+            <div
+              class="dispatch-item"
+              id="dispatchItem-${productoIndex}"
+              data-index="${productoIndex}"
+              role="button"
+              tabindex="0"
+            >
+
+              <img
+                class="dispatch-image"
+                src="${escaparHTML(
+                  obtenerImagenProducto(producto) ||
+                  "https://via.placeholder.com/48?text=P"
+                )}"
+                alt="${escaparHTML(
+                  obtenerNombreProducto(producto)
+                )}"
+                onerror="
+                  this.onerror=null;
+                  this.src='https://via.placeholder.com/48?text=P';
+                "
               >
 
-                <img
-                  class="dispatch-image"
-                  src="${escaparHTML(
-                    obtenerImagenProducto(
-                      producto
-                    ) ||
-                    "https://via.placeholder.com/48?text=P"
-                  )}"
-                  alt="${escaparHTML(
-                    obtenerNombreProducto(
-                      producto
-                    )
-                  )}"
-                  onerror="
-                    this.onerror=null;
-                    this.src='https://via.placeholder.com/48?text=P';
-                  "
-                >
+              <div class="dispatch-details">
 
-                <div class="dispatch-details">
+                <strong>
+                  ${escaparHTML(
+                    obtenerNombreProducto(producto)
+                  )}
+                </strong>
 
-                  <strong>
-                    ${escaparHTML(
-                      obtenerNombreProducto(
-                        producto
-                      )
-                    )}
-                  </strong>
+                <span>
+                  Disponible para despachar:
+                  ${cantidad.toLocaleString("es-DO")}
+                </span>
+
+                <div class="dispatch-quantity-box">
 
                   <span>
-                    Disponible para despachar:
-                    ${cantidad.toLocaleString(
-                      "es-DO"
-                    )}
+                    Cantidad:
                   </span>
 
-                  <div
-                    class="dispatch-quantity-box"
+                  <input
+                    type="number"
+                    class="dispatch-quantity-input"
+                    id="dispatchQuantity-${productoIndex}"
+                    data-index="${productoIndex}"
+                    min="1"
+                    max="${cantidad}"
+                    step="1"
+                    value="${cantidad}"
+                    disabled
                   >
-
-                    <label
-                      for="dispatchQuantity-${productoIndex}"
-                    >
-                      Cantidad:
-                    </label>
-
-                    <input
-                      type="number"
-                      class="dispatch-quantity-input"
-                      id="dispatchQuantity-${productoIndex}"
-                      data-index="${productoIndex}"
-                      min="1"
-                      max="${cantidad}"
-                      step="1"
-                      value="${cantidad}"
-                      disabled
-                    >
-
-                  </div>
 
                 </div>
 
-                <span
-                  class="dispatch-check"
+              </div>
+
+              <span class="dispatch-check">
+
+                <input
+                  type="checkbox"
+                  class="dispatch-checkbox"
+                  id="dispatchCheckbox-${productoIndex}"
+                  data-index="${productoIndex}"
+                  aria-label="Seleccionar ${escaparHTML(
+                    obtenerNombreProducto(producto)
+                  )}"
                 >
 
-                  <input
-                    type="checkbox"
-                    class="dispatch-checkbox"
-                    data-index="${productoIndex}"
-                  >
-
-                  <span
-                    class="custom-check"
-                  >
-                    <i
-                      class="fa-solid fa-check"
-                    ></i>
-                  </span>
-
+                <span class="custom-check">
+                  <i class="fa-solid fa-check"></i>
                 </span>
 
-              </label>
-            `;
-          }
-        ).join("");
+              </span>
+
+            </div>
+          `;
+        }
+      ).join("");
 
       Swal.fire({
         position: "center",
-
-        title:
-          "Seleccionar artículos",
+        title: "Seleccionar artículos",
 
         html: `
           <div
@@ -1596,79 +1464,75 @@
         `,
 
         width: 540,
-
         showCancelButton: true,
-
-        confirmButtonText:
-          "Enviar aprobados",
-
-        cancelButtonText:
-          "Cancelar",
-
-        confirmButtonColor:
-          "#f26a21",
-
-        cancelButtonColor:
-          "#737985",
-
+        confirmButtonText: "Enviar aprobados",
+        cancelButtonText: "Cancelar",
+        confirmButtonColor: "#f26a21",
+        cancelButtonColor: "#737985",
         focusConfirm: false,
 
-        didOpen: () => {
-          const checkboxes =
-            document.querySelectorAll(
+        didOpen: popup => {
+          const checkboxes = Array.from(
+            popup.querySelectorAll(
               ".dispatch-checkbox"
-            );
+            )
+          );
+
+          const tarjetas = Array.from(
+            popup.querySelectorAll(
+              ".dispatch-item"
+            )
+          );
+
+          const cantidades = Array.from(
+            popup.querySelectorAll(
+              ".dispatch-quantity-input"
+            )
+          );
 
           function actualizarEstado() {
             let seleccionados = 0;
             let unidades = 0;
 
-            checkboxes.forEach(
-              checkbox => {
-                const indice =
-                  Number(
-                    checkbox.dataset
-                      .index
-                  );
+            checkboxes.forEach(checkbox => {
+              const indice = Number(
+                checkbox.dataset.index
+              );
 
-                const item =
-                  document.getElementById(
-                    `dispatchItem-${indice}`
-                  );
+              const item =
+                popup.querySelector(
+                  `#dispatchItem-${indice}`
+                );
 
-                const inputCantidad =
-                  document.getElementById(
-                    `dispatchQuantity-${indice}`
-                  );
+              const inputCantidad =
+                popup.querySelector(
+                  `#dispatchQuantity-${indice}`
+                );
 
-                item?.classList.toggle(
+              if (item) {
+                item.classList.toggle(
                   "approved",
                   checkbox.checked
                 );
-
-                if (inputCantidad) {
-                  inputCantidad.disabled =
-                    !checkbox.checked;
-                }
-
-                if (
-                  checkbox.checked
-                ) {
-                  seleccionados++;
-
-                  unidades +=
-                    Number(
-                      inputCantidad
-                        ?.value ||
-                      0
-                    );
-                }
               }
-            );
+
+              if (inputCantidad) {
+                inputCantidad.disabled =
+                  !checkbox.checked;
+              }
+
+              if (checkbox.checked) {
+                seleccionados++;
+
+                unidades += Number(
+                  inputCantidad?.value || 0
+                );
+              }
+            });
 
             const progreso =
-              document.getElementById(
-                "dispatchProgress"
+              popup.querySelector(
+                "#dispatchProgress"
               );
 
             if (progreso) {
@@ -1677,80 +1541,178 @@
             }
           }
 
-          checkboxes.forEach(
-            checkbox => {
-              checkbox.addEventListener(
-                "change",
-                actualizarEstado
-              );
-            }
-          );
+          tarjetas.forEach(tarjeta => {
+            tarjeta.addEventListener(
+              "click",
+              event => {
+                if (
+                  event.target.closest(
+                    ".dispatch-quantity-input"
+                  )
+                ) {
+                  return;
+                }
 
-          document
-            .querySelectorAll(
-              ".dispatch-quantity-input"
-            )
-            .forEach(input => {
-              input.addEventListener(
-                "input",
-                actualizarEstado
-              );
-            });
+                if (
+                  event.target.closest(
+                    ".dispatch-check input"
+                  )
+                ) {
+                  return;
+                }
+
+                const indice = Number(
+                  tarjeta.dataset.index
+                );
+
+                const checkbox =
+                  popup.querySelector(
+                    `#dispatchCheckbox-${indice}`
+                  );
+
+                if (!checkbox) {
+                  return;
+                }
+
+                checkbox.checked =
+                  !checkbox.checked;
+
+                checkbox.dispatchEvent(
+                  new Event("change", {
+                    bubbles: true
+                  })
+                );
+              }
+            );
+
+            tarjeta.addEventListener(
+              "keydown",
+              event => {
+                if (
+                  event.key !== "Enter" &&
+                  event.key !== " "
+                ) {
+                  return;
+                }
+
+                event.preventDefault();
+
+                const indice = Number(
+                  tarjeta.dataset.index
+                );
+
+                const checkbox =
+                  popup.querySelector(
+                    `#dispatchCheckbox-${indice}`
+                  );
+
+                if (!checkbox) {
+                  return;
+                }
+
+                checkbox.checked =
+                  !checkbox.checked;
+
+                checkbox.dispatchEvent(
+                  new Event("change", {
+                    bubbles: true
+                  })
+                );
+              }
+            );
+          });
+
+          checkboxes.forEach(checkbox => {
+            checkbox.addEventListener(
+              "change",
+              actualizarEstado
+            );
+          });
+
+          cantidades.forEach(input => {
+            input.addEventListener(
+              "click",
+              event => {
+                event.stopPropagation();
+              }
+            );
+
+            input.addEventListener(
+              "input",
+              () => {
+                const maximo =
+                  Number(input.max || 0);
+
+                let valor =
+                  Number(input.value || 0);
+
+                if (valor > maximo) {
+                  valor = maximo;
+                  input.value = maximo;
+                }
+
+                if (valor < 1) {
+                  valor = 1;
+                  input.value = 1;
+                }
+
+                actualizarEstado();
+              }
+            );
+          });
 
           actualizarEstado();
         },
 
         preConfirm: () => {
+          const popup = Swal.getPopup();
+
+          if (!popup) {
+            return false;
+          }
+
           const seleccionados = [];
 
-          const checkboxes =
-            Array.from(
-              document.querySelectorAll(
-                ".dispatch-checkbox"
-              )
-            );
-
-          checkboxes.forEach(
-            checkbox => {
-              if (!checkbox.checked) {
-                return;
-              }
-
-              const indice =
-                Number(
-                  checkbox.dataset.index
-                );
-
-              const producto =
-                productos[indice];
-
-              const inputCantidad =
-                document.getElementById(
-                  `dispatchQuantity-${indice}`
-                );
-
-              const cantidad =
-                Number(
-                  inputCantidad?.value ||
-                  0
-                );
-
-              const maximo =
-                obtenerCantidadProducto(
-                  producto
-                );
-
-              seleccionados.push({
-                indice,
-                cantidad,
-                maximo
-              });
-            }
+          const checkboxes = Array.from(
+            popup.querySelectorAll(
+              ".dispatch-checkbox"
+            )
           );
 
-          if (
-            seleccionados.length === 0
-          ) {
+          checkboxes.forEach(checkbox => {
+            if (!checkbox.checked) {
+              return;
+            }
+
+            const indice = Number(
+              checkbox.dataset.index
+            );
+
+            const producto =
+              productos[indice];
+
+            const inputCantidad =
+              popup.querySelector(
+                `#dispatchQuantity-${indice}`
+              );
+
+            const cantidad = Number(
+              inputCantidad?.value || 0
+            );
+
+            const maximo =
+              obtenerCantidadProducto(
+                producto
+              );
+
+            seleccionados.push({
+              indice,
+              cantidad,
+              maximo
+            });
+          });
+
+          if (seleccionados.length === 0) {
             Swal.showValidationMessage(
               "Debes seleccionar al menos un artículo."
             );
@@ -1759,19 +1721,15 @@
           }
 
           const cantidadInvalida =
-            seleccionados.find(
-              item =>
-                !Number.isInteger(
-                  item.cantidad
-                ) ||
-                item.cantidad <= 0 ||
-                item.cantidad >
-                  item.maximo
+            seleccionados.find(item =>
+              !Number.isInteger(item.cantidad) ||
+              item.cantidad <= 0 ||
+              item.cantidad > item.maximo
             );
 
           if (cantidadInvalida) {
             Swal.showValidationMessage(
-              "Revisa las cantidades. No pueden ser mayores que las disponibles."
+              "Revisa las cantidades seleccionadas."
             );
 
             return false;
@@ -1780,9 +1738,7 @@
           return seleccionados;
         }
       }).then(resultado => {
-        if (
-          !resultado.isConfirmed
-        ) {
+        if (!resultado.isConfirmed) {
           return;
         }
 
@@ -1802,18 +1758,14 @@
 
       if (
         !pedido ||
-        !Array.isArray(
-          selecciones
-        ) ||
+        !Array.isArray(selecciones) ||
         selecciones.length === 0
       ) {
         return;
       }
 
       const productosOriginales =
-        Array.isArray(
-          pedido.productos
-        )
+        Array.isArray(pedido.productos)
           ? pedido.productos
           : [];
 
@@ -1821,40 +1773,25 @@
         selecciones
           .filter(seleccion => {
             const indice =
-              Number(
-                seleccion.indice
-              );
+              Number(seleccion.indice);
 
             const cantidad =
-              Number(
-                seleccion.cantidad
-              );
+              Number(seleccion.cantidad);
 
             return (
-              Number.isInteger(
-                indice
-              ) &&
+              Number.isInteger(indice) &&
               indice >= 0 &&
-              indice <
-                productosOriginales
-                  .length &&
-              Number.isInteger(
-                cantidad
-              ) &&
+              indice < productosOriginales.length &&
+              Number.isInteger(cantidad) &&
               cantidad > 0 &&
               cantidad <=
                 obtenerCantidadProducto(
-                  productosOriginales[
-                    indice
-                  ]
+                  productosOriginales[indice]
                 )
             );
           })
           .reduce(
-            (
-              resultado,
-              seleccion
-            ) => {
+            (resultado, seleccion) => {
               if (
                 !resultado.some(
                   item =>
@@ -1862,9 +1799,7 @@
                     seleccion.indice
                 )
               ) {
-                resultado.push(
-                  seleccion
-                );
+                resultado.push(seleccion);
               }
 
               return resultado;
@@ -1872,23 +1807,13 @@
             []
           );
 
-      if (
-        seleccionesValidas.length ===
-        0
-      ) {
+      if (seleccionesValidas.length === 0) {
         Swal.fire({
           position: "center",
-
-          title:
-            "Selección inválida",
-
-          text:
-            "No se encontraron artículos válidos para despachar.",
-
+          title: "Selección inválida",
+          text: "No se encontraron artículos válidos para despachar.",
           icon: "warning",
-
-          confirmButtonColor:
-            "#f26a21"
+          confirmButtonColor: "#f26a21"
         });
 
         return;
@@ -1908,23 +1833,16 @@
       const articulosPendientes = [];
 
       productosOriginales.forEach(
-        (
-          producto,
-          productoIndex
-        ) => {
+        (producto, productoIndex) => {
           const cantidadOriginal =
-            obtenerCantidadProducto(
-              producto
-            );
+            obtenerCantidadProducto(producto);
 
           const cantidadDespachar =
             mapaSelecciones.get(
               productoIndex
             ) || 0;
 
-          if (
-            cantidadDespachar > 0
-          ) {
+          if (cantidadDespachar > 0) {
             articulosAprobados.push(
               crearParteProducto(
                 producto,
@@ -1948,16 +1866,12 @@
         }
       );
 
-      if (
-        articulosAprobados.length ===
-        0
-      ) {
+      if (articulosAprobados.length === 0) {
         return;
       }
 
       if (
-        pedido.totalOriginal ==
-        null
+        pedido.totalOriginal == null
       ) {
         pedido.totalOriginal =
           Number(
@@ -1970,9 +1884,7 @@
       }
 
       const fechaDespacho =
-        new Date().toLocaleString(
-          "es-DO"
-        );
+        new Date().toLocaleString("es-DO");
 
       const totalDespachado =
         calcularTotalProductos(
@@ -1984,24 +1896,17 @@
           pedido.despachosParciales
         )
       ) {
-        pedido.despachosParciales =
-          [];
+        pedido.despachosParciales = [];
       }
 
       pedido.despachosParciales.push({
         id: generarId(),
-
-        fecha:
-          fechaDespacho,
-
+        fecha: fechaDespacho,
         productos:
           clonarObjeto(
             articulosAprobados
           ),
-
-        total:
-          totalDespachado,
-
+        total: totalDespachado,
         vendedor:
           pedido.vendedor ||
           getVendedorSesionLegible()
@@ -2015,7 +1920,6 @@
             ? pedido.productosDespachados
             : []
         ),
-
         ...clonarObjeto(
           articulosAprobados
         )
@@ -2038,24 +1942,18 @@
 
       if (!pedido.clienteInfo) {
         const cliente =
-          obtenerClienteParaPedido(
-            pedido
-          );
+          obtenerClienteParaPedido(pedido);
 
         if (cliente) {
-          pedido.clienteInfo =
-            cliente;
+          pedido.clienteInfo = cliente;
         }
       }
 
       if (
-        articulosPendientes.length ===
-        0
+        articulosPendientes.length === 0
       ) {
         pedido.despachado = true;
-        pedido.estado =
-          "despachado";
-
+        pedido.estado = "despachado";
         pedido.fechaDespacho =
           fechaDespacho;
       } else {
@@ -2093,12 +1991,10 @@
 
       Swal.fire({
         position: "center",
-
         icon: "success",
 
         title:
-          articulosPendientes.length ===
-          0
+          articulosPendientes.length === 0
             ? "Pedido despachado"
             : "Despacho parcial realizado",
 
@@ -2107,29 +2003,19 @@
             color:#4b5563;
             line-height:1.7;
           ">
-
             Se enviaron
-
-            <strong style="
-              color:#159638;
-            ">
+            <strong style="color:#159638">
               ${unidadesEnviadas}
             </strong>
-
             unidades aprobadas.
 
             ${
               unidadesPendientes > 0
                 ? `
                   <br>
-
                   Quedan pendientes:
-
-                  <strong style="
-                    color:#e52424;
-                  ">
-                    ${unidadesPendientes}
-                    unidades
+                  <strong style="color:#e52424">
+                    ${unidadesPendientes} unidades
                   </strong>
                 `
                 : `
@@ -2137,7 +2023,6 @@
                   No quedan artículos pendientes.
                 `
             }
-
           </div>
         `,
 
@@ -2146,21 +2031,16 @@
       });
     }
 
-    window.despachar =
-      function(index) {
-        mostrarListaDespacho(
-          index
-        );
-      };
+    window.despachar = function(index) {
+      mostrarListaDespacho(index);
+    };
 
     function mostrarModal(
       pedido,
       index
     ) {
       const pendientes =
-        Array.isArray(
-          pedido.productos
-        )
+        Array.isArray(pedido.productos)
           ? pedido.productos
           : [];
 
@@ -2170,17 +2050,10 @@
       ) {
         Swal.fire({
           position: "center",
-
-          title:
-            "Pedido pendiente",
-
-          text:
-            "Debes despachar todos los artículos antes de registrar la entrega.",
-
+          title: "Pedido pendiente",
+          text: "Debes despachar todos los artículos antes de registrar la entrega.",
           icon: "warning",
-
-          confirmButtonColor:
-            "#f26a21"
+          confirmButtonColor: "#f26a21"
         });
 
         return;
@@ -2191,34 +2064,22 @@
           Array.isArray(
             pedido.productosDespachados
           ) &&
-          pedido.productosDespachados
-            .length > 0
+          pedido.productosDespachados.length > 0
         )
           ? clonarObjeto(
-              pedido
-                .productosDespachados
+              pedido.productosDespachados
             )
-          : clonarObjeto(
-              pedido.productos || []
-            );
+          : [];
 
       if (
-        productosEntregados.length ===
-        0
+        productosEntregados.length === 0
       ) {
         Swal.fire({
           position: "center",
-
-          title:
-            "Entrega sin productos",
-
-          text:
-            "No se encontraron artículos despachados para registrar la venta.",
-
+          title: "Entrega sin productos",
+          text: "No se encontraron artículos despachados para registrar la venta.",
           icon: "warning",
-
-          confirmButtonColor:
-            "#f26a21"
+          confirmButtonColor: "#f26a21"
         });
 
         return;
@@ -2227,9 +2088,7 @@
       procesandoEntrega = false;
 
       const modal =
-        document.createElement(
-          "div"
-        );
+        document.createElement("div");
 
       modal.className = "modal";
 
@@ -2240,9 +2099,7 @@
             <i class="fa-solid fa-hand-holding-dollar"></i>
           </div>
 
-          <h3>
-            Registrar entrega
-          </h3>
+          <h3>Registrar entrega</h3>
 
           <p>
             Selecciona cómo deseas registrar esta venta.
@@ -2279,18 +2136,11 @@
       `;
 
       const clienteFinal =
-        obtenerClienteParaPedido(
-          pedido
-        );
+        obtenerClienteParaPedido(pedido);
 
       const vendedor =
         pedido.vendedor ||
         getVendedorSesionLegible();
-
-      /*
-        Conserva el total original para no perder
-        descuentos, impuestos, cargos o redondeos.
-      */
 
       const totalEntregado =
         Number(
@@ -2305,219 +2155,146 @@
         procesandoEntrega = true;
 
         modal
-          .querySelectorAll(
-            "button"
-          )
+          .querySelectorAll("button")
           .forEach(boton => {
             boton.disabled = true;
           });
       }
 
-      modal
-        .querySelector(
-          ".cancelar"
-        )
-        .onclick = () => {
-          if (
-            !procesandoEntrega
-          ) {
-            modal.remove();
-          }
-        };
-
-      modal
-        .querySelector(
-          ".contado"
-        )
-        .onclick = () => {
-          if (
-            procesandoEntrega
-          ) {
-            return;
-          }
-
-          desactivarBotones();
-
-          const venta = {
-            id: generarId(),
-
-            pedidoId:
-              pedido.id || "",
-
-            fecha:
-              pedido.fecha ||
-              new Date()
-                .toLocaleString(
-                  "es-DO"
-                ),
-
-            fechaEntrega:
-              new Date()
-                .toLocaleString(
-                  "es-DO"
-                ),
-
-            productos:
-              productosEntregados,
-
-            total:
-              totalEntregado,
-
-            clienteInfo:
-              clienteFinal,
-
-            vendedor,
-
-            estado:
-              "entregado",
-
-            tipoPago:
-              "contado"
-          };
-
-          ventasRealizadas.push(
-            venta
-          );
-
-          historial.splice(
-            index,
-            1
-          );
-
-          guardarLS(
-            "ventasRealizadas",
-            ventasRealizadas
-          );
-
-          guardarLS(
-            "historialPedidos",
-            historial
-          );
-
+      modal.querySelector(
+        ".cancelar"
+      ).onclick = () => {
+        if (!procesandoEntrega) {
           modal.remove();
+        }
+      };
 
-          procesandoEntrega = false;
+      modal.querySelector(
+        ".contado"
+      ).onclick = () => {
+        if (procesandoEntrega) {
+          return;
+        }
 
-          renderHistorial();
+        desactivarBotones();
 
-          Swal.fire({
-            position: "center",
-
-            icon: "success",
-
-            title:
-              "Venta registrada",
-
-            text:
-              "La entrega fue registrada al contado.",
-
-            confirmButtonColor:
-              "#f26a21"
-          });
+        const venta = {
+          id: generarId(),
+          pedidoId: pedido.id || "",
+          fecha:
+            pedido.fecha ||
+            new Date().toLocaleString(
+              "es-DO"
+            ),
+          fechaEntrega:
+            new Date().toLocaleString(
+              "es-DO"
+            ),
+          productos:
+            productosEntregados,
+          total:
+            totalEntregado,
+          clienteInfo:
+            clienteFinal,
+          vendedor,
+          estado:
+            "entregado",
+          tipoPago:
+            "contado"
         };
 
-      modal
-        .querySelector(
-          ".credito"
-        )
-        .onclick = () => {
-          if (
-            procesandoEntrega
-          ) {
-            return;
-          }
+        ventasRealizadas.push(venta);
+        historial.splice(index, 1);
 
-          desactivarBotones();
+        guardarLS(
+          "ventasRealizadas",
+          ventasRealizadas
+        );
 
-          const cuenta = {
-            id: generarId(),
+        guardarLS(
+          "historialPedidos",
+          historial
+        );
 
-            pedidoId:
-              pedido.id || "",
+        modal.remove();
+        procesandoEntrega = false;
+        renderHistorial();
 
-            fecha:
-              pedido.fecha ||
-              new Date()
-                .toLocaleString(
-                  "es-DO"
-                ),
+        Swal.fire({
+          position: "center",
+          icon: "success",
+          title: "Venta registrada",
+          text: "La entrega fue registrada al contado.",
+          confirmButtonColor: "#f26a21"
+        });
+      };
 
-            fechaEntrega:
-              new Date()
-                .toLocaleString(
-                  "es-DO"
-                ),
+      modal.querySelector(
+        ".credito"
+      ).onclick = () => {
+        if (procesandoEntrega) {
+          return;
+        }
 
-            creadoEn:
-              new Date()
-                .toISOString(),
+        desactivarBotones();
 
-            productos:
-              productosEntregados,
-
-            total:
-              totalEntregado,
-
-            totalOriginal:
-              totalEntregado,
-
-            saldoPendiente:
-              totalEntregado,
-
-            abonos: [],
-
-            clienteInfo:
-              clienteFinal,
-
-            vendedor,
-
-            estado:
-              "pendiente",
-
-            tipoPago:
-              "credito"
-          };
-
-          cuentasPorCobrar.push(
-            cuenta
-          );
-
-          historial.splice(
-            index,
-            1
-          );
-
-          guardarLS(
-            "cuentasPorCobrar",
-            cuentasPorCobrar
-          );
-
-          guardarLS(
-            "historialPedidos",
-            historial
-          );
-
-          modal.remove();
-
-          procesandoEntrega = false;
-
-          renderHistorial();
-
-          Swal.fire({
-            position: "center",
-
-            icon: "success",
-
-            title:
-              "Crédito registrado",
-
-            text:
-              "La cuenta por cobrar fue creada correctamente.",
-
-            confirmButtonColor:
-              "#f26a21"
-          });
+        const cuenta = {
+          id: generarId(),
+          pedidoId: pedido.id || "",
+          fecha:
+            pedido.fecha ||
+            new Date().toLocaleString(
+              "es-DO"
+            ),
+          fechaEntrega:
+            new Date().toLocaleString(
+              "es-DO"
+            ),
+          creadoEn:
+            new Date().toISOString(),
+          productos:
+            productosEntregados,
+          total:
+            totalEntregado,
+          totalOriginal:
+            totalEntregado,
+          saldoPendiente:
+            totalEntregado,
+          abonos: [],
+          clienteInfo:
+            clienteFinal,
+          vendedor,
+          estado:
+            "pendiente",
+          tipoPago:
+            "credito"
         };
+
+        cuentasPorCobrar.push(cuenta);
+        historial.splice(index, 1);
+
+        guardarLS(
+          "cuentasPorCobrar",
+          cuentasPorCobrar
+        );
+
+        guardarLS(
+          "historialPedidos",
+          historial
+        );
+
+        modal.remove();
+        procesandoEntrega = false;
+        renderHistorial();
+
+        Swal.fire({
+          position: "center",
+          icon: "success",
+          title: "Crédito registrado",
+          text: "La cuenta por cobrar fue creada correctamente.",
+          confirmButtonColor: "#f26a21"
+        });
+      };
 
       modal.addEventListener(
         "click",
@@ -2531,9 +2308,7 @@
         }
       );
 
-      document.body.appendChild(
-        modal
-      );
+      document.body.appendChild(modal);
     }
 
     window.entregarPedido =
@@ -2551,13 +2326,10 @@
 
         if (!pedido.clienteInfo) {
           const cliente =
-            obtenerClienteParaPedido(
-              pedido
-            );
+            obtenerClienteParaPedido(pedido);
 
           if (cliente) {
-            pedido.clienteInfo =
-              cliente;
+            pedido.clienteInfo = cliente;
           }
         }
 
@@ -2670,9 +2442,7 @@
               ${
                 mostrarPendiente
                   ? `
-                    <span
-                      class="pending-label"
-                    >
+                    <span class="pending-label">
                       Pendiente
                     </span>
                   `
@@ -2698,18 +2468,14 @@
       return `
         <div class="dispatched-section">
 
-          <div
-            class="dispatched-section-title"
-          >
+          <div class="dispatched-section-title">
             <i class="fa-solid fa-circle-check"></i>
             Artículos despachados
           </div>
 
           ${productos.map(
             producto => `
-              <div
-                class="dispatched-item"
-              >
+              <div class="dispatched-item">
 
                 <strong>
                   ${escaparHTML(
@@ -2737,26 +2503,20 @@
     }
 
     function renderHistorial() {
-      historialContainer.innerHTML =
-        "";
+      historialContainer.innerHTML = "";
 
       const articulosPendientes =
         historial.reduce(
           (total, pedido) => {
             const productos =
-              Array.isArray(
-                pedido.productos
-              )
+              Array.isArray(pedido.productos)
                 ? pedido.productos
                 : [];
 
             return (
               total +
               productos.reduce(
-                (
-                  suma,
-                  producto
-                ) =>
+                (suma, producto) =>
                   suma +
                   obtenerCantidadProducto(
                     producto
@@ -2773,9 +2533,7 @@
           ? `1 pedido · ${articulosPendientes} pendientes`
           : `${historial.length} pedidos · ${articulosPendientes} pendientes`;
 
-      if (
-        historial.length === 0
-      ) {
+      if (historial.length === 0) {
         historialContainer.innerHTML = `
           <div class="empty-state">
 
@@ -2798,19 +2556,12 @@
       }
 
       historial.forEach(
-        (
-          pedido,
-          index
-        ) => {
+        (pedido, index) => {
           const cliente =
-            obtenerClienteParaPedido(
-              pedido
-            );
+            obtenerClienteParaPedido(pedido);
 
           const productosPendientes =
-            Array.isArray(
-              pedido.productos
-            )
+            Array.isArray(pedido.productos)
               ? pedido.productos
               : [];
 
@@ -2823,41 +2574,27 @@
 
           const totalmenteDespachado =
             pedido.despachado === true &&
-            productosPendientes.length ===
-              0;
+            productosPendientes.length === 0;
 
           const parcialmenteDespachado =
             !totalmenteDespachado &&
-            productosDespachados.length >
-              0;
+            productosDespachados.length > 0;
 
-          let claseEstado =
-            "pendiente";
+          let claseEstado = "pendiente";
+          let textoEstado = "Pendiente";
 
-          let textoEstado =
-            "Pendiente";
-
-          if (
-            totalmenteDespachado
-          ) {
-            claseEstado =
-              "despachado";
-
-            textoEstado =
-              "Despachado";
+          if (totalmenteDespachado) {
+            claseEstado = "despachado";
+            textoEstado = "Despachado";
           } else if (
             parcialmenteDespachado
           ) {
-            claseEstado =
-              "parcial";
-
-            textoEstado =
-              "Parcial";
+            claseEstado = "parcial";
+            textoEstado = "Parcial";
           }
 
           const totalMostrado =
-            productosPendientes.length >
-            0
+            productosPendientes.length > 0
               ? calcularTotalProductos(
                   productosPendientes
                 )
@@ -2876,8 +2613,7 @@
               "article"
             );
 
-          tarjeta.className =
-            "venta";
+          tarjeta.className = "venta";
 
           tarjeta.innerHTML = `
             <div class="venta-header">
@@ -2888,9 +2624,7 @@
                   <i class="fa-solid fa-box"></i>
                 </div>
 
-                <div
-                  class="venta-heading-text"
-                >
+                <div class="venta-heading-text">
 
                   <strong>
                     ${escaparHTML(
@@ -2910,9 +2644,7 @@
 
               </div>
 
-              <span
-                class="status-badge ${claseEstado}"
-              >
+              <span class="status-badge ${claseEstado}">
                 ${textoEstado}
               </span>
 
@@ -2924,10 +2656,7 @@
                 <i class="fa-solid fa-store"></i>
 
                 <span>
-                  <strong>
-                    Negocio:
-                  </strong>
-
+                  <strong>Negocio:</strong>
                   ${escaparHTML(
                     cliente?.negocio ||
                     "No seleccionado"
@@ -2939,10 +2668,7 @@
                 <i class="fa-solid fa-phone"></i>
 
                 <span>
-                  <strong>
-                    Teléfono:
-                  </strong>
-
+                  <strong>Teléfono:</strong>
                   ${escaparHTML(
                     cliente?.telefono ||
                     "-"
@@ -2954,10 +2680,7 @@
                 <i class="fa-solid fa-location-dot"></i>
 
                 <span>
-                  <strong>
-                    Dirección:
-                  </strong>
-
+                  <strong>Dirección:</strong>
                   ${escaparHTML(
                     cliente?.direccion ||
                     "-"
@@ -2969,8 +2692,7 @@
 
             <div class="products-title">
               ${
-                productosPendientes.length >
-                0
+                productosPendientes.length > 0
                   ? "Artículos pendientes"
                   : "Pedido preparado"
               }
@@ -2991,8 +2713,7 @@
 
                 <span>
                   ${
-                    productosPendientes
-                      .length > 0
+                    productosPendientes.length > 0
                       ? "Total pendiente"
                       : "Total del pedido"
                   }
@@ -3088,14 +2809,9 @@
 
       Swal.fire({
         position: "center",
-
         icon: "success",
-
-        title:
-          "Pedidos actualizados",
-
+        title: "Pedidos actualizados",
         showConfirmButton: false,
-
         timer: 1200
       });
     }
