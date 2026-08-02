@@ -264,6 +264,7 @@
       align-items: center;
       justify-content: center;
       font-size: 18px;
+      flex-shrink: 0;
     }
 
     .step-title div {
@@ -359,7 +360,6 @@
     }
 
     .cedula-question {
-      margin-bottom: 12px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -408,12 +408,51 @@
 
     .cedula-field {
       display: none;
-      margin-top: 4px;
+      margin-top: 15px;
     }
 
     .cedula-field.show {
-      display: block;
+      display: grid;
+      gap: 16px;
       animation: fadeIn 0.2s ease;
+    }
+
+    .cedula-photos-title {
+      padding-top: 15px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .cedula-photos-title > i {
+      width: 39px;
+      height: 39px;
+      border-radius: 12px;
+      background: var(--orange-light);
+      color: var(--orange);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    .cedula-photos-title div {
+      min-width: 0;
+    }
+
+    .cedula-photos-title strong {
+      display: block;
+      margin-bottom: 3px;
+      color: #111;
+      font-size: 13px;
+    }
+
+    .cedula-photos-title span {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
     }
 
     /* ARCHIVOS */
@@ -426,7 +465,7 @@
 
     .file-box {
       position: relative;
-      min-height: 125px;
+      min-height: 135px;
       padding: 14px;
       border: 2px dashed #e3a079;
       border-radius: 16px;
@@ -441,6 +480,7 @@
     }
 
     .file-box-content {
+      width: 100%;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -467,7 +507,7 @@
 
     .file-preview {
       width: 100%;
-      height: 120px;
+      height: 125px;
       border-radius: 13px;
       object-fit: cover;
       display: block;
@@ -511,6 +551,7 @@
       align-items: center;
       justify-content: center;
       font-size: 19px;
+      flex-shrink: 0;
     }
 
     .location-card-header strong {
@@ -658,7 +699,7 @@
       }
 
       .file-box {
-        min-height: 145px;
+        min-height: 150px;
       }
 
       .cedula-question {
@@ -842,7 +883,7 @@
                   </strong>
 
                   <span>
-                    Este dato es opcional
+                    La cédula y sus fotografías son opcionales
                   </span>
 
                 </div>
@@ -876,81 +917,104 @@
                 id="cedulaField"
               >
 
-                <div class="input-wrapper">
+                <div class="field-group">
 
-                  <i class="fa-solid fa-id-card"></i>
+                  <label for="cedula">
+                    Número de cédula
+                  </label>
 
-                  <input
-                    type="text"
-                    id="cedula"
-                    placeholder="Número de cédula"
-                    inputmode="numeric"
-                    autocomplete="off"
-                  >
+                  <div class="input-wrapper">
+
+                    <i class="fa-solid fa-id-card"></i>
+
+                    <input
+                      type="text"
+                      id="cedula"
+                      placeholder="Número de cédula"
+                      inputmode="numeric"
+                      maxlength="13"
+                      autocomplete="off"
+                    >
+
+                  </div>
+
+                </div>
+
+                <div class="cedula-photos-title">
+
+                  <i class="fa-solid fa-camera"></i>
+
+                  <div>
+                    <strong>Fotografías de la cédula</strong>
+
+                    <span>
+                      Agrega la parte frontal y trasera
+                    </span>
+                  </div>
+
+                </div>
+
+                <div class="document-grid">
+
+                  <label class="file-box">
+
+                    <input
+                      type="file"
+                      id="fotoFrontal"
+                      accept="image/*"
+                      onchange="mostrarVistaDocumento(event, 'previewFrontal')"
+                    >
+
+                    <div
+                      class="file-box-content"
+                      id="previewFrontal"
+                    >
+
+                      <i class="fa-solid fa-id-card"></i>
+
+                      <strong>
+                        Cédula frontal
+                      </strong>
+
+                      <span>
+                        Toca para seleccionar
+                      </span>
+
+                    </div>
+
+                  </label>
+
+                  <label class="file-box">
+
+                    <input
+                      type="file"
+                      id="fotoTrasera"
+                      accept="image/*"
+                      onchange="mostrarVistaDocumento(event, 'previewTrasera')"
+                    >
+
+                    <div
+                      class="file-box-content"
+                      id="previewTrasera"
+                    >
+
+                      <i class="fa-solid fa-address-card"></i>
+
+                      <strong>
+                        Cédula trasera
+                      </strong>
+
+                      <span>
+                        Toca para seleccionar
+                      </span>
+
+                    </div>
+
+                  </label>
 
                 </div>
 
               </div>
-
-            </div>
-
-            <div class="document-grid">
-
-              <label class="file-box">
-
-                <input
-                  type="file"
-                  id="fotoFrontal"
-                  accept="image/*"
-                  onchange="mostrarVistaDocumento(event, 'previewFrontal')"
-                >
-
-                <div
-                  class="file-box-content"
-                  id="previewFrontal"
-                >
-
-                  <i class="fa-solid fa-camera"></i>
-
-                  <strong>
-                    Foto frontal
-                  </strong>
-
-                  <span>
-                    Opcional
-                  </span>
-
-                </div>
-
-              </label>
-
-              <label class="file-box">
-
-                <input
-                  type="file"
-                  id="fotoTrasera"
-                  accept="image/*"
-                  onchange="mostrarVistaDocumento(event, 'previewTrasera')"
-                >
-
-                <div
-                  class="file-box-content"
-                  id="previewTrasera"
-                >
-
-                  <i class="fa-solid fa-camera-rotate"></i>
-
-                  <strong>
-                    Foto trasera
-                  </strong>
-
-                  <span>
-                    Opcional
-                  </span>
-
-                </div>
-
-              </label>
 
             </div>
 
@@ -1219,6 +1283,26 @@
           "cedula"
         );
 
+      const fotoFrontal =
+        document.getElementById(
+          "fotoFrontal"
+        );
+
+      const fotoTrasera =
+        document.getElementById(
+          "fotoTrasera"
+        );
+
+      const previewFrontal =
+        document.getElementById(
+          "previewFrontal"
+        );
+
+      const previewTrasera =
+        document.getElementById(
+          "previewTrasera"
+        );
+
       botonSi.classList.toggle(
         "active",
         valor
@@ -1236,6 +1320,42 @@
 
       if (!valor) {
         cedula.value = "";
+
+        fotoFrontal.value = "";
+        fotoTrasera.value = "";
+
+        previewFrontal.className =
+          "file-box-content";
+
+        previewTrasera.className =
+          "file-box-content";
+
+        previewFrontal.innerHTML = `
+          <i class="fa-solid fa-id-card"></i>
+
+          <strong>
+            Cédula frontal
+          </strong>
+
+          <span>
+            Toca para seleccionar
+          </span>
+        `;
+
+        previewTrasera.innerHTML = `
+          <i class="fa-solid fa-address-card"></i>
+
+          <strong>
+            Cédula trasera
+          </strong>
+
+          <span>
+            Toca para seleccionar
+          </span>
+        `;
+
+        delete previewFrontal.dataset.image;
+        delete previewTrasera.dataset.image;
       } else {
         setTimeout(
           () => cedula.focus(),
@@ -1727,14 +1847,18 @@
       }
 
       const fotoFrontal =
-        document.getElementById(
-          "previewFrontal"
-        ).dataset.image || "";
+        ingresarCedula
+          ? document.getElementById(
+              "previewFrontal"
+            ).dataset.image || ""
+          : "";
 
       const fotoTrasera =
-        document.getElementById(
-          "previewTrasera"
-        ).dataset.image || "";
+        ingresarCedula
+          ? document.getElementById(
+              "previewTrasera"
+            ).dataset.image || ""
+          : "";
 
       clientes.push({
         nombre,
