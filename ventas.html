@@ -1,559 +1,1882 @@
-
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
   <title>Ventas</title>
+
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+  >
 
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   <style>
-  :root{
-    --ink:#000;
-    --brand:#00796b;
-    --paper:#fff;
-    --bg:#f4f4f4;
-    --soft:#f0fdf8;
-  }
-  *{box-sizing:border-box}
-  body{
-    font-family:'Segoe UI',system-ui,-apple-system,Roboto,Arial,sans-serif;
-    background:var(--bg);
-    color:#222;
-    margin:0;
-    padding-top:70px;
-  }
-
-  /* ====== HEADER (MÓVIL IGUAL) ====== */
-  header{
-    position:fixed;
-    top:0; left:0; right:0;
-    height:65px;
-    background:var(--ink);
-    color:#fff;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding:0 15px;
-    z-index:1000;
-    box-shadow:0 4px 6px rgba(0,0,0,.15);
-  }
-  .back-btn{
-    font-size:22px;
-    text-decoration:none;
-    color:#fff;
-    font-weight:900;
-    line-height:1;
-  }
-  h2{
-    margin:0;
-    font-size:20px;
-    flex:1;
-    text-align:center;
-  }
-  .header-actions{
-    display:flex;
-    align-items:center;
-    gap:10px;
-  }
-  .reset-btn,.total-btn{
-    background:#fff;
-    color:var(--brand);
-    border:none;
-    font-size:13px;
-    padding:6px 12px;
-    border-radius:20px;
-    font-weight:800;
-    cursor:pointer;
-  }
-
-  /* ====== TARJETA (MÓVIL IGUAL) ====== */
-  .venta{
-    background:var(--paper);
-    border:1px solid var(--ink);
-    border-radius:10px;
-    box-shadow:0 2px 8px rgba(0,0,0,.08);
-    margin:20px 16px;
-    padding:18px;
-  }
-
-  .cliente-info{
-    background:var(--soft);
-    padding:15px;
-    border:1px solid var(--ink);
-    border-radius:8px;
-    margin-bottom:15px;
-  }
-  .cliente-info p{
-    margin:4px 0;
-    font-size:16px;
-    color:#333;
-    word-break:break-word;
-  }
-
-  .producto{
-    display:flex;
-    align-items:center;
-    padding:10px 0;
-    border-bottom:1px solid #eee;
-    gap:12px;
-  }
-  .producto:last-child{border-bottom:none}
-  .producto img{
-    width:50px;
-    height:50px;
-    object-fit:cover;
-    border-radius:8px;
-    background:#f3f3f3;
-  }
-  .producto-info{flex:1}
-  .producto-info p{margin:3px 0; font-size:15px}
-
-  .total{
-    text-align:right;
-    font-weight:900;
-    margin-top:10px;
-    font-size:16px;
-    color:var(--brand);
-  }
-
-  .print-btn{
-    margin-top:12px;
-    padding:9px 14px;
-    border:none;
-    background:var(--brand);
-    color:#fff;
-    border-radius:8px;
-    font-weight:900;
-    cursor:pointer;
-    width:100%;
-  }
-
-  .muted{ color:#777; font-size:14px; }
-
-  /* ===================== ESTILO PC ===================== */
-  @media (min-width: 992px){
-
-    body{
-      padding-top:80px; /* header un poco más alto */
+    :root {
+      --orange: #f26a21;
+      --orange-dark: #a83b0b;
+      --orange-light: #fff1e8;
+      --black: #080808;
+      --white: #ffffff;
+      --background: #f4f5f7;
+      --text: #111827;
+      --muted: #737985;
+      --line: #e7e8eb;
+      --green: #159638;
+      --green-light: #eaf8e9;
+      --blue: #087be7;
+      --blue-light: #e4f3ff;
+      --red: #e52424;
+      --red-light: #ffeaea;
+      --purple: #7128df;
+      --purple-light: #f0e8ff;
     }
 
-    header{
-      height:72px;
-      padding:0 26px;
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, Helvetica, sans-serif;
     }
 
-    h2{
-      font-size:22px;
-      text-align:left;
-      padding-left:10px;
+    html,
+    body {
+      min-height: 100%;
     }
 
-    /* Contenedor centrado */
-    #ventasContainer{
-      max-width:1200px;
+    body {
+      background: var(--background);
+      color: var(--text);
+      padding-top: 78px;
+    }
+
+    button,
+    a {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    button {
+      font: inherit;
+      cursor: pointer;
+    }
+
+    /* ENCABEZADO */
+
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 1200;
+      width: 100%;
+      height: 78px;
+      padding: 0 18px;
+      background: var(--black);
+      color: var(--white);
+      display: grid;
+      grid-template-columns: 54px minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 3px 15px rgba(0, 0, 0, 0.25);
+    }
+
+    .header-button {
+      width: 48px;
+      height: 48px;
+      border: 1px solid #373737;
+      border-radius: 15px;
+      background: linear-gradient(145deg, #191919, #080808);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      font-size: 22px;
+      box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.03);
+    }
+
+    .header-button:active {
+      transform: scale(0.96);
+    }
+
+    .header-title {
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      color: #fff;
+      font-size: 21px;
+      font-weight: 800;
+    }
+
+    .header-title i {
+      color: var(--orange);
+      font-size: 24px;
+    }
+
+    .header-title span {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+
+    .total-btn {
+      min-height: 45px;
+      padding: 9px 15px;
+      border: 1px solid #373737;
+      border-radius: 14px;
+      background: #171717;
+      color: var(--orange);
+      font-size: 13px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .reset-btn {
+      width: 48px;
+      height: 48px;
+      border: 1px solid #373737;
+      border-radius: 15px;
+      background: linear-gradient(145deg, #191919, #080808);
+      color: var(--red);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 19px;
+    }
+
+    .reset-btn:active,
+    .total-btn:active {
+      transform: scale(0.96);
+    }
+
+    /* CONTENIDO */
+
+    .page {
+      width: min(100%, 1250px);
       margin: 0 auto;
-      padding: 14px 18px 40px;
-      display:grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 18px;
+      padding: 22px 16px 45px;
     }
 
-    /* En pantallas grandes: 3 columnas */
-    @media (min-width: 1280px){
-      #ventasContainer{
+    .summary-card {
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 22px;
+      padding: 24px 22px;
+      border-radius: 22px;
+      background: linear-gradient(135deg, #101010, #252525);
+      color: #fff;
+      box-shadow: 0 9px 28px rgba(0, 0, 0, 0.18);
+    }
+
+    .summary-card::before {
+      content: "";
+      position: absolute;
+      top: -55px;
+      right: -40px;
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      background: rgba(242, 106, 33, 0.16);
+    }
+
+    .summary-card::after {
+      content: "";
+      position: absolute;
+      right: 65px;
+      bottom: -75px;
+      width: 135px;
+      height: 135px;
+      border-radius: 50%;
+      background: rgba(242, 106, 33, 0.08);
+    }
+
+    .summary-content {
+      position: relative;
+      z-index: 2;
+    }
+
+    .summary-label {
+      margin-bottom: 7px;
+      color: var(--orange);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+    }
+
+    .summary-title {
+      margin-bottom: 7px;
+      color: #fff;
+      font-size: 24px;
+      line-height: 1.2;
+    }
+
+    .summary-description {
+      max-width: 570px;
+      color: #c9c9c9;
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .section-heading {
+      margin: 0 3px 15px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .section-heading h2 {
+      color: #111;
+      font-size: 19px;
+    }
+
+    .section-heading span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    /* LISTA DE VENTAS */
+
+    #ventasContainer {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 17px;
+    }
+
+    .venta {
+      position: relative;
+      overflow: hidden;
+      padding: 18px;
+      border: 1px solid #ededed;
+      border-radius: 21px;
+      background: #fff;
+      box-shadow: 0 7px 22px rgba(0, 0, 0, 0.07);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .venta:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 11px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .venta-header {
+      margin-bottom: 15px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .venta-heading {
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .venta-icon {
+      width: 49px;
+      height: 49px;
+      border-radius: 16px;
+      background: var(--orange-light);
+      color: var(--orange);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 21px;
+      flex-shrink: 0;
+    }
+
+    .venta-heading-text {
+      min-width: 0;
+    }
+
+    .venta-heading-text strong {
+      display: block;
+      color: #111;
+      font-size: 16px;
+      line-height: 1.3;
+      overflow-wrap: anywhere;
+    }
+
+    .venta-heading-text span {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .order-badge {
+      padding: 8px 11px;
+      border-radius: 999px;
+      background: var(--blue-light);
+      color: var(--blue);
+      font-size: 11px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    /* DATOS DEL CLIENTE */
+
+    .cliente-info {
+      margin-bottom: 15px;
+      padding: 14px;
+      border: 1px solid #e8ecef;
+      border-radius: 16px;
+      background: #f8fafb;
+      display: grid;
+      gap: 9px;
+    }
+
+    .cliente-info p {
+      margin: 0;
+      color: #4b5563;
+      display: flex;
+      align-items: flex-start;
+      gap: 9px;
+      font-size: 13px;
+      line-height: 1.45;
+      overflow-wrap: anywhere;
+    }
+
+    .cliente-info p i {
+      width: 17px;
+      margin-top: 2px;
+      color: var(--orange);
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .cliente-info strong {
+      color: #111;
+    }
+
+    /* PRODUCTOS */
+
+    .productos-title {
+      margin: 2px 0 9px;
+      color: #111;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .producto {
+      padding: 11px 0;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .producto:last-child {
+      border-bottom: none;
+    }
+
+    .producto-image {
+      width: 58px;
+      height: 58px;
+      padding: 4px;
+      border-radius: 14px;
+      background: #f2f3f5;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .producto img {
+      width: 100%;
+      height: 100%;
+      border-radius: 11px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .producto-info {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .producto-info p {
+      margin: 3px 0;
+      color: #4b5563;
+      font-size: 13px;
+      line-height: 1.4;
+      overflow-wrap: anywhere;
+    }
+
+    .producto-info p strong {
+      color: #111;
+      font-size: 14px;
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    /* PIE DE LA TARJETA */
+
+    .venta-footer {
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 13px;
+    }
+
+    .total {
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      text-align: left;
+    }
+
+    .total span {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .total strong {
+      color: var(--orange);
+      font-size: 20px;
+      line-height: 1.2;
+      overflow-wrap: anywhere;
+    }
+
+    .print-btn {
+      min-height: 45px;
+      padding: 10px 14px;
+      border: none;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #e95414, #a83b0b);
+      color: #fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+      box-shadow: 0 5px 15px rgba(242, 106, 33, 0.26);
+    }
+
+    .print-btn:hover {
+      opacity: 0.95;
+    }
+
+    .print-btn:active {
+      transform: scale(0.97);
+    }
+
+    /* SIN VENTAS */
+
+    .empty-state {
+      grid-column: 1 / -1;
+      min-height: 330px;
+      padding: 40px 20px;
+      border: 1px solid #ededed;
+      border-radius: 22px;
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      box-shadow: 0 7px 22px rgba(0, 0, 0, 0.07);
+    }
+
+    .empty-icon {
+      width: 125px;
+      height: 125px;
+      margin-bottom: 18px;
+      border-radius: 50%;
+      background: var(--orange-light);
+      color: var(--orange);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 52px;
+    }
+
+    .empty-state h3 {
+      margin-bottom: 7px;
+      color: #111;
+      font-size: 20px;
+    }
+
+    .empty-state p {
+      max-width: 330px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    /* RESPONSIVE */
+
+    @media (min-width: 760px) {
+      #ventasContainer {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (min-width: 1180px) {
+      #ventasContainer {
         grid-template-columns: repeat(3, minmax(0, 1fr));
       }
     }
 
-    /* Tarjeta PC */
-    .venta{
-      margin: 0;          /* ya no usa margin porque el grid maneja el espacio */
-      padding: 18px;
-      border-radius: 14px;
-      box-shadow: 0 8px 24px rgba(0,0,0,.08);
-      transition: transform .12s ease, box-shadow .12s ease;
-    }
-    .venta:hover{
-      transform: translateY(-2px);
-      box-shadow: 0 14px 34px rgba(0,0,0,.12);
+    @media (max-width: 720px) {
+      body {
+        padding-top: 70px;
+      }
+
+      .header {
+        height: 70px;
+        padding: 0 12px;
+        grid-template-columns: 46px minmax(0, 1fr) auto;
+        gap: 9px;
+      }
+
+      .header-button,
+      .reset-btn {
+        width: 43px;
+        height: 43px;
+        border-radius: 14px;
+        font-size: 19px;
+      }
+
+      .header-title {
+        gap: 8px;
+        font-size: 18px;
+      }
+
+      .header-title i {
+        font-size: 21px;
+      }
+
+      .total-btn {
+        min-height: 41px;
+        padding: 8px 11px;
+        font-size: 11px;
+      }
+
+      .page {
+        padding: 17px 10px 35px;
+      }
+
+      .summary-card {
+        padding: 20px 18px;
+      }
+
+      .summary-title {
+        font-size: 21px;
+      }
+
+      .venta {
+        padding: 15px;
+      }
+
+      .venta-icon {
+        width: 45px;
+        height: 45px;
+        font-size: 19px;
+      }
+
+      .venta-heading-text strong {
+        font-size: 15px;
+      }
+
+      .order-badge {
+        padding: 7px 9px;
+        font-size: 10px;
+      }
+
+      .cliente-info {
+        padding: 12px;
+      }
+
+      .cliente-info p {
+        font-size: 12px;
+      }
+
+      .producto-image {
+        width: 53px;
+        height: 53px;
+      }
+
+      .venta-footer {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .print-btn {
+        width: 100%;
+      }
     }
 
-    .cliente-info{
-      padding: 14px;
-      border-radius: 12px;
-    }
-    .cliente-info p{
-      font-size: 15px;
+    @media (max-width: 430px) {
+      .header-title span {
+        font-size: 16px;
+      }
+
+      .header-actions {
+        gap: 6px;
+      }
+
+      .total-btn {
+        max-width: 108px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .summary-card {
+        display: none;
+      }
+
+      .section-heading {
+        margin-top: 2px;
+      }
+
+      .venta-header {
+        align-items: center;
+      }
+
+      .order-badge {
+        max-width: 94px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
     }
 
-    .producto img{
-      width:58px;
-      height:58px;
+    /* IMPRESIÓN */
+
+    @media print {
+      .header,
+      .summary-card,
+      .section-heading,
+      .print-btn {
+        display: none !important;
+      }
+
+      body {
+        padding: 0;
+        background: #fff;
+      }
+
+      .page {
+        width: 100%;
+        max-width: none;
+        padding: 0;
+      }
+
+      #ventasContainer {
+        display: block !important;
+      }
+
+      .venta {
+        margin: 0;
+        padding: 0;
+        border: none;
+        border-radius: 0;
+        box-shadow: none;
+        page-break-after: always;
+      }
     }
-
-    .producto-info p{
-      font-size: 14px;
-    }
-
-    /* Botón imprimir más "pro" en PC */
-    .print-btn{
-      width:auto;
-      min-width: 220px;
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      gap:10px;
-      padding: 10px 16px;
-      border-radius: 10px;
-    }
-
-    .total{
-      font-size: 17px;
-    }
-  }
-
-  /* ====== PRINT ====== */
-  @media print{
-    header,.print-btn,.reset-btn,.total-btn{display:none !important;}
-    body{padding:0;}
-    #ventasContainer{ display:block !important; max-width:none !important; padding:0 !important; }
-    .venta{border:none; box-shadow:none; margin:0; padding:0;}
-  }
-</style>
-
+  </style>
 </head>
+
 <body>
 
-<header>
-  <a href="Usuario.html" class="back-btn" title="Volver">←</a>
-  <h2>📋 Ventas</h2>
-  <div class="header-actions">
-    <button class="total-btn" id="totalVentasBtn">Total: $0.00</button>
-    <button class="reset-btn" onclick="restablecerVentas()" title="Restablecer ventas">🗑️</button>
-  </div>
-</header>
+  <header class="header">
 
-<div id="ventasContainer"></div>
+    <a
+      href="Usuario.html"
+      class="header-button"
+      title="Volver"
+      aria-label="Volver"
+    >
+      <i class="fa-solid fa-arrow-left"></i>
+    </a>
 
-<script>
-  // ===================== CONFIG =====================
-  const NOMBRE_NEGOCIO_TICKET = '🛒 MI NEGOCIO';
-  const PASS_RESETEO = '1234';
+    <div class="header-title">
+      <i class="fa-solid fa-receipt"></i>
+      <span>Ventas</span>
+    </div>
 
-  // ===================== HELPERS =====================
-  function normaliza(x){ return String(x||'').trim().toLowerCase(); }
+    <div class="header-actions">
 
-  function money(n){
-    return Number(n||0).toLocaleString('es-DO',{ minimumFractionDigits: 2 });
-  }
+      <button
+        type="button"
+        class="total-btn"
+        id="totalVentasBtn"
+      >
+        Total: $0.00
+      </button>
 
-  // ============ IDENTIDADES / ROLES ============
-  function getIdentidadesUsuario(){
-    const ids = new Set();
+      <button
+        type="button"
+        class="reset-btn"
+        onclick="restablecerVentas()"
+        title="Restablecer ventas"
+        aria-label="Restablecer ventas"
+      >
+        <i class="fa-regular fa-trash-can"></i>
+      </button>
 
-    const nombreUsuario = localStorage.getItem('nombreUsuario');
-    if (nombreUsuario) ids.add(normaliza(nombreUsuario));
+    </div>
 
-    const rol = localStorage.getItem('rol');
-    if (rol) ids.add(normaliza(rol));
+  </header>
 
-    try{
-      const us = JSON.parse(localStorage.getItem('usuarioSesion')||'null');
-      if (us?.nombre)  ids.add(normaliza(us.nombre));
-      if (us?.usuario) ids.add(normaliza(us.usuario));
-      if (us?.rol)     ids.add(normaliza(us.rol));
-    }catch(e){}
+  <main class="page">
 
-    try{
-      const cu = JSON.parse(localStorage.getItem('currentUser')||'null');
-      if (cu?.name)     ids.add(normaliza(cu.name));
-      if (cu?.username) ids.add(normaliza(cu.username));
-      if (cu?.role)     ids.add(normaliza(cu.role));
-    }catch(e){}
+    <section class="summary-card">
 
-    return ids;
-  }
+      <div class="summary-content">
 
-  function esAdmin(){
-    const ids = getIdentidadesUsuario();
-    return ids.has('admin') || ids.has('administrador');
-  }
-
-  function getVendedorSesionLegible(){
-    try{
-      const us = JSON.parse(localStorage.getItem('usuarioSesion')||'null');
-      if (us?.nombre)  return String(us.nombre);
-      if (us?.usuario) return String(us.usuario);
-    }catch(e){}
-    try{
-      const cu = JSON.parse(localStorage.getItem('currentUser')||'null');
-      if (cu?.name) return String(cu.name);
-      if (cu?.username) return String(cu.username);
-      if (cu?.role && !['admin','administrador'].includes(normaliza(cu.role))) return String(cu.role);
-    }catch(e){}
-
-    const nombreUsuario = localStorage.getItem('nombreUsuario');
-    if (nombreUsuario) return String(nombreUsuario);
-
-    const rol = localStorage.getItem('rol');
-    if (rol) return String(rol);
-
-    return 'No definido';
-  }
-
-  function ventaDelUsuario(venta, identidades){
-    const candidato =
-      venta?.vendedor ??
-      venta?.usuario ??
-      venta?.creadoPor ??
-      venta?.owner ??
-      null;
-
-    if (!candidato) return false;
-    return identidades.has(normaliza(candidato));
-  }
-
-  function asegurarVendedor(venta){
-    if (!venta.vendedor && !venta.usuario && !venta.creadoPor && !venta.owner){
-      venta.vendedor = getVendedorSesionLegible();
-      return true;
-    }
-    return false;
-  }
-
-  // ✅ SÚPER IMPORTANTE: sacar el cliente aunque venga con llaves diferentes
-  function obtenerClienteDeVenta(venta){
-    if (venta?.clienteInfo) return venta.clienteInfo;
-    if (venta?.cliente) return venta.cliente;
-    if (venta?.clienteSeleccionado) return venta.clienteSeleccionado;
-
-    const negocio  = venta?.negocio || venta?.nombreNegocio || '';
-    const direccion = venta?.direccion || venta?.dirección || '';
-    const telefono  = venta?.telefono || venta?.tel || '';
-
-    if (negocio || direccion || telefono) return { negocio, direccion, telefono };
-    return {};
-  }
-
-  function normalizaClienteObj(c){
-    if (!c) return {};
-    const obj = { ...c };
-
-    if (!obj.negocio && obj.nombreNegocio) obj.negocio = obj.nombreNegocio;
-    if (!obj.direccion && obj.dirección) obj.direccion = obj.dirección;
-    if (!obj.telefono && obj.tel) obj.telefono = obj.tel;
-
-    return obj;
-  }
-
-  // ===================== DATOS =====================
-  const contenedor = document.getElementById('ventasContainer');
-  const totalVentasBtn = document.getElementById('totalVentasBtn');
-
-  const identidades = getIdentidadesUsuario();
-  const admin = esAdmin();
-
-  let ventasTodas = JSON.parse(localStorage.getItem('ventasRealizadas')) || [];
-
-  // ✅ PARCHE: arreglar ventas viejas (si no tenían clienteInfo, intentar recuperarlo)
-  let cambios = false;
-  ventasTodas.forEach(v => {
-    if (asegurarVendedor(v)) cambios = true;
-
-    // si no tiene clienteInfo, intentar obtenerlo de otras llaves y guardarlo
-    if (!v.clienteInfo){
-      const c = obtenerClienteDeVenta(v);
-      if (c && (c.negocio || c.direccion || c.telefono)){
-        v.clienteInfo = normalizaClienteObj(c);
-        cambios = true;
-      }
-    } else {
-      v.clienteInfo = normalizaClienteObj(v.clienteInfo);
-    }
-  });
-
-  if (cambios) localStorage.setItem('ventasRealizadas', JSON.stringify(ventasTodas));
-
-  // ✅ Admin ve todas; usuario normal solo las suyas
-  const ventasFiltradas = admin ? ventasTodas : ventasTodas.filter(v => ventaDelUsuario(v, identidades));
-
-  if (ventasFiltradas.length === 0){
-    contenedor.innerHTML = "<p style='text-align:center; margin-top:16px;'>No hay ventas registradas para tu usuario.</p>";
-  }
-
-  // ===================== RENDER =====================
-  let totalVentas = 0;
-
-  ventasFiltradas.forEach((venta, idx) => {
-    const cliente = normalizaClienteObj(obtenerClienteDeVenta(venta));
-    const numeroPedido = String(idx + 1).padStart(6, '0');
-    const vendedor = venta.vendedor || getVendedorSesionLegible();
-
-    totalVentas += Number(venta.total) || 0;
-
-    const productosHtml = (venta.productos || []).map(p => {
-      const cant = Number(p.cantidad || 0);
-      const precio = Number(p.precio || 0);
-      const subtotal = (p.subtotal != null) ? Number(p.subtotal) : (precio * cant);
-
-      return `
-        <div class="producto">
-          <img src="${p.imagen || 'https://via.placeholder.com/50?text=%20'}" alt="${p.nombre || ''}">
-          <div class="producto-info">
-            <p><strong>${p.nombre || 'Producto'}</strong></p>
-            <p class="muted">Cant: ${cant.toLocaleString('es-DO')} • Precio: $${money(precio)}</p>
-            <p class="muted">Subtotal: $${money(subtotal)}</p>
-          </div>
+        <div class="summary-label">
+          Registro de operaciones
         </div>
-      `;
-    }).join('');
 
-    const card = document.createElement('div');
-    card.className = 'venta';
-    card.innerHTML = `
-      <div class="cliente-info">
-        <p><strong>Negocio:</strong> ${cliente?.negocio || 'No disponible'}</p>
-        <p><strong>Dirección:</strong> ${cliente?.direccion || '-'}</p>
-        <p><strong>Teléfono:</strong> ${cliente?.telefono || '-'}</p>
-        <p><strong>Pedido N.º:</strong> ${numeroPedido}</p>
-        <p><strong>Fecha:</strong> ${venta.fecha || '-'}</p>
-        <p><strong>Vendedor:</strong> ${vendedor}</p>
+        <h1 class="summary-title">
+          Historial de ventas
+        </h1>
+
+        <p class="summary-description">
+          Consulta las ventas realizadas, los datos del cliente, los productos vendidos y el total de cada pedido.
+        </p>
+
       </div>
 
-      ${productosHtml}
+    </section>
 
-      <div class="total">Total: $${money(venta.total)}</div>
+    <div class="section-heading">
 
-      <button class="print-btn" onclick="imprimirVenta(${idx})">🧾 Imprimir Ticket</button>
-    `;
-    contenedor.appendChild(card);
-  });
+      <h2>Ventas registradas</h2>
 
-  totalVentasBtn.innerText = "Total: $" + money(totalVentas);
+      <span id="cantidadVentasTexto">
+        0 ventas
+      </span>
 
-  // ===================== IMPRESIÓN 58MM + QR =====================
-  function imprimirVenta(index){
-    const venta = ventasFiltradas[index];
-    const cliente = normalizaClienteObj(obtenerClienteDeVenta(venta));
-    const numeroPedido = String(index + 1).padStart(6, '0');
-    const vendedor = venta.vendedor || getVendedorSesionLegible();
+    </div>
 
-    const productosHTML = (venta.productos || []).map((p, i) => {
-      const cant = Number(p.cantidad || 0);
-      const precio = Number(p.precio || 0);
-      const sub = (p.subtotal != null) ? Number(p.subtotal) : (precio * cant);
+    <div id="ventasContainer"></div>
 
-      return `
-        <tr><td colspan="2">${i+1}. ${p.nombre || 'Producto'}</td></tr>
-        <tr>
-          <td style="font-size:12px;">Cant: ${cant.toLocaleString('es-DO')}</td>
-          <td style="text-align:right; font-size:12px;">
-            $${money(sub)}
-          </td>
-        </tr>
-      `;
-    }).join('');
+  </main>
 
-    const totalFmt = money(venta.total);
+  <script>
+    const NOMBRE_NEGOCIO_TICKET =
+      "🛒 MI NEGOCIO";
 
-    const qrTexto =
-`Pedido: ${numeroPedido}
-Negocio: ${cliente.negocio || 'N/A'}
-Direccion: ${cliente.direccion || '-'}
-Tel: ${cliente.telefono || '-'}
-Fecha: ${venta.fecha || '-'}
-Vendedor: ${vendedor}
-Total: $${Number(venta.total||0).toFixed(2)}`;
+    const PASS_RESETEO =
+      "1234";
 
-    const qrAPI = `https://api.qrserver.com/v1/create-qr-code/?size=130x130&data=${encodeURIComponent(qrTexto)}`;
+    function normaliza(x) {
+      return String(x || "")
+        .trim()
+        .toLowerCase();
+    }
 
-    const html = `
-      <html>
-        <head>
-          <meta charset="UTF-8">
-          <title>Ticket</title>
-          <style>
-            body { font-family: monospace; font-size: 13px; margin: 0; padding: 10px; width: 58mm; color:#000; }
-            .center { text-align:center; }
-            .bold { font-weight:900; }
-            table { width:100%; border-collapse:collapse; }
-            td { padding:2px 0; vertical-align:top; }
-            .total { font-weight:900; font-size: 14px; text-align:right; margin-top:8px; }
-            hr { border:none; border-top:1px dashed #000; margin:8px 0; }
-            .qr { margin-top:10px; text-align:center; }
-            .footer { margin-top:8px; text-align:center; font-size: 11px; }
-            @media print { @page { margin: 0; } body { margin:0; } }
-          </style>
-        </head>
-        <body onload="window.print(); setTimeout(()=>window.close(), 400);">
-          <div class="center bold">${NOMBRE_NEGOCIO_TICKET}</div>
-          <hr>
-          <div><strong>Negocio:</strong> ${cliente.negocio || 'No disponible'}</div>
-          <div><strong>Dirección:</strong> ${cliente.direccion || '-'}</div>
-          <div><strong>Tel:</strong> ${cliente.telefono || '-'}</div>
-          <div><strong>Pedido N.º:</strong> ${numeroPedido}</div>
-          <div><strong>Fecha:</strong> ${venta.fecha || '-'}</div>
-          <div><strong>Vendedor:</strong> ${vendedor}</div>
-          <hr>
-          <table>${productosHTML}</table>
-          <hr>
-          <div class="total">Total: $${totalFmt}</div>
-          <div class="qr"><img src="${qrAPI}" alt="QR"></div>
-          <div class="footer">Gracias por su compra</div>`;
+    function money(n) {
+      return Number(n || 0)
+        .toLocaleString(
+          "es-DO",
+          {
+            minimumFractionDigits: 2
+          }
+        );
+    }
 
-    const pop = window.open('', '_blank', 'width=400,height=650');
-    pop.document.open();
-    pop.document.write(html);
-    pop.document.close();
+    function escaparHTML(valor) {
+      return String(valor || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
 
-    const boton = document.getElementsByClassName('venta')[index]?.querySelector('.print-btn');
-    if (boton) boton.innerText = '🔁 Reimprimir Ticket';
-  }
+    function getIdentidadesUsuario() {
+      const ids = new Set();
 
-  // ===================== RESTABLECER =====================
-  function restablecerVentas(){
-    Swal.fire({
-      title:'🔒 Restablecer Ventas',
-      text:'Ingrese la contraseña para continuar:',
-      input:'password',
-      inputAttributes:{ autocapitalize:'off', autocorrect:'off' },
-      showCancelButton:true,
-      confirmButtonText:'Confirmar',
-      cancelButtonText:'Cancelar',
-      preConfirm:(password)=>{
-        if (password !== PASS_RESETEO) Swal.showValidationMessage('Contraseña incorrecta');
-        return password;
+      const nombreUsuario =
+        localStorage.getItem(
+          "nombreUsuario"
+        );
+
+      if (nombreUsuario) {
+        ids.add(
+          normaliza(nombreUsuario)
+        );
       }
-    }).then(result=>{
-      if (!result.isConfirmed) return;
 
-      Swal.fire({
-        title:'¿Está seguro?',
-        text:'Se eliminarán todas las ventas registradas.',
-        icon:'warning',
-        showCancelButton:true,
-        confirmButtonColor:'#d33',
-        confirmButtonText:'Sí, eliminar',
-        cancelButtonText:'Cancelar'
-      }).then(confirmar=>{
-        if (confirmar.isConfirmed){
-          localStorage.removeItem('ventasRealizadas');
-          Swal.fire('✔️ Ventas eliminadas','Las ventas han sido eliminadas correctamente.','success')
-            .then(()=>location.reload());
+      const rol =
+        localStorage.getItem("rol");
+
+      if (rol) {
+        ids.add(normaliza(rol));
+      }
+
+      try {
+        const us =
+          JSON.parse(
+            localStorage.getItem(
+              "usuarioSesion"
+            ) || "null"
+          );
+
+        if (us?.nombre) {
+          ids.add(
+            normaliza(us.nombre)
+          );
         }
-      });
+
+        if (us?.usuario) {
+          ids.add(
+            normaliza(us.usuario)
+          );
+        }
+
+        if (us?.rol) {
+          ids.add(
+            normaliza(us.rol)
+          );
+        }
+      } catch (error) {
+        console.warn(
+          "No se pudo leer usuarioSesion:",
+          error
+        );
+      }
+
+      try {
+        const cu =
+          JSON.parse(
+            localStorage.getItem(
+              "currentUser"
+            ) || "null"
+          );
+
+        if (cu?.name) {
+          ids.add(
+            normaliza(cu.name)
+          );
+        }
+
+        if (cu?.username) {
+          ids.add(
+            normaliza(cu.username)
+          );
+        }
+
+        if (cu?.role) {
+          ids.add(
+            normaliza(cu.role)
+          );
+        }
+      } catch (error) {
+        console.warn(
+          "No se pudo leer currentUser:",
+          error
+        );
+      }
+
+      return ids;
+    }
+
+    function esAdmin() {
+      const ids =
+        getIdentidadesUsuario();
+
+      return (
+        ids.has("admin") ||
+        ids.has("administrador")
+      );
+    }
+
+    function getVendedorSesionLegible() {
+      try {
+        const us =
+          JSON.parse(
+            localStorage.getItem(
+              "usuarioSesion"
+            ) || "null"
+          );
+
+        if (us?.nombre) {
+          return String(us.nombre);
+        }
+
+        if (us?.usuario) {
+          return String(us.usuario);
+        }
+      } catch (error) {
+        console.warn(error);
+      }
+
+      try {
+        const cu =
+          JSON.parse(
+            localStorage.getItem(
+              "currentUser"
+            ) || "null"
+          );
+
+        if (cu?.name) {
+          return String(cu.name);
+        }
+
+        if (cu?.username) {
+          return String(cu.username);
+        }
+
+        if (
+          cu?.role &&
+          ![
+            "admin",
+            "administrador"
+          ].includes(
+            normaliza(cu.role)
+          )
+        ) {
+          return String(cu.role);
+        }
+      } catch (error) {
+        console.warn(error);
+      }
+
+      const nombreUsuario =
+        localStorage.getItem(
+          "nombreUsuario"
+        );
+
+      if (nombreUsuario) {
+        return String(nombreUsuario);
+      }
+
+      const rol =
+        localStorage.getItem("rol");
+
+      if (rol) {
+        return String(rol);
+      }
+
+      return "No definido";
+    }
+
+    function ventaDelUsuario(
+      venta,
+      identidades
+    ) {
+      const candidato =
+        venta?.vendedor ??
+        venta?.usuario ??
+        venta?.creadoPor ??
+        venta?.owner ??
+        null;
+
+      if (!candidato) {
+        return false;
+      }
+
+      return identidades.has(
+        normaliza(candidato)
+      );
+    }
+
+    function asegurarVendedor(venta) {
+      if (
+        !venta.vendedor &&
+        !venta.usuario &&
+        !venta.creadoPor &&
+        !venta.owner
+      ) {
+        venta.vendedor =
+          getVendedorSesionLegible();
+
+        return true;
+      }
+
+      return false;
+    }
+
+    function obtenerClienteDeVenta(
+      venta
+    ) {
+      if (venta?.clienteInfo) {
+        return venta.clienteInfo;
+      }
+
+      if (venta?.cliente) {
+        return venta.cliente;
+      }
+
+      if (
+        venta?.clienteSeleccionado
+      ) {
+        return venta.clienteSeleccionado;
+      }
+
+      const negocio =
+        venta?.negocio ||
+        venta?.nombreNegocio ||
+        "";
+
+      const direccion =
+        venta?.direccion ||
+        venta?.dirección ||
+        "";
+
+      const telefono =
+        venta?.telefono ||
+        venta?.tel ||
+        "";
+
+      if (
+        negocio ||
+        direccion ||
+        telefono
+      ) {
+        return {
+          negocio,
+          direccion,
+          telefono
+        };
+      }
+
+      return {};
+    }
+
+    function normalizaClienteObj(c) {
+      if (!c) {
+        return {};
+      }
+
+      const obj = {
+        ...c
+      };
+
+      if (
+        !obj.negocio &&
+        obj.nombreNegocio
+      ) {
+        obj.negocio =
+          obj.nombreNegocio;
+      }
+
+      if (
+        !obj.direccion &&
+        obj.dirección
+      ) {
+        obj.direccion =
+          obj.dirección;
+      }
+
+      if (
+        !obj.telefono &&
+        obj.tel
+      ) {
+        obj.telefono =
+          obj.tel;
+      }
+
+      return obj;
+    }
+
+    const contenedor =
+      document.getElementById(
+        "ventasContainer"
+      );
+
+    const totalVentasBtn =
+      document.getElementById(
+        "totalVentasBtn"
+      );
+
+    const cantidadVentasTexto =
+      document.getElementById(
+        "cantidadVentasTexto"
+      );
+
+    const identidades =
+      getIdentidadesUsuario();
+
+    const admin =
+      esAdmin();
+
+    let ventasTodas = [];
+
+    try {
+      const datos =
+        JSON.parse(
+          localStorage.getItem(
+            "ventasRealizadas"
+          ) || "[]"
+        );
+
+      ventasTodas =
+        Array.isArray(datos)
+          ? datos
+          : [];
+    } catch (error) {
+      ventasTodas = [];
+    }
+
+    let cambios = false;
+
+    ventasTodas.forEach(venta => {
+      if (
+        asegurarVendedor(venta)
+      ) {
+        cambios = true;
+      }
+
+      if (!venta.clienteInfo) {
+        const cliente =
+          obtenerClienteDeVenta(
+            venta
+          );
+
+        if (
+          cliente &&
+          (
+            cliente.negocio ||
+            cliente.direccion ||
+            cliente.telefono
+          )
+        ) {
+          venta.clienteInfo =
+            normalizaClienteObj(
+              cliente
+            );
+
+          cambios = true;
+        }
+      } else {
+        venta.clienteInfo =
+          normalizaClienteObj(
+            venta.clienteInfo
+          );
+      }
     });
-  }
-</script>
+
+    if (cambios) {
+      localStorage.setItem(
+        "ventasRealizadas",
+        JSON.stringify(
+          ventasTodas
+        )
+      );
+    }
+
+    const ventasFiltradas =
+      admin
+        ? ventasTodas
+        : ventasTodas.filter(
+            venta =>
+              ventaDelUsuario(
+                venta,
+                identidades
+              )
+          );
+
+    function renderVentas() {
+      contenedor.innerHTML = "";
+
+      cantidadVentasTexto.textContent =
+        ventasFiltradas.length === 1
+          ? "1 venta"
+          : `${ventasFiltradas.length} ventas`;
+
+      if (
+        ventasFiltradas.length === 0
+      ) {
+        contenedor.innerHTML = `
+          <div class="empty-state">
+
+            <div class="empty-icon">
+              <i class="fa-solid fa-receipt"></i>
+            </div>
+
+            <h3>No hay ventas registradas</h3>
+
+            <p>
+              No se encontraron ventas asociadas a este usuario.
+            </p>
+
+          </div>
+        `;
+
+        totalVentasBtn.innerText =
+          "Total: $0.00";
+
+        return;
+      }
+
+      let totalVentas = 0;
+
+      ventasFiltradas.forEach(
+        (venta, index) => {
+          const cliente =
+            normalizaClienteObj(
+              obtenerClienteDeVenta(
+                venta
+              )
+            );
+
+          const numeroPedido =
+            String(index + 1)
+              .padStart(6, "0");
+
+          const vendedor =
+            venta.vendedor ||
+            getVendedorSesionLegible();
+
+          totalVentas +=
+            Number(venta.total) || 0;
+
+          const productosHtml =
+            (
+              venta.productos || []
+            ).map(producto => {
+              const cantidad =
+                Number(
+                  producto.cantidad || 0
+                );
+
+              const precio =
+                Number(
+                  producto.precio || 0
+                );
+
+              const subtotal =
+                producto.subtotal != null
+                  ? Number(
+                      producto.subtotal
+                    )
+                  : precio * cantidad;
+
+              return `
+                <div class="producto">
+
+                  <div class="producto-image">
+
+                    <img
+                      src="${escaparHTML(
+                        producto.imagen ||
+                        "https://via.placeholder.com/58?text=Producto"
+                      )}"
+                      alt="${escaparHTML(
+                        producto.nombre ||
+                        "Producto"
+                      )}"
+                      onerror="
+                        this.onerror=null;
+                        this.src='https://via.placeholder.com/58?text=Producto';
+                      "
+                    >
+
+                  </div>
+
+                  <div class="producto-info">
+
+                    <p>
+                      <strong>
+                        ${escaparHTML(
+                          producto.nombre ||
+                          "Producto"
+                        )}
+                      </strong>
+                    </p>
+
+                    <p class="muted">
+                      Cantidad:
+                      ${cantidad.toLocaleString(
+                        "es-DO"
+                      )}
+                      · Precio:
+                      $${money(precio)}
+                    </p>
+
+                    <p class="muted">
+                      Subtotal:
+                      $${money(subtotal)}
+                    </p>
+
+                  </div>
+
+                </div>
+              `;
+            }).join("");
+
+          const card =
+            document.createElement(
+              "article"
+            );
+
+          card.className =
+            "venta";
+
+          card.innerHTML = `
+            <div class="venta-header">
+
+              <div class="venta-heading">
+
+                <div class="venta-icon">
+                  <i class="fa-solid fa-store"></i>
+                </div>
+
+                <div class="venta-heading-text">
+
+                  <strong>
+                    ${escaparHTML(
+                      cliente.negocio ||
+                      "Negocio no disponible"
+                    )}
+                  </strong>
+
+                  <span>
+                    ${escaparHTML(
+                      venta.fecha ||
+                      "Fecha no disponible"
+                    )}
+                  </span>
+
+                </div>
+
+              </div>
+
+              <div class="order-badge">
+                Pedido #${numeroPedido}
+              </div>
+
+            </div>
+
+            <div class="cliente-info">
+
+              <p>
+                <i class="fa-solid fa-store"></i>
+
+                <span>
+                  <strong>Negocio:</strong>
+                  ${escaparHTML(
+                    cliente.negocio ||
+                    "No disponible"
+                  )}
+                </span>
+              </p>
+
+              <p>
+                <i class="fa-solid fa-location-dot"></i>
+
+                <span>
+                  <strong>Dirección:</strong>
+                  ${escaparHTML(
+                    cliente.direccion ||
+                    "-"
+                  )}
+                </span>
+              </p>
+
+              <p>
+                <i class="fa-solid fa-phone"></i>
+
+                <span>
+                  <strong>Teléfono:</strong>
+                  ${escaparHTML(
+                    cliente.telefono ||
+                    "-"
+                  )}
+                </span>
+              </p>
+
+              <p>
+                <i class="fa-solid fa-user"></i>
+
+                <span>
+                  <strong>Vendedor:</strong>
+                  ${escaparHTML(
+                    vendedor
+                  )}
+                </span>
+              </p>
+
+            </div>
+
+            <div class="productos-title">
+              Productos vendidos
+            </div>
+
+            <div class="productos-list">
+              ${
+                productosHtml ||
+                `
+                  <p class="muted">
+                    No hay productos registrados.
+                  </p>
+                `
+              }
+            </div>
+
+            <div class="venta-footer">
+
+              <div class="total">
+                <span>Total de la venta</span>
+
+                <strong>
+                  $${money(venta.total)}
+                </strong>
+              </div>
+
+              <button
+                type="button"
+                class="print-btn"
+                onclick="imprimirVenta(${index})"
+              >
+                <i class="fa-solid fa-print"></i>
+                Imprimir ticket
+              </button>
+
+            </div>
+          `;
+
+          contenedor.appendChild(
+            card
+          );
+        }
+      );
+
+      totalVentasBtn.innerText =
+        "Total: $" +
+        money(totalVentas);
+    }
+
+    renderVentas();
+
+    function imprimirVenta(index) {
+      const venta =
+        ventasFiltradas[index];
+
+      const cliente =
+        normalizaClienteObj(
+          obtenerClienteDeVenta(
+            venta
+          )
+        );
+
+      const numeroPedido =
+        String(index + 1)
+          .padStart(6, "0");
+
+      const vendedor =
+        venta.vendedor ||
+        getVendedorSesionLegible();
+
+      const productosHTML =
+        (
+          venta.productos || []
+        ).map(
+          (producto, productoIndex) => {
+            const cantidad =
+              Number(
+                producto.cantidad || 0
+              );
+
+            const precio =
+              Number(
+                producto.precio || 0
+              );
+
+            const subtotal =
+              producto.subtotal != null
+                ? Number(
+                    producto.subtotal
+                  )
+                : precio * cantidad;
+
+            return `
+              <tr>
+                <td colspan="2">
+                  ${productoIndex + 1}.
+                  ${escaparHTML(
+                    producto.nombre ||
+                    "Producto"
+                  )}
+                </td>
+              </tr>
+
+              <tr>
+                <td style="font-size:12px;">
+                  Cant:
+                  ${cantidad.toLocaleString(
+                    "es-DO"
+                  )}
+                </td>
+
+                <td style="
+                  text-align:right;
+                  font-size:12px;
+                ">
+                  $${money(subtotal)}
+                </td>
+              </tr>
+            `;
+          }
+        ).join("");
+
+      const totalFmt =
+        money(venta.total);
+
+      const qrTexto =
+`Pedido: ${numeroPedido}
+Negocio: ${cliente.negocio || "N/A"}
+Direccion: ${cliente.direccion || "-"}
+Tel: ${cliente.telefono || "-"}
+Fecha: ${venta.fecha || "-"}
+Vendedor: ${vendedor}
+Total: $${Number(venta.total || 0).toFixed(2)}`;
+
+      const qrAPI =
+        `https://api.qrserver.com/v1/create-qr-code/?size=130x130&data=${encodeURIComponent(
+          qrTexto
+        )}`;
+
+      const html = `
+        <html>
+
+          <head>
+
+            <meta charset="UTF-8">
+
+            <title>Ticket</title>
+
+            <style>
+              body {
+                font-family: monospace;
+                font-size: 13px;
+                margin: 0;
+                padding: 10px;
+                width: 58mm;
+                color: #000;
+              }
+
+              .center {
+                text-align: center;
+              }
+
+              .bold {
+                font-weight: 900;
+              }
+
+              table {
+                width: 100%;
+                border-collapse: collapse;
+              }
+
+              td {
+                padding: 2px 0;
+                vertical-align: top;
+              }
+
+              .total {
+                margin-top: 8px;
+                font-size: 14px;
+                font-weight: 900;
+                text-align: right;
+              }
+
+              hr {
+                margin: 8px 0;
+                border: none;
+                border-top: 1px dashed #000;
+              }
+
+              .qr {
+                margin-top: 10px;
+                text-align: center;
+              }
+
+              .footer {
+                margin-top: 8px;
+                text-align: center;
+                font-size: 11px;
+              }
+
+              @media print {
+                @page {
+                  margin: 0;
+                }
+
+                body {
+                  margin: 0;
+                }
+              }
+            </style>
+
+          </head>
+
+          <body
+            onload="
+              window.print();
+              setTimeout(
+                () => window.close(),
+                400
+              );
+            "
+          >
+
+            <div class="center bold">
+              ${NOMBRE_NEGOCIO_TICKET}
+            </div>
+
+            <hr>
+
+            <div>
+              <strong>Negocio:</strong>
+              ${escaparHTML(
+                cliente.negocio ||
+                "No disponible"
+              )}
+            </div>
+
+            <div>
+              <strong>Dirección:</strong>
+              ${escaparHTML(
+                cliente.direccion ||
+                "-"
+              )}
+            </div>
+
+            <div>
+              <strong>Tel:</strong>
+              ${escaparHTML(
+                cliente.telefono ||
+                "-"
+              )}
+            </div>
+
+            <div>
+              <strong>Pedido N.º:</strong>
+              ${numeroPedido}
+            </div>
+
+            <div>
+              <strong>Fecha:</strong>
+              ${escaparHTML(
+                venta.fecha ||
+                "-"
+              )}
+            </div>
+
+            <div>
+              <strong>Vendedor:</strong>
+              ${escaparHTML(
+                vendedor
+              )}
+            </div>
+
+            <hr>
+
+            <table>
+              ${productosHTML}
+            </table>
+
+            <hr>
+
+            <div class="total">
+              Total: $${totalFmt}
+            </div>
+
+            <div class="qr">
+              <img
+                src="${qrAPI}"
+                alt="Código QR"
+              >
+            </div>
+
+            <div class="footer">
+              Gracias por su compra
+            </div>
+
+          </body>
+
+        </html>
+      `;
+
+      const pop =
+        window.open(
+          "",
+          "_blank",
+          "width=400,height=650"
+        );
+
+      if (!pop) {
+        Swal.fire({
+          title:
+            "Ventana bloqueada",
+
+          text:
+            "Permite las ventanas emergentes para imprimir el ticket.",
+
+          icon:
+            "warning",
+
+          confirmButtonColor:
+            "#f26a21"
+        });
+
+        return;
+      }
+
+      pop.document.open();
+      pop.document.write(html);
+      pop.document.close();
+
+      const boton =
+        document
+          .getElementsByClassName(
+            "venta"
+          )[index]
+          ?.querySelector(
+            ".print-btn"
+          );
+
+      if (boton) {
+        boton.innerHTML = `
+          <i class="fa-solid fa-rotate"></i>
+          Reimprimir ticket
+        `;
+      }
+    }
+
+    function restablecerVentas() {
+      Swal.fire({
+        title:
+          "Restablecer ventas",
+
+        text:
+          "Ingrese la contraseña para continuar.",
+
+        input:
+          "password",
+
+        inputPlaceholder:
+          "Contraseña",
+
+        inputAttributes: {
+          autocapitalize:
+            "off",
+
+          autocorrect:
+            "off",
+
+          autocomplete:
+            "current-password"
+        },
+
+        showCancelButton:
+          true,
+
+        confirmButtonText:
+          "Confirmar",
+
+        cancelButtonText:
+          "Cancelar",
+
+        confirmButtonColor:
+          "#f26a21",
+
+        cancelButtonColor:
+          "#737985",
+
+        preConfirm:
+          password => {
+            if (
+              password !==
+              PASS_RESETEO
+            ) {
+              Swal.showValidationMessage(
+                "Contraseña incorrecta"
+              );
+            }
+
+            return password;
+          }
+      }).then(resultado => {
+        if (
+          !resultado.isConfirmed
+        ) {
+          return;
+        }
+
+        Swal.fire({
+          title:
+            "¿Eliminar todas las ventas?",
+
+          text:
+            "Esta acción no se puede deshacer.",
+
+          icon:
+            "warning",
+
+          showCancelButton:
+            true,
+
+          confirmButtonColor:
+            "#e52424",
+
+          cancelButtonColor:
+            "#737985",
+
+          confirmButtonText:
+            "Sí, eliminar",
+
+          cancelButtonText:
+            "Cancelar"
+        }).then(confirmacion => {
+          if (
+            !confirmacion.isConfirmed
+          ) {
+            return;
+          }
+
+          localStorage.removeItem(
+            "ventasRealizadas"
+          );
+
+          Swal.fire({
+            title:
+              "Ventas eliminadas",
+
+            text:
+              "Las ventas fueron eliminadas correctamente.",
+
+            icon:
+              "success",
+
+            confirmButtonColor:
+              "#f26a21"
+          }).then(() => {
+            location.reload();
+          });
+        });
+      });
+    }
+  </script>
 
 </body>
 </html>
-
-
-
-
-
-
