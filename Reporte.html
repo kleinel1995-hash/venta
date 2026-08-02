@@ -1,69 +1,2591 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="es">
 <head>
-<meta charset="utf-8">
-<title>Reporte Ventas</title>
-<style>
-  @page{ size:A4 landscape; margin:12mm; }
-  body{ font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; color:#111; }
-  h2{ margin:0 0 6px 0; }
-  .muted{ color:#555; font-size:12px; margin-bottom:10px; }
-  .kpi{ display:flex; gap:16px; margin:10px 0 14px 0; }
-  .kpi div{ padding:8px 12px; border:1px solid #ddd; border-radius:8px; font-weight:700; }
-  table{ width:100%; border-collapse:collapse; font-size:12px; }
-  th,td{ padding:8px 6px; border-bottom:1px solid #e5e7eb; }
-  thead th{ text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:.4px; background:#f6f7fb; }
-  tfoot th{ text-align:right; }
-</style>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Reporte de Ventas</title>
+
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+  >
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <style>
+    :root {
+      --orange: #ff5a13;
+      --orange-dark: #b63b08;
+      --orange-light: #fff0e8;
+      --black: #080808;
+      --white: #ffffff;
+      --background: #f4f5f7;
+      --text: #111827;
+      --muted: #737985;
+      --line: #e6e8ec;
+
+      --green: #299d18;
+      --green-light: #ebf8e8;
+
+      --purple: #7031c9;
+      --purple-light: #f1eaff;
+
+      --blue: #2363c7;
+      --blue-light: #eaf2ff;
+
+      --cyan: #20aaa9;
+      --red: #e52424;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    html,
+    body {
+      min-height: 100%;
+    }
+
+    body {
+      background: var(--background);
+      color: var(--text);
+      padding-top: 92px;
+      padding-bottom: 30px;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button,
+    a,
+    input {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    img {
+      max-width: 100%;
+    }
+
+    /* ENCABEZADO */
+
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 1200;
+      width: 100%;
+      height: 92px;
+      padding: 0 18px;
+      background: var(--black);
+      color: var(--white);
+      display: grid;
+      grid-template-columns: 56px minmax(0, 1fr) 56px;
+      align-items: center;
+      gap: 14px;
+      box-shadow: 0 3px 15px rgba(0, 0, 0, 0.28);
+    }
+
+    .header-button {
+      width: 52px;
+      height: 52px;
+      border: 1px solid #282828;
+      border-radius: 15px;
+      background: linear-gradient(145deg, #191919, #070707);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.03);
+    }
+
+    .header-button:active {
+      transform: scale(0.96);
+    }
+
+    .header-center {
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+    }
+
+    .header-chart-icon {
+      color: var(--orange);
+      display: flex;
+      align-items: flex-end;
+      gap: 4px;
+      height: 42px;
+      flex-shrink: 0;
+    }
+
+    .header-chart-icon span {
+      width: 7px;
+      border-radius: 2px 2px 0 0;
+      background: var(--orange);
+    }
+
+    .header-chart-icon span:nth-child(1) {
+      height: 17px;
+    }
+
+    .header-chart-icon span:nth-child(2) {
+      height: 28px;
+    }
+
+    .header-chart-icon span:nth-child(3) {
+      height: 39px;
+    }
+
+    .header-text {
+      min-width: 0;
+    }
+
+    .header-text h1 {
+      color: #fff;
+      font-size: 23px;
+      line-height: 1.15;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .header-text p {
+      margin-top: 5px;
+      color: #a6a6a6;
+      font-size: 13px;
+    }
+
+    /* CONTENIDO */
+
+    .container {
+      width: min(100%, 1100px);
+      margin: 0 auto;
+      padding: 22px 14px;
+    }
+
+    /* FILTRO DE FECHA */
+
+    .date-filter {
+      position: relative;
+      width: min(100%, 620px);
+      margin: 0 auto 20px;
+      padding: 15px;
+      border: 1px solid var(--line);
+      border-radius: 17px;
+      background: #fff;
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      align-items: end;
+      gap: 10px;
+      box-shadow: 0 5px 18px rgba(0, 0, 0, 0.06);
+    }
+
+    .date-field {
+      display: grid;
+      gap: 5px;
+    }
+
+    .date-field label {
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .date-input-wrapper {
+      position: relative;
+    }
+
+    .date-input-wrapper i {
+      position: absolute;
+      top: 50%;
+      left: 12px;
+      transform: translateY(-50%);
+      color: var(--orange);
+      font-size: 15px;
+      pointer-events: none;
+    }
+
+    .date-input-wrapper input {
+      width: 100%;
+      height: 43px;
+      padding: 0 8px 0 36px;
+      border: 1px solid #dfe2e7;
+      border-radius: 12px;
+      background: #fff;
+      color: #111;
+      font-size: 12px;
+      outline: none;
+    }
+
+    .date-input-wrapper input:focus {
+      border-color: var(--orange);
+      box-shadow: 0 0 0 3px rgba(255, 90, 19, 0.1);
+    }
+
+    .filter-apply {
+      height: 43px;
+      padding: 0 15px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--orange), var(--orange-dark));
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    /* TARJETAS SUPERIORES */
+
+    .summary-grid {
+      margin-bottom: 20px;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .summary-card {
+      min-width: 0;
+      min-height: 200px;
+      padding: 20px 13px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      box-shadow: 0 5px 18px rgba(0, 0, 0, 0.06);
+    }
+
+    .summary-icon {
+      width: 57px;
+      height: 57px;
+      margin-bottom: 16px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 24px;
+    }
+
+    .summary-icon.orange {
+      background: var(--orange);
+    }
+
+    .summary-icon.green {
+      background: var(--green);
+    }
+
+    .summary-icon.purple {
+      background: var(--purple);
+    }
+
+    .summary-icon.blue {
+      background: var(--blue);
+    }
+
+    .summary-card h3 {
+      margin-bottom: 13px;
+      color: #171717;
+      font-size: 12px;
+      text-transform: uppercase;
+    }
+
+    .summary-value {
+      max-width: 100%;
+      margin-bottom: 12px;
+      color: #111;
+      font-size: 24px;
+      font-weight: 900;
+      line-height: 1.15;
+      overflow-wrap: anywhere;
+    }
+
+    .summary-value.orange {
+      color: var(--orange);
+    }
+
+    .summary-value.green {
+      color: var(--green);
+    }
+
+    .summary-value.purple {
+      color: var(--purple);
+    }
+
+    .summary-value.blue {
+      color: var(--blue);
+    }
+
+    .summary-description {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    /* TARJETAS GENERALES */
+
+    .report-card {
+      margin-bottom: 18px;
+      padding: 20px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: #fff;
+      box-shadow: 0 5px 18px rgba(0, 0, 0, 0.06);
+    }
+
+    .card-header {
+      margin-bottom: 17px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .card-header h2 {
+      color: #181818;
+      font-size: 17px;
+      text-transform: uppercase;
+    }
+
+    .card-header button {
+      border: none;
+      background: transparent;
+      color: var(--orange);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    /* GANANCIAS */
+
+    .profit-card {
+      display: grid;
+      grid-template-columns: 250px minmax(0, 1fr);
+      gap: 22px;
+      align-items: center;
+    }
+
+    .profit-info h2 {
+      margin-bottom: 20px;
+      color: #171717;
+      font-size: 17px;
+      text-transform: uppercase;
+    }
+
+    .profit-amount {
+      margin-bottom: 20px;
+      color: var(--green);
+      font-size: 36px;
+      font-weight: 900;
+      line-height: 1.1;
+      overflow-wrap: anywhere;
+    }
+
+    .profit-info p {
+      margin-bottom: 8px;
+      color: #454b55;
+      font-size: 14px;
+    }
+
+    .profit-margin {
+      color: var(--green);
+      font-size: 22px;
+      font-weight: 900;
+    }
+
+    .chart-container {
+      min-width: 0;
+      height: 260px;
+      padding: 5px;
+    }
+
+    #profitChart {
+      width: 100%;
+      height: 100%;
+      display: block;
+      overflow: visible;
+    }
+
+    /* TOP PRODUCTOS */
+
+    .products-list {
+      display: grid;
+    }
+
+    .top-product {
+      padding: 13px 0;
+      border-bottom: 1px solid var(--line);
+      display: grid;
+      grid-template-columns: 68px minmax(0, 1fr) 145px 145px;
+      gap: 15px;
+      align-items: center;
+    }
+
+    .top-product:last-child {
+      border-bottom: none;
+    }
+
+    .top-product-image {
+      width: 64px;
+      height: 64px;
+      padding: 4px;
+      border: 1px solid #eceef1;
+      border-radius: 13px;
+      background: #f7f8f9;
+      overflow: hidden;
+    }
+
+    .top-product-image img {
+      width: 100%;
+      height: 100%;
+      border-radius: 10px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .top-product-info {
+      min-width: 0;
+    }
+
+    .top-product-info strong {
+      display: block;
+      margin-bottom: 5px;
+      color: #111;
+      font-size: 14px;
+      line-height: 1.35;
+      overflow-wrap: anywhere;
+    }
+
+    .top-product-info span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .product-stat {
+      min-width: 0;
+    }
+
+    .product-stat strong {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 15px;
+      overflow-wrap: anywhere;
+    }
+
+    .product-stat.sales strong {
+      color: var(--green);
+    }
+
+    .product-stat.profit strong {
+      color: #111;
+    }
+
+    .product-stat span {
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    /* CATEGORÍAS */
+
+    .categories-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 310px;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .category-list {
+      display: grid;
+      gap: 13px;
+    }
+
+    .category-row {
+      display: grid;
+      grid-template-columns: 15px minmax(0, 1fr) 120px 60px;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+    }
+
+    .category-color {
+      width: 13px;
+      height: 13px;
+      border-radius: 50%;
+    }
+
+    .category-name {
+      color: #20242b;
+      overflow-wrap: anywhere;
+    }
+
+    .category-amount {
+      color: #272b31;
+      text-align: right;
+      font-weight: 700;
+    }
+
+    .category-percent {
+      color: #272b31;
+      text-align: right;
+      font-weight: 800;
+    }
+
+    .donut-area {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .donut-chart {
+      position: relative;
+      width: 245px;
+      height: 245px;
+      border-radius: 50%;
+      background: conic-gradient(
+        var(--orange) 0deg 360deg
+      );
+      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.04);
+    }
+
+    .donut-chart::after {
+      content: "";
+      position: absolute;
+      inset: 31%;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 0 0 1px #f1f1f1;
+    }
+
+    .donut-center {
+      position: absolute;
+      z-index: 2;
+      inset: 31%;
+      border-radius: 50%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .donut-center strong {
+      color: #111;
+      font-size: 16px;
+    }
+
+    .donut-center span {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    /* SIN DATOS */
+
+    .empty-state {
+      padding: 40px 20px;
+      border: 1px dashed #d9dce1;
+      border-radius: 17px;
+      background: #fafafa;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    .empty-state i {
+      margin-bottom: 12px;
+      color: #c6c9ce;
+      font-size: 42px;
+    }
+
+    .empty-state h3 {
+      margin-bottom: 7px;
+      color: #333;
+      font-size: 16px;
+    }
+
+    .empty-state p {
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    /* RESPONSIVE */
+
+    @media (max-width: 850px) {
+      .summary-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .profit-card {
+        grid-template-columns: 1fr;
+      }
+
+      .profit-info {
+        text-align: center;
+      }
+
+      .categories-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .top-product {
+        grid-template-columns: 62px minmax(0, 1fr);
+      }
+
+      .product-stat {
+        padding-left: 77px;
+      }
+    }
+
+    @media (max-width: 620px) {
+      body {
+        padding-top: 78px;
+      }
+
+      .header {
+        height: 78px;
+        padding: 0 12px;
+        grid-template-columns: 48px minmax(0, 1fr) 48px;
+        gap: 8px;
+      }
+
+      .header-button {
+        width: 45px;
+        height: 45px;
+        border-radius: 14px;
+        font-size: 20px;
+      }
+
+      .header-center {
+        justify-content: flex-start;
+        gap: 10px;
+      }
+
+      .header-chart-icon {
+        height: 34px;
+      }
+
+      .header-chart-icon span {
+        width: 6px;
+      }
+
+      .header-chart-icon span:nth-child(1) {
+        height: 14px;
+      }
+
+      .header-chart-icon span:nth-child(2) {
+        height: 23px;
+      }
+
+      .header-chart-icon span:nth-child(3) {
+        height: 32px;
+      }
+
+      .header-text h1 {
+        font-size: 18px;
+      }
+
+      .header-text p {
+        font-size: 11px;
+      }
+
+      .container {
+        padding: 16px 9px;
+      }
+
+      .date-filter {
+        padding: 11px;
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .filter-apply {
+        grid-column: 1 / -1;
+      }
+
+      .summary-grid {
+        gap: 8px;
+      }
+
+      .summary-card {
+        min-height: 175px;
+        padding: 15px 7px;
+        border-radius: 15px;
+      }
+
+      .summary-icon {
+        width: 48px;
+        height: 48px;
+        margin-bottom: 12px;
+        font-size: 20px;
+      }
+
+      .summary-card h3 {
+        min-height: 28px;
+        margin-bottom: 8px;
+        font-size: 10px;
+      }
+
+      .summary-value {
+        margin-bottom: 8px;
+        font-size: 18px;
+      }
+
+      .summary-description {
+        font-size: 10px;
+      }
+
+      .report-card {
+        padding: 15px;
+        border-radius: 17px;
+      }
+
+      .profit-amount {
+        font-size: 30px;
+      }
+
+      .chart-container {
+        height: 225px;
+        padding: 0;
+      }
+
+      .card-header h2 {
+        font-size: 14px;
+      }
+
+      .top-product {
+        padding: 11px 0;
+        grid-template-columns: 56px minmax(0, 1fr);
+        gap: 10px;
+      }
+
+      .top-product-image {
+        width: 54px;
+        height: 54px;
+      }
+
+      .top-product-info strong {
+        font-size: 13px;
+      }
+
+      .product-stat {
+        padding-left: 66px;
+      }
+
+      .product-stat strong {
+        font-size: 13px;
+      }
+
+      .category-row {
+        grid-template-columns: 13px minmax(0, 1fr) 100px 48px;
+        gap: 7px;
+        font-size: 11px;
+      }
+
+      .donut-chart {
+        width: 210px;
+        height: 210px;
+      }
+    }
+
+    @media (max-width: 390px) {
+      .header-text h1 {
+        font-size: 16px;
+      }
+
+      .header-chart-icon {
+        display: none;
+      }
+
+      .summary-card {
+        min-height: 165px;
+      }
+
+      .summary-value {
+        font-size: 16px;
+      }
+
+      .category-row {
+        grid-template-columns: 12px minmax(0, 1fr) 82px 42px;
+        font-size: 10px;
+      }
+    }
+  </style>
 </head>
-<body onload="window.print(); setTimeout(()=>window.close(), 400)">
-  <h2>Reporte de Ventas</h2>
-  <div class="muted">Rango: <b>${desde}</b> a <b>${hasta}</b> · Cliente: <b>${cliente}</b> · Vendedor: <b>${vendedor}</b> · Generado: ${new Date().toLocaleString('es-DO')}</div>
-  <div class="kpi">
-    <div>Ventas: ${ventas.length.toLocaleString('es-DO')}</div>
-    <div>Ítems: ${totalItems.toLocaleString('es-DO')}</div>
-    <div>Total: $${total.toLocaleString('es-DO',{minimumFractionDigits:2})}</div>
-    <div>Ticket Prom.: $${(ventas.length? (total/ventas.length):0).toLocaleString('es-DO',{minimumFractionDigits:2})}</div>
-  </div>
-  <table>
-    <thead><tr>
-      <th>Fecha</th><th>Cliente</th><th>Vendedor</th><th style="text-align:right"># Ítems</th><th style="text-align:right">Total</th>
-    </tr></thead>
-    <tbody>${filas || '<tr><td colspan="5">Sin datos</td></tr>'}</tbody>
-    <tfoot><tr>
-      <th colspan="3">Totales</th>
-      <th style="text-align:right">${totalItems.toLocaleString('es-DO')}</th>
-      <th style="text-align:right">$${total.toLocaleString('es-DO',{minimumFractionDigits:2})}</th>
-    </tr></tfoot>
-  </table>
-</body>
-</html>`;
-    const w = window.open('', '_blank');
-    w.document.open(); w.document.write(html); w.document.close();
-  }
-  // ========= Init =========
-  let VENTAS = [];
-  (function init(){
-    VENTAS = leerVentas();
-    llenarFiltrosDinamicos(VENTAS);
-    const hoy = new Date();
-    const desde = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
-    $('fDesde').value = toISOdate(desde);
-    $('fHasta').value = toISOdate(hoy);
-    const lista = filtrar(VENTAS);
-    renderTabla(lista);
-    $('aplicar').onclick = ()=> renderTabla(filtrar(VENTAS));
-    $('limpiar').onclick  = ()=>{
-      $('fDesde').value = '';
-      $('fHasta').value = '';
-      $('fCliente').value = '';
-      $('fVendedor').value = '';
-      $('fTexto').value = '';
-      renderTabla(VENTAS);
-    };
-    $('csv').onclick = ()=> exportCSV(filtrar(VENTAS));
-    $('imprimir').onclick = ()=> imprimirPDF(); // botón Imprimir / PDF
-  })();
-</script>
+
+<body>
+
+  <header class="header">
+
+    <button
+      type="button"
+      class="header-button"
+      onclick="history.back()"
+      aria-label="Volver"
+    >
+      <i class="fa-solid fa-arrow-left"></i>
+    </button>
+
+    <div class="header-center">
+
+      <div class="header-chart-icon">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+
+      <div class="header-text">
+        <h1>Reporte de Ventas</h1>
+        <p>Resumen general</p>
+      </div>
+
+    </div>
+
+    <button
+      type="button"
+      class="header-button"
+      onclick="abrirCalendario()"
+      aria-label="Seleccionar fecha"
+    >
+      <i class="fa-regular fa-calendar-days"></i>
+    </button>
+
+  </header>
+
+  <main class="container">
+
+    <section class="date-filter">
+
+      <div class="date-field">
+
+        <label for="fechaInicio">
+          Desde
+        </label>
+
+        <div class="date-input-wrapper">
+
+          <i class="fa-regular fa-calendar"></i>
+
+          <input
+            type="date"
+            id="fechaInicio"
+          >
+
+        </div>
+
+      </div>
+
+      <div class="date-field">
+
+        <label for="fechaFin">
+          Hasta
+        </label>
+
+        <div class="date-input-wrapper">
+
+          <i class="fa-regular fa-calendar-check"></i>
+
+          <input
+            type="date"
+            id="fechaFin"
+          >
+
+        </div>
+
+      </div>
+
+      <button
+        type="button"
+        class="filter-apply"
+        onclick="generarReporte()"
+      >
+        <i class="fa-solid fa-filter"></i>
+        Aplicar
+      </button>
+
+    </section>
+
+    <section class="summary-grid">
+
+      <article class="summary-card">
+
+        <div class="summary-icon orange">
+          <i class="fa-solid fa-dollar-sign"></i>
+        </div>
+
+        <h3>Ventas totales</h3>
+
+        <div
+          class="summary-value orange"
+          id="ventasTotales"
+        >
+          $0.00
+        </div>
+
+        <div class="summary-description">
+          Ingresos del período
+        </div>
+
+      </article>
+
+      <article class="summary-card">
+
+        <div class="summary-icon green">
+          <i class="fa-solid fa-bag-shopping"></i>
+        </div>
+
+        <h3>Pedidos</h3>
+
+        <div
+          class="summary-value green"
+          id="cantidadPedidos"
+        >
+          0
+        </div>
+
+        <div class="summary-description">
+          Ventas completadas
+        </div>
+
+      </article>
+
+      <article class="summary-card">
+
+        <div class="summary-icon purple">
+          <i class="fa-solid fa-cube"></i>
+        </div>
+
+        <h3>Productos vendidos</h3>
+
+        <div
+          class="summary-value purple"
+          id="productosVendidos"
+        >
+          0
+        </div>
+
+        <div class="summary-description">
+          Unidades vendidas
+        </div>
+
+      </article>
+
+      <article class="summary-card">
+
+        <div class="summary-icon blue">
+          <i class="fa-solid fa-arrow-trend-up"></i>
+        </div>
+
+        <h3>Ticket promedio</h3>
+
+        <div
+          class="summary-value blue"
+          id="ticketPromedio"
+        >
+          $0.00
+        </div>
+
+        <div class="summary-description">
+          Por pedido
+        </div>
+
+      </article>
+
+    </section>
+
+    <section class="report-card profit-card">
+
+      <div class="profit-info">
+
+        <h2>Ganancia total</h2>
+
+        <div
+          class="profit-amount"
+          id="gananciaTotal"
+        >
+          $0.00
+        </div>
+
+        <p>Margen de ganancia</p>
+
+        <div
+          class="profit-margin"
+          id="margenGanancia"
+        >
+          0.0%
+        </div>
+
+      </div>
+
+      <div class="chart-container">
+
+        <svg
+          id="profitChart"
+          viewBox="0 0 700 260"
+          preserveAspectRatio="none"
+          aria-label="Gráfico de ganancias"
+        ></svg>
+
+      </div>
+
+    </section>
+
+    <section class="report-card">
+
+      <div class="card-header">
+
+        <h2>Top productos más vendidos</h2>
+
+        <button
+          type="button"
+          onclick="window.location.href='inventario.html'"
+        >
+          Ver todos
+        </button>
+
+      </div>
+
+      <div
+        class="products-list"
+        id="topProducts"
+      ></div>
+
+    </section>
+
+    <section class="report-card">
+
+      <div class="card-header">
+
+        <h2>Ventas por categoría</h2>
+
+      </div>
+
+      <div class="categories-layout">
+
+        <div
+          class="category-list"
+          id="categoryList"
+        ></div>
+
+        <div class="donut-area">
+
+          <div
+            class="donut-chart"
+            id="donutChart"
+          >
+
+            <div class="donut-center">
+
+              <strong id="donutTotal">
+                $0
+              </strong>
+
+              <span>Ventas</span>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <script>
+    const COLORES_CATEGORIAS = [
+      "#ff5a13",
+      "#299d18",
+      "#2363c7",
+      "#7031c9",
+      "#20aaa9",
+      "#e52424",
+      "#b77900",
+      "#6366f1"
+    ];
+
+    let ventasRealizadas = [];
+    let productosInventario = [];
+
+    function cargarArreglo(key) {
+      try {
+        const datos = JSON.parse(
+          localStorage.getItem(key) || "[]"
+        );
+
+        return Array.isArray(datos)
+          ? datos
+          : [];
+      } catch (error) {
+        console.warn(
+          `No se pudo leer ${key}:`,
+          error
+        );
+
+        return [];
+      }
+    }
+
+    function escaparHTML(valor) {
+      return String(valor || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function formatearMoneda(valor) {
+      return Number(valor || 0).toLocaleString(
+        "es-DO",
+        {
+          style: "currency",
+          currency: "DOP",
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        }
+      );
+    }
+
+    function formatearNumero(valor) {
+      return Number(valor || 0).toLocaleString(
+        "es-DO"
+      );
+    }
+
+    function fechaISO(fecha) {
+      const año = fecha.getFullYear();
+
+      const mes = String(
+        fecha.getMonth() + 1
+      ).padStart(2, "0");
+
+      const dia = String(
+        fecha.getDate()
+      ).padStart(2, "0");
+
+      return `${año}-${mes}-${dia}`;
+    }
+
+    function establecerFechasIniciales() {
+      const hoy = new Date();
+
+      const primerDia =
+        new Date(
+          hoy.getFullYear(),
+          hoy.getMonth(),
+          1
+        );
+
+      document.getElementById(
+        "fechaInicio"
+      ).value = fechaISO(primerDia);
+
+      document.getElementById(
+        "fechaFin"
+      ).value = fechaISO(hoy);
+    }
+
+    function abrirCalendario() {
+      const input =
+        document.getElementById(
+          "fechaInicio"
+        );
+
+      if (
+        typeof input.showPicker ===
+        "function"
+      ) {
+        input.showPicker();
+      } else {
+        input.focus();
+      }
+    }
+
+    function convertirFecha(valor) {
+      if (!valor) return null;
+
+      if (valor instanceof Date) {
+        return isNaN(valor)
+          ? null
+          : valor;
+      }
+
+      const texto =
+        String(valor).trim();
+
+      const fechaDirecta =
+        new Date(texto);
+
+      if (!isNaN(fechaDirecta)) {
+        return fechaDirecta;
+      }
+
+      const parteFecha =
+        texto.split(",")[0].trim();
+
+      const partes =
+        parteFecha.split("/");
+
+      if (partes.length === 3) {
+        const dia =
+          Number(partes[0]);
+
+        const mes =
+          Number(partes[1]) - 1;
+
+        const año =
+          Number(partes[2]);
+
+        const fecha =
+          new Date(año, mes, dia);
+
+        return isNaN(fecha)
+          ? null
+          : fecha;
+      }
+
+      return null;
+    }
+
+    function obtenerRango() {
+      const inicioValor =
+        document.getElementById(
+          "fechaInicio"
+        ).value;
+
+      const finValor =
+        document.getElementById(
+          "fechaFin"
+        ).value;
+
+      const inicio =
+        inicioValor
+          ? new Date(
+              `${inicioValor}T00:00:00`
+            )
+          : null;
+
+      const fin =
+        finValor
+          ? new Date(
+              `${finValor}T23:59:59`
+            )
+          : null;
+
+      return {
+        inicio,
+        fin
+      };
+    }
+
+    function ventaEstaEnRango(
+      venta,
+      inicio,
+      fin
+    ) {
+      const fecha =
+        convertirFecha(
+          venta.fecha ||
+          venta.creadoEn ||
+          venta.fechaVenta
+        );
+
+      if (!fecha) {
+        return true;
+      }
+
+      if (
+        inicio &&
+        fecha < inicio
+      ) {
+        return false;
+      }
+
+      if (
+        fin &&
+        fecha > fin
+      ) {
+        return false;
+      }
+
+      return true;
+    }
+
+    function normalizarTexto(valor) {
+      return String(valor || "")
+        .trim()
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(
+          /[\u0300-\u036f]/g,
+          ""
+        );
+    }
+
+    function buscarProductoInventario(
+      productoVenta
+    ) {
+      const nombre =
+        normalizarTexto(
+          productoVenta.nombre ||
+          productoVenta.name
+        );
+
+      const codigo =
+        String(
+          productoVenta.codigo ||
+          productoVenta.code ||
+          productoVenta.barcode ||
+          ""
+        ).trim();
+
+      return productosInventario.find(
+        producto => {
+          const mismoNombre =
+            normalizarTexto(
+              producto.name ||
+              producto.nombre
+            ) === nombre;
+
+          const codigoProducto =
+            String(
+              producto.codigo ||
+              producto.code ||
+              producto.barcode ||
+              ""
+            ).trim();
+
+          const mismoCodigo =
+            codigo &&
+            codigoProducto &&
+            codigo === codigoProducto;
+
+          return mismoNombre ||
+            mismoCodigo;
+        }
+      );
+    }
+
+    function obtenerCostoUnitario(
+      productoVenta
+    ) {
+      const costoVenta =
+        Number(
+          productoVenta.costo ||
+          productoVenta.cost ||
+          0
+        );
+
+      if (costoVenta > 0) {
+        return costoVenta;
+      }
+
+      const productoInventario =
+        buscarProductoInventario(
+          productoVenta
+        );
+
+      return Number(
+        productoInventario?.cost ||
+        productoInventario?.costo ||
+        0
+      );
+    }
+
+    function obtenerCategoria(
+      productoVenta
+    ) {
+      const categoriaVenta =
+        productoVenta.categoria ||
+        productoVenta.category;
+
+      if (categoriaVenta) {
+        return String(
+          categoriaVenta
+        ).trim();
+      }
+
+      const productoInventario =
+        buscarProductoInventario(
+          productoVenta
+        );
+
+      return String(
+        productoInventario?.category ||
+        productoInventario?.categoria ||
+        "Sin categoría"
+      ).trim();
+    }
+
+    function obtenerImagen(
+      productoVenta
+    ) {
+      const imagenVenta =
+        productoVenta.imagen ||
+        productoVenta.image;
+
+      if (imagenVenta) {
+        return imagenVenta;
+      }
+
+      const productoInventario =
+        buscarProductoInventario(
+          productoVenta
+        );
+
+      return (
+        productoInventario?.image ||
+        productoInventario?.imagen ||
+        ""
+      );
+    }
+
+    function obtenerDatosVenta(
+      ventasFiltradas
+    ) {
+      let ventasTotales = 0;
+      let unidadesVendidas = 0;
+      let costoTotal = 0;
+
+      const productosAgrupados =
+        new Map();
+
+      const categoriasAgrupadas =
+        new Map();
+
+      ventasFiltradas.forEach(
+        venta => {
+          const productos =
+            Array.isArray(
+              venta.productos
+            )
+              ? venta.productos
+              : [];
+
+          let totalCalculado = 0;
+
+          productos.forEach(
+            producto => {
+              const cantidad =
+                Number(
+                  producto.cantidad ||
+                  producto.quantity ||
+                  0
+                );
+
+              const precio =
+                Number(
+                  producto.precio ||
+                  producto.price ||
+                  0
+                );
+
+              const subtotal =
+                producto.subtotal != null
+                  ? Number(
+                      producto.subtotal
+                    )
+                  : precio * cantidad;
+
+              const costoUnitario =
+                obtenerCostoUnitario(
+                  producto
+                );
+
+              const ganancia =
+                subtotal -
+                costoUnitario *
+                  cantidad;
+
+              totalCalculado +=
+                subtotal;
+
+              unidadesVendidas +=
+                cantidad;
+
+              costoTotal +=
+                costoUnitario *
+                cantidad;
+
+              const nombre =
+                producto.nombre ||
+                producto.name ||
+                "Producto";
+
+              const claveProducto =
+                normalizarTexto(nombre);
+
+              if (
+                !productosAgrupados.has(
+                  claveProducto
+                )
+              ) {
+                productosAgrupados.set(
+                  claveProducto,
+                  {
+                    nombre,
+                    cantidad: 0,
+                    ventas: 0,
+                    ganancia: 0,
+                    imagen:
+                      obtenerImagen(
+                        producto
+                      )
+                  }
+                );
+              }
+
+              const productoGrupo =
+                productosAgrupados.get(
+                  claveProducto
+                );
+
+              productoGrupo.cantidad +=
+                cantidad;
+
+              productoGrupo.ventas +=
+                subtotal;
+
+              productoGrupo.ganancia +=
+                ganancia;
+
+              if (
+                !productoGrupo.imagen
+              ) {
+                productoGrupo.imagen =
+                  obtenerImagen(
+                    producto
+                  );
+              }
+
+              const categoria =
+                obtenerCategoria(
+                  producto
+                ) ||
+                "Sin categoría";
+
+              if (
+                !categoriasAgrupadas.has(
+                  categoria
+                )
+              ) {
+                categoriasAgrupadas.set(
+                  categoria,
+                  0
+                );
+              }
+
+              categoriasAgrupadas.set(
+                categoria,
+                categoriasAgrupadas.get(
+                  categoria
+                ) + subtotal
+              );
+            }
+          );
+
+          const totalVenta =
+            Number(
+              venta.total ||
+              totalCalculado ||
+              0
+            );
+
+          ventasTotales +=
+            totalVenta;
+        }
+      );
+
+      const gananciaTotal =
+        ventasTotales -
+        costoTotal;
+
+      const margen =
+        ventasTotales > 0
+          ? (
+              gananciaTotal /
+              ventasTotales
+            ) * 100
+          : 0;
+
+      const ticketPromedio =
+        ventasFiltradas.length > 0
+          ? ventasTotales /
+            ventasFiltradas.length
+          : 0;
+
+      return {
+        ventasTotales,
+        unidadesVendidas,
+        costoTotal,
+        gananciaTotal,
+        margen,
+        ticketPromedio,
+        productos:
+          Array.from(
+            productosAgrupados.values()
+          ),
+        categorias:
+          Array.from(
+            categoriasAgrupadas.entries()
+          ).map(
+            ([nombre, total]) => ({
+              nombre,
+              total
+            })
+          )
+      };
+    }
+
+    function generarReporte() {
+      ventasRealizadas =
+        cargarArreglo(
+          "ventasRealizadas"
+        );
+
+      productosInventario =
+        cargarArreglo(
+          "products"
+        );
+
+      const {
+        inicio,
+        fin
+      } = obtenerRango();
+
+      if (
+        inicio &&
+        fin &&
+        inicio > fin
+      ) {
+        Swal.fire({
+          position: "center",
+          icon: "warning",
+          title: "Fechas incorrectas",
+          text: "La fecha inicial no puede ser mayor que la fecha final.",
+          confirmButtonColor: "#ff5a13"
+        });
+
+        return;
+      }
+
+      const ventasFiltradas =
+        ventasRealizadas.filter(
+          venta =>
+            ventaEstaEnRango(
+              venta,
+              inicio,
+              fin
+            )
+        );
+
+      const datos =
+        obtenerDatosVenta(
+          ventasFiltradas
+        );
+
+      pintarResumen(
+        ventasFiltradas,
+        datos
+      );
+
+      pintarTopProductos(
+        datos.productos
+      );
+
+      pintarCategorias(
+        datos.categorias,
+        datos.ventasTotales
+      );
+
+      pintarGraficoGanancias(
+        ventasFiltradas,
+        inicio,
+        fin
+      );
+    }
+
+    function pintarResumen(
+      ventas,
+      datos
+    ) {
+      document.getElementById(
+        "ventasTotales"
+      ).textContent =
+        formatearMoneda(
+          datos.ventasTotales
+        );
+
+      document.getElementById(
+        "cantidadPedidos"
+      ).textContent =
+        formatearNumero(
+          ventas.length
+        );
+
+      document.getElementById(
+        "productosVendidos"
+      ).textContent =
+        formatearNumero(
+          datos.unidadesVendidas
+        );
+
+      document.getElementById(
+        "ticketPromedio"
+      ).textContent =
+        formatearMoneda(
+          datos.ticketPromedio
+        );
+
+      document.getElementById(
+        "gananciaTotal"
+      ).textContent =
+        formatearMoneda(
+          datos.gananciaTotal
+        );
+
+      document.getElementById(
+        "margenGanancia"
+      ).textContent =
+        `${datos.margen.toFixed(1)}%`;
+    }
+
+    function pintarTopProductos(
+      productos
+    ) {
+      const contenedor =
+        document.getElementById(
+          "topProducts"
+        );
+
+      const ordenados =
+        [...productos]
+          .sort(
+            (a, b) =>
+              b.cantidad -
+              a.cantidad
+          )
+          .slice(0, 5);
+
+      if (
+        ordenados.length === 0
+      ) {
+        contenedor.innerHTML = `
+          <div class="empty-state">
+
+            <i class="fa-solid fa-box-open"></i>
+
+            <h3>
+              No hay productos vendidos
+            </h3>
+
+            <p>
+              Los productos aparecerán cuando existan ventas dentro del período seleccionado.
+            </p>
+
+          </div>
+        `;
+
+        return;
+      }
+
+      contenedor.innerHTML =
+        ordenados.map(
+          producto => {
+            const imagen =
+              producto.imagen ||
+              "https://via.placeholder.com/64?text=P";
+
+            return `
+              <article class="top-product">
+
+                <div class="top-product-image">
+
+                  <img
+                    src="${escaparHTML(
+                      imagen
+                    )}"
+                    alt="${escaparHTML(
+                      producto.nombre
+                    )}"
+                    onerror="
+                      this.onerror=null;
+                      this.src='https://via.placeholder.com/64?text=P';
+                    "
+                  >
+
+                </div>
+
+                <div class="top-product-info">
+
+                  <strong>
+                    ${escaparHTML(
+                      producto.nombre
+                    )}
+                  </strong>
+
+                  <span>
+                    ${formatearNumero(
+                      producto.cantidad
+                    )}
+                    ${
+                      producto.cantidad === 1
+                        ? "unidad"
+                        : "unidades"
+                    }
+                  </span>
+
+                </div>
+
+                <div class="product-stat sales">
+
+                  <strong>
+                    ${formatearMoneda(
+                      producto.ventas
+                    )}
+                  </strong>
+
+                  <span>Ventas</span>
+
+                </div>
+
+                <div class="product-stat profit">
+
+                  <strong>
+                    ${formatearMoneda(
+                      producto.ganancia
+                    )}
+                  </strong>
+
+                  <span>Ganancia</span>
+
+                </div>
+
+              </article>
+            `;
+          }
+        ).join("");
+    }
+
+    function pintarCategorias(
+      categorias,
+      totalVentas
+    ) {
+      const lista =
+        document.getElementById(
+          "categoryList"
+        );
+
+      const donut =
+        document.getElementById(
+          "donutChart"
+        );
+
+      document.getElementById(
+        "donutTotal"
+      ).textContent =
+        formatearMoneda(
+          totalVentas
+        );
+
+      const ordenadas =
+        [...categorias]
+          .sort(
+            (a, b) =>
+              b.total -
+              a.total
+          )
+          .slice(0, 8);
+
+      if (
+        ordenadas.length === 0 ||
+        totalVentas <= 0
+      ) {
+        lista.innerHTML = `
+          <div class="empty-state">
+
+            <i class="fa-solid fa-chart-pie"></i>
+
+            <h3>Sin categorías</h3>
+
+            <p>
+              No hay ventas por categoría dentro del período seleccionado.
+            </p>
+
+          </div>
+        `;
+
+        donut.style.background =
+          "#eceef1";
+
+        return;
+      }
+
+      lista.innerHTML =
+        ordenadas.map(
+          (categoria, index) => {
+            const porcentaje =
+              (
+                categoria.total /
+                totalVentas *
+                100
+              );
+
+            const color =
+              COLORES_CATEGORIAS[
+                index %
+                COLORES_CATEGORIAS.length
+              ];
+
+            return `
+              <div class="category-row">
+
+                <span
+                  class="category-color"
+                  style="background:${color}"
+                ></span>
+
+                <span class="category-name">
+                  ${escaparHTML(
+                    categoria.nombre
+                  )}
+                </span>
+
+                <span class="category-amount">
+                  ${formatearMoneda(
+                    categoria.total
+                  )}
+                </span>
+
+                <span class="category-percent">
+                  ${porcentaje.toFixed(1)}%
+                </span>
+
+              </div>
+            `;
+          }
+        ).join("");
+
+      let acumulado = 0;
+
+      const segmentos =
+        ordenadas.map(
+          (categoria, index) => {
+            const porcentaje =
+              categoria.total /
+              totalVentas *
+              100;
+
+            const inicio =
+              acumulado;
+
+            const fin =
+              acumulado +
+              porcentaje;
+
+            acumulado =
+              fin;
+
+            const color =
+              COLORES_CATEGORIAS[
+                index %
+                COLORES_CATEGORIAS.length
+              ];
+
+            return `${color} ${inicio}% ${fin}%`;
+          }
+        );
+
+      if (acumulado < 100) {
+        segmentos.push(
+          `#eceef1 ${acumulado}% 100%`
+        );
+      }
+
+      donut.style.background =
+        `conic-gradient(${segmentos.join(
+          ","
+        )})`;
+    }
+
+    function obtenerClavePeriodo(
+      fecha,
+      usarDias
+    ) {
+      if (usarDias) {
+        return fechaISO(fecha);
+      }
+
+      return `${fecha.getFullYear()}-${String(
+        fecha.getMonth() + 1
+      ).padStart(2, "0")}`;
+    }
+
+    function etiquetaPeriodo(
+      clave,
+      usarDias
+    ) {
+      if (usarDias) {
+        const fecha =
+          new Date(
+            `${clave}T00:00:00`
+          );
+
+        return fecha.toLocaleDateString(
+          "es-DO",
+          {
+            day: "2-digit",
+            month: "short"
+          }
+        );
+      }
+
+      const [
+        año,
+        mes
+      ] = clave.split("-");
+
+      const fecha =
+        new Date(
+          Number(año),
+          Number(mes) - 1,
+          1
+        );
+
+      return fecha.toLocaleDateString(
+        "es-DO",
+        {
+          month: "short",
+          year: "numeric"
+        }
+      );
+    }
+
+    function obtenerGananciaVenta(
+      venta
+    ) {
+      const productos =
+        Array.isArray(
+          venta.productos
+        )
+          ? venta.productos
+          : [];
+
+      let ingresos = 0;
+      let costos = 0;
+
+      productos.forEach(
+        producto => {
+          const cantidad =
+            Number(
+              producto.cantidad ||
+              producto.quantity ||
+              0
+            );
+
+          const precio =
+            Number(
+              producto.precio ||
+              producto.price ||
+              0
+            );
+
+          const subtotal =
+            producto.subtotal != null
+              ? Number(
+                  producto.subtotal
+                )
+              : precio * cantidad;
+
+          ingresos +=
+            subtotal;
+
+          costos +=
+            obtenerCostoUnitario(
+              producto
+            ) * cantidad;
+        }
+      );
+
+      if (
+        ingresos === 0
+      ) {
+        ingresos =
+          Number(
+            venta.total || 0
+          );
+      }
+
+      return ingresos -
+        costos;
+    }
+
+    function pintarGraficoGanancias(
+      ventas,
+      inicio,
+      fin
+    ) {
+      const svg =
+        document.getElementById(
+          "profitChart"
+        );
+
+      const diasRango =
+        inicio &&
+        fin
+          ? Math.ceil(
+              (
+                fin -
+                inicio
+              ) /
+              86400000
+            )
+          : 999;
+
+      const usarDias =
+        diasRango <= 31;
+
+      const agrupado =
+        new Map();
+
+      ventas.forEach(
+        venta => {
+          const fecha =
+            convertirFecha(
+              venta.fecha ||
+              venta.creadoEn ||
+              venta.fechaVenta
+            );
+
+          if (!fecha) return;
+
+          const clave =
+            obtenerClavePeriodo(
+              fecha,
+              usarDias
+            );
+
+          agrupado.set(
+            clave,
+            (
+              agrupado.get(
+                clave
+              ) || 0
+            ) +
+            obtenerGananciaVenta(
+              venta
+            )
+          );
+        }
+      );
+
+      let puntos =
+        Array.from(
+          agrupado.entries()
+        )
+          .sort(
+            (a, b) =>
+              a[0].localeCompare(
+                b[0]
+              )
+          )
+          .slice(-7);
+
+      if (
+        puntos.length === 0
+      ) {
+        svg.innerHTML = `
+          <rect
+            x="0"
+            y="0"
+            width="700"
+            height="260"
+            fill="#ffffff"
+          ></rect>
+
+          <text
+            x="350"
+            y="125"
+            text-anchor="middle"
+            fill="#9aa0a8"
+            font-size="18"
+            font-family="Arial"
+          >
+            No hay datos para mostrar
+          </text>
+
+          <text
+            x="350"
+            y="150"
+            text-anchor="middle"
+            fill="#b0b4bb"
+            font-size="12"
+            font-family="Arial"
+          >
+            Selecciona un período con ventas
+          </text>
+        `;
+
+        return;
+      }
+
+      if (
+        puntos.length === 1
+      ) {
+        puntos.unshift([
+          "Anterior",
+          0
+        ]);
+      }
+
+      const ancho = 700;
+      const alto = 260;
+      const margenIzq = 62;
+      const margenDer = 18;
+      const margenArriba = 24;
+      const margenAbajo = 48;
+
+      const anchoGrafico =
+        ancho -
+        margenIzq -
+        margenDer;
+
+      const altoGrafico =
+        alto -
+        margenArriba -
+        margenAbajo;
+
+      const valores =
+        puntos.map(
+          punto =>
+            Math.max(
+              0,
+              Number(
+                punto[1] || 0
+              )
+            )
+        );
+
+      const maximo =
+        Math.max(
+          ...valores,
+          1
+        );
+
+      const maximoRedondeado =
+        redondearMaximo(
+          maximo
+        );
+
+      const coordenadas =
+        puntos.map(
+          (punto, index) => {
+            const x =
+              margenIzq +
+              (
+                index /
+                (
+                  puntos.length - 1
+                )
+              ) *
+              anchoGrafico;
+
+            const y =
+              margenArriba +
+              altoGrafico -
+              (
+                Number(
+                  punto[1] || 0
+                ) /
+                maximoRedondeado
+              ) *
+              altoGrafico;
+
+            return {
+              x,
+              y,
+              clave:
+                punto[0],
+              valor:
+                Number(
+                  punto[1] || 0
+                )
+            };
+          }
+        );
+
+      const linea =
+        coordenadas.map(
+          punto =>
+            `${punto.x},${punto.y}`
+        ).join(" ");
+
+      const area =
+        `${margenIzq},${
+          margenArriba +
+          altoGrafico
+        } ${linea} ${
+          margenIzq +
+          anchoGrafico
+        },${
+          margenArriba +
+          altoGrafico
+        }`;
+
+      let gridHTML = "";
+
+      for (
+        let i = 0;
+        i <= 4;
+        i++
+      ) {
+        const y =
+          margenArriba +
+          (
+            altoGrafico /
+            4
+          ) * i;
+
+        const valor =
+          maximoRedondeado -
+          (
+            maximoRedondeado /
+            4
+          ) * i;
+
+        gridHTML += `
+          <line
+            x1="${margenIzq}"
+            y1="${y}"
+            x2="${
+              margenIzq +
+              anchoGrafico
+            }"
+            y2="${y}"
+            stroke="#e7e9ec"
+            stroke-width="1"
+          ></line>
+
+          <text
+            x="${
+              margenIzq - 10
+            }"
+            y="${y + 4}"
+            text-anchor="end"
+            fill="#666d76"
+            font-size="11"
+            font-family="Arial"
+          >
+            ${abreviarNumero(
+              valor
+            )}
+          </text>
+        `;
+      }
+
+      const puntosHTML =
+        coordenadas.map(
+          punto => `
+            <circle
+              cx="${punto.x}"
+              cy="${punto.y}"
+              r="5"
+              fill="#299d18"
+            ></circle>
+
+            <text
+              x="${punto.x}"
+              y="${punto.y - 12}"
+              text-anchor="middle"
+              fill="#222"
+              font-size="11"
+              font-weight="700"
+              font-family="Arial"
+            >
+              ${abreviarNumero(
+                punto.valor
+              )}
+            </text>
+
+            <text
+              x="${punto.x}"
+              y="${
+                margenArriba +
+                altoGrafico +
+                27
+              }"
+              text-anchor="middle"
+              fill="#555c65"
+              font-size="10"
+              font-family="Arial"
+            >
+              ${escaparHTML(
+                punto.clave ===
+                "Anterior"
+                  ? "Anterior"
+                  : etiquetaPeriodo(
+                      punto.clave,
+                      usarDias
+                    )
+              )}
+            </text>
+          `
+        ).join("");
+
+      svg.innerHTML = `
+        <defs>
+
+          <linearGradient
+            id="profitGradient"
+            x1="0"
+            y1="0"
+            x2="0"
+            y2="1"
+          >
+            <stop
+              offset="0%"
+              stop-color="#73c75d"
+              stop-opacity="0.5"
+            ></stop>
+
+            <stop
+              offset="100%"
+              stop-color="#73c75d"
+              stop-opacity="0.06"
+            ></stop>
+          </linearGradient>
+
+        </defs>
+
+        ${gridHTML}
+
+        <polygon
+          points="${area}"
+          fill="url(#profitGradient)"
+        ></polygon>
+
+        <polyline
+          points="${linea}"
+          fill="none"
+          stroke="#299d18"
+          stroke-width="3"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        ></polyline>
+
+        ${puntosHTML}
+      `;
+    }
+
+    function redondearMaximo(
+      valor
+    ) {
+      if (valor <= 10) {
+        return 10;
+      }
+
+      const potencia =
+        Math.pow(
+          10,
+          Math.floor(
+            Math.log10(
+              valor
+            )
+          )
+        );
+
+      return Math.ceil(
+        valor /
+        potencia
+      ) * potencia;
+    }
+
+    function abreviarNumero(
+      valor
+    ) {
+      const numero =
+        Number(valor || 0);
+
+      if (
+        Math.abs(numero) >=
+        1000000
+      ) {
+        return `${(
+          numero /
+          1000000
+        ).toFixed(1)}M`;
+      }
+
+      if (
+        Math.abs(numero) >=
+        1000
+      ) {
+        return `${(
+          numero /
+          1000
+        ).toFixed(0)}K`;
+      }
+
+      return numero.toFixed(0);
+    }
+
+    function actualizarDesdeStorage() {
+      generarReporte();
+    }
+
+    window.addEventListener(
+      "storage",
+      evento => {
+        if (
+          evento.key ===
+            "ventasRealizadas" ||
+          evento.key ===
+            "products"
+        ) {
+          actualizarDesdeStorage();
+        }
+      }
+    );
+
+    document.addEventListener(
+      "visibilitychange",
+      () => {
+        if (!document.hidden) {
+          actualizarDesdeStorage();
+        }
+      }
+    );
+
+    document.addEventListener(
+      "DOMContentLoaded",
+      () => {
+        establecerFechasIniciales();
+        generarReporte();
+      }
+    );
+  </script>
+
 </body>
 </html>
