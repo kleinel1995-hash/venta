@@ -28,16 +28,12 @@
       --text: #111827;
       --muted: #737985;
       --line: #e6e8ec;
-
       --green: #299d18;
       --green-light: #ebf8e8;
-
       --purple: #7031c9;
       --purple-light: #f1eaff;
-
       --blue: #2363c7;
       --blue-light: #eaf2ff;
-
       --cyan: #20aaa9;
       --red: #e52424;
     }
@@ -182,7 +178,6 @@
     /* FILTRO DE FECHA */
 
     .date-filter {
-      position: relative;
       width: min(100%, 620px);
       margin: 0 auto 20px;
       padding: 15px;
@@ -244,7 +239,11 @@
       padding: 0 15px;
       border: none;
       border-radius: 12px;
-      background: linear-gradient(135deg, var(--orange), var(--orange-dark));
+      background: linear-gradient(
+        135deg,
+        var(--orange),
+        var(--orange-dark)
+      );
       color: #fff;
       display: flex;
       align-items: center;
@@ -950,20 +949,20 @@
       <article class="summary-card">
 
         <div class="summary-icon green">
-          <i class="fa-solid fa-bag-shopping"></i>
+          <i class="fa-solid fa-hand-holding-dollar"></i>
         </div>
 
-        <h3>Pedidos</h3>
+        <h3>Cuentas por cobrar</h3>
 
         <div
           class="summary-value green"
-          id="cantidadPedidos"
+          id="cuentasPorCobrar"
         >
-          0
+          $0.00
         </div>
 
         <div class="summary-description">
-          Ventas completadas
+          Total pendiente
         </div>
 
       </article>
@@ -1005,7 +1004,7 @@
         </div>
 
         <div class="summary-description">
-          Por pedido
+          Por venta
         </div>
 
       </article>
@@ -1074,9 +1073,7 @@
     <section class="report-card">
 
       <div class="card-header">
-
         <h2>Ventas por categoría</h2>
-
       </div>
 
       <div class="categories-layout">
@@ -1127,6 +1124,7 @@
 
     let ventasRealizadas = [];
     let productosInventario = [];
+    let cuentasPendientes = [];
 
     function cargarArreglo(key) {
       try {
@@ -1191,12 +1189,11 @@
     function establecerFechasIniciales() {
       const hoy = new Date();
 
-      const primerDia =
-        new Date(
-          hoy.getFullYear(),
-          hoy.getMonth(),
-          1
-        );
+      const primerDia = new Date(
+        hoy.getFullYear(),
+        hoy.getMonth(),
+        1
+      );
 
       document.getElementById(
         "fechaInicio"
@@ -1208,10 +1205,9 @@
     }
 
     function abrirCalendario() {
-      const input =
-        document.getElementById(
-          "fechaInicio"
-        );
+      const input = document.getElementById(
+        "fechaInicio"
+      );
 
       if (
         typeof input.showPicker ===
@@ -1224,7 +1220,9 @@
     }
 
     function convertirFecha(valor) {
-      if (!valor) return null;
+      if (!valor) {
+        return null;
+      }
 
       if (valor instanceof Date) {
         return isNaN(valor)
@@ -1232,8 +1230,7 @@
           : valor;
       }
 
-      const texto =
-        String(valor).trim();
+      const texto = String(valor).trim();
 
       const fechaDirecta =
         new Date(texto);
@@ -1300,17 +1297,23 @@
       };
     }
 
-    function ventaEstaEnRango(
-      venta,
+    function registroEstaEnRango(
+      registro,
       inicio,
       fin
     ) {
-      const fecha =
-        convertirFecha(
-          venta.fecha ||
-          venta.creadoEn ||
-          venta.fechaVenta
-        );
+      const fecha = convertirFecha(
+        registro.fecha ||
+        registro.creadoEn ||
+        registro.fechaVenta ||
+        registro.fechaRegistro
+      );
+
+      /*
+        Las ventas o cuentas antiguas que no tengan
+        una fecha reconocible se incluyen para no
+        perder datos existentes.
+      */
 
       if (!fecha) {
         return true;
@@ -1353,13 +1356,12 @@
           productoVenta.name
         );
 
-      const codigo =
-        String(
-          productoVenta.codigo ||
-          productoVenta.code ||
-          productoVenta.barcode ||
-          ""
-        ).trim();
+      const codigo = String(
+        productoVenta.codigo ||
+        productoVenta.code ||
+        productoVenta.barcode ||
+        ""
+      ).trim();
 
       return productosInventario.find(
         producto => {
@@ -1382,8 +1384,10 @@
             codigoProducto &&
             codigo === codigoProducto;
 
-          return mismoNombre ||
-            mismoCodigo;
+          return (
+            mismoNombre ||
+            mismoCodigo
+          );
         }
       );
     }
@@ -1462,6 +1466,52 @@
       );
     }
 
+    function obtenerSaldoCuenta(cuenta) {
+      /*
+        En el código anterior, cuando se registra
+        un abono se descuenta directamente de cuenta.total.
+        Por eso cuenta.total normalmente ya representa
+        el saldo pendiente actual.
+      */
+
+      const saldoDirecto = Number(
+        cuenta.saldoPendiente ??
+        cuenta.saldo ??
+        cuenta.balance ??
+        cuenta.pendiente ??
+        cuenta.total ??
+        cuenta.monto ??
+        0
+      );
+
+      return Math.max(
+        0,
+        saldoDirecto
+      );
+    }
+
+    function calcularTotalCuentasPorCobrar(
+      cuentas,
+      inicio,
+      fin
+    ) {
+      return cuentas
+        .filter(
+          cuenta =>
+            registroEstaEnRango(
+              cuenta,
+              inicio,
+              fin
+            )
+        )
+        .reduce(
+          (total, cuenta) =>
+            total +
+            obtenerSaldoCuenta(cuenta),
+          0
+        );
+    }
+
     function obtenerDatosVenta(
       ventasFiltradas
     ) {
@@ -1517,7 +1567,7 @@
               const ganancia =
                 subtotal -
                 costoUnitario *
-                  cantidad;
+                cantidad;
 
               totalCalculado +=
                 subtotal;
@@ -1643,10 +1693,12 @@
         gananciaTotal,
         margen,
         ticketPromedio,
+
         productos:
           Array.from(
             productosAgrupados.values()
           ),
+
         categorias:
           Array.from(
             categoriasAgrupadas.entries()
@@ -1668,6 +1720,11 @@
       productosInventario =
         cargarArreglo(
           "products"
+        );
+
+      cuentasPendientes =
+        cargarArreglo(
+          "cuentasPorCobrar"
         );
 
       const {
@@ -1694,11 +1751,18 @@
       const ventasFiltradas =
         ventasRealizadas.filter(
           venta =>
-            ventaEstaEnRango(
+            registroEstaEnRango(
               venta,
               inicio,
               fin
             )
+        );
+
+      const totalCuentas =
+        calcularTotalCuentasPorCobrar(
+          cuentasPendientes,
+          inicio,
+          fin
         );
 
       const datos =
@@ -1708,7 +1772,8 @@
 
       pintarResumen(
         ventasFiltradas,
-        datos
+        datos,
+        totalCuentas
       );
 
       pintarTopProductos(
@@ -1729,7 +1794,8 @@
 
     function pintarResumen(
       ventas,
-      datos
+      datos,
+      totalCuentas
     ) {
       document.getElementById(
         "ventasTotales"
@@ -1739,10 +1805,10 @@
         );
 
       document.getElementById(
-        "cantidadPedidos"
+        "cuentasPorCobrar"
       ).textContent =
-        formatearNumero(
-          ventas.length
+        formatearMoneda(
+          totalCuentas
         );
 
       document.getElementById(
@@ -1850,6 +1916,7 @@
                     ${formatearNumero(
                       producto.cantidad
                     )}
+
                     ${
                       producto.cantidad === 1
                         ? "unidad"
@@ -2048,10 +2115,9 @@
       usarDias
     ) {
       if (usarDias) {
-        const fecha =
-          new Date(
-            `${clave}T00:00:00`
-          );
+        const fecha = new Date(
+          `${clave}T00:00:00`
+        );
 
         return fecha.toLocaleDateString(
           "es-DO",
@@ -2067,12 +2133,11 @@
         mes
       ] = clave.split("-");
 
-      const fecha =
-        new Date(
-          Number(año),
-          Number(mes) - 1,
-          1
-        );
+      const fecha = new Date(
+        Number(año),
+        Number(mes) - 1,
+        1
+      );
 
       return fecha.toLocaleDateString(
         "es-DO",
@@ -2129,9 +2194,7 @@
         }
       );
 
-      if (
-        ingresos === 0
-      ) {
+      if (ingresos === 0) {
         ingresos =
           Number(
             venta.total || 0
@@ -2179,7 +2242,9 @@
               venta.fechaVenta
             );
 
-          if (!fecha) return;
+          if (!fecha) {
+            return;
+          }
 
           const clave =
             obtenerClavePeriodo(
@@ -2326,12 +2391,10 @@
             return {
               x,
               y,
-              clave:
-                punto[0],
-              valor:
-                Number(
-                  punto[1] || 0
-                )
+              clave: punto[0],
+              valor: Number(
+                punto[1] || 0
+              )
             };
           }
         );
@@ -2464,6 +2527,7 @@
             x2="0"
             y2="1"
           >
+
             <stop
               offset="0%"
               stop-color="#73c75d"
@@ -2475,6 +2539,7 @@
               stop-color="#73c75d"
               stop-opacity="0.06"
             ></stop>
+
           </linearGradient>
 
         </defs>
@@ -2499,22 +2564,17 @@
       `;
     }
 
-    function redondearMaximo(
-      valor
-    ) {
+    function redondearMaximo(valor) {
       if (valor <= 10) {
         return 10;
       }
 
-      const potencia =
-        Math.pow(
-          10,
-          Math.floor(
-            Math.log10(
-              valor
-            )
-          )
-        );
+      const potencia = Math.pow(
+        10,
+        Math.floor(
+          Math.log10(valor)
+        )
+      );
 
       return Math.ceil(
         valor /
@@ -2522,9 +2582,7 @@
       ) * potencia;
     }
 
-    function abreviarNumero(
-      valor
-    ) {
+    function abreviarNumero(valor) {
       const numero =
         Number(valor || 0);
 
@@ -2562,7 +2620,9 @@
           evento.key ===
             "ventasRealizadas" ||
           evento.key ===
-            "products"
+            "products" ||
+          evento.key ===
+            "cuentasPorCobrar"
         ) {
           actualizarDesdeStorage();
         }
