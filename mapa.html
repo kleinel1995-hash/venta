@@ -123,7 +123,7 @@
       background: #e8eaed;
     }
 
-    /* TARJETA DE INFORMACIÓN */
+    /* TARJETA SUPERIOR */
 
     .map-status {
       position: fixed;
@@ -189,11 +189,120 @@
       font-weight: 800;
     }
 
+    /* UBICACIÓN DEL DISPOSITIVO */
+
+    .device-location {
+      position: fixed;
+      z-index: 1100;
+      left: 50%;
+      bottom: 97px;
+      transform: translateX(-50%);
+      width: min(calc(100% - 95px), 500px);
+      min-height: 72px;
+      padding: 12px 14px;
+      border: 1px solid #e7e7e7;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.97);
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.18);
+      backdrop-filter: blur(10px);
+    }
+
+    .device-location-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      background: var(--blue-light);
+      color: var(--blue);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 19px;
+      flex-shrink: 0;
+    }
+
+    .device-location-info {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .device-location-info strong {
+      display: block;
+      margin-bottom: 3px;
+      color: #111;
+      font-size: 13px;
+    }
+
+    .device-location-info span {
+      display: block;
+      color: var(--green);
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.3;
+    }
+
+    .device-location-info span.error {
+      color: var(--red);
+    }
+
+    .device-location-info small {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 10px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .location-live {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      color: var(--green);
+      font-size: 9px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .location-live.offline {
+      color: var(--red);
+    }
+
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      animation: livePulse 1.5s infinite;
+    }
+
+    .location-live.offline .live-dot {
+      background: var(--red);
+      animation: none;
+    }
+
+    @keyframes livePulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(21, 150, 56, 0.65);
+      }
+
+      70% {
+        box-shadow: 0 0 0 8px rgba(21, 150, 56, 0);
+      }
+
+      100% {
+        box-shadow: 0 0 0 0 rgba(21, 150, 56, 0);
+      }
+    }
+
     /* BOTONES FLOTANTES */
 
     .map-controls {
       position: fixed;
-      z-index: 1000;
+      z-index: 1150;
       right: 12px;
       bottom: 103px;
       display: flex;
@@ -294,7 +403,7 @@
       display: none;
     }
 
-    /* VENTANA DE GOOGLE MAPS */
+    /* VENTANAS DEL MAPA */
 
     .cliente-popup {
       width: 230px;
@@ -376,13 +485,13 @@
       font-weight: 800;
     }
 
-    /* MENSAJE DE CARGA */
+    /* CARGANDO */
 
     .loading-location {
       position: fixed;
       z-index: 1500;
       left: 50%;
-      bottom: 100px;
+      bottom: 185px;
       transform: translateX(-50%);
       padding: 11px 16px;
       border-radius: 999px;
@@ -450,6 +559,33 @@
         font-size: 11px;
       }
 
+      .device-location {
+        left: 10px;
+        bottom: 94px;
+        transform: none;
+        width: calc(100% - 76px);
+        min-height: 67px;
+        padding: 10px;
+      }
+
+      .device-location-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 17px;
+      }
+
+      .device-location-info strong {
+        font-size: 12px;
+      }
+
+      .device-location-info span {
+        font-size: 11px;
+      }
+
+      .device-location-info small {
+        max-width: 190px;
+      }
+
       .map-controls {
         right: 10px;
         bottom: 96px;
@@ -461,15 +597,27 @@
         border-radius: 14px;
         font-size: 18px;
       }
+
+      .loading-location {
+        bottom: 175px;
+      }
     }
 
-    @media (max-width: 380px) {
+    @media (max-width: 390px) {
       .header-title span {
         font-size: 16px;
       }
 
       .map-status-content span {
-        max-width: 190px;
+        max-width: 180px;
+      }
+
+      .device-location-info small {
+        max-width: 150px;
+      }
+
+      .location-live {
+        font-size: 8px;
       }
 
       .nav-item {
@@ -520,6 +668,7 @@
 
     <div class="map-status-content">
       <strong>Ubicación de clientes</strong>
+
       <span>
         Toca un marcador para ver los datos y calcular la ruta.
       </span>
@@ -535,6 +684,41 @@
   </div>
 
   <div id="map"></div>
+
+  <div
+    class="device-location"
+    id="device-location"
+  >
+
+    <div class="device-location-icon">
+      <i class="fa-solid fa-location-crosshairs"></i>
+    </div>
+
+    <div class="device-location-info">
+
+      <strong>
+        Ubicación del dispositivo
+      </strong>
+
+      <span id="device-location-status">
+        Buscando ubicación...
+      </span>
+
+      <small id="device-location-coordinates">
+        Latitud: -- | Longitud: --
+      </small>
+
+    </div>
+
+    <div
+      class="location-live"
+      id="location-live"
+    >
+      <span class="live-dot"></span>
+      EN VIVO
+    </div>
+
+  </div>
 
   <div class="map-controls">
 
@@ -616,12 +800,15 @@
   <script>
     let map;
     let marcadorUsuario;
+    let circuloPrecision;
+    let infoUsuario;
     let directionsService;
     let directionsRenderer;
     let ubicacionActual = null;
     let bounds = null;
     let marcadoresClientes = [];
     let watchId = null;
+    let mapaCentradoPrimeraVez = false;
 
     function initMap() {
       map = new google.maps.Map(
@@ -634,7 +821,6 @@
 
           zoom: 14,
           mapTypeId: "roadmap",
-
           disableDefaultUI: true,
           zoomControl: true,
           gestureHandling: "greedy",
@@ -711,6 +897,7 @@
           map: map,
           suppressMarkers: false,
           preserveViewport: false,
+
           polylineOptions: {
             strokeColor: "#f26a21",
             strokeOpacity: 0.9,
@@ -733,92 +920,332 @@
           "loading-location"
         );
 
-      if (!navigator.geolocation) {
-        alert(
-          "Tu dispositivo no permite obtener la ubicación."
+      const estadoUbicacion =
+        document.getElementById(
+          "device-location-status"
         );
+
+      const coordenadasUbicacion =
+        document.getElementById(
+          "device-location-coordinates"
+        );
+
+      const indicadorEnVivo =
+        document.getElementById(
+          "location-live"
+        );
+
+      if (!navigator.geolocation) {
+        estadoUbicacion.textContent =
+          "Este dispositivo no permite obtener la ubicación";
+
+        estadoUbicacion.classList.add("error");
+        indicadorEnVivo.classList.add("offline");
+        indicadorEnVivo.lastChild.textContent = " SIN GPS";
 
         return;
       }
 
-      cargando?.classList.add("show");
+      cargando.classList.add("show");
+
+      estadoUbicacion.textContent =
+        "Esperando señal del GPS...";
 
       watchId =
         navigator.geolocation.watchPosition(
           position => {
+            const latitud =
+              position.coords.latitude;
+
+            const longitud =
+              position.coords.longitude;
+
+            const precision =
+              position.coords.accuracy || 0;
+
+            const velocidad =
+              position.coords.speed;
+
             ubicacionActual = {
-              lat: position.coords.latitude,
-              lng: position.coords.longitude
+              lat: latitud,
+              lng: longitud
             };
 
-            if (marcadorUsuario) {
-              marcadorUsuario.setPosition(
-                ubicacionActual
-              );
-            } else {
-              marcadorUsuario =
-                new google.maps.Marker({
-                  position: ubicacionActual,
-                  map: map,
-                  title: "Tu ubicación",
+            estadoUbicacion.classList.remove(
+              "error"
+            );
 
-                  icon: {
-                    url: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png",
-                    scaledSize:
-                      new google.maps.Size(
-                        42,
-                        42
-                      )
-                  },
+            estadoUbicacion.textContent =
+              `Ubicación actualizada · Precisión ${Math.round(
+                precision
+              )} m`;
 
-                  zIndex: 999
-                });
-            }
+            coordenadasUbicacion.textContent =
+              `Latitud: ${latitud.toFixed(
+                6
+              )} | Longitud: ${longitud.toFixed(6)}`;
+
+            indicadorEnVivo.classList.remove(
+              "offline"
+            );
+
+            indicadorEnVivo.innerHTML = `
+              <span class="live-dot"></span>
+              EN VIVO
+            `;
+
+            actualizarMarcadorUsuario(
+              ubicacionActual,
+              precision,
+              velocidad
+            );
 
             bounds.extend(ubicacionActual);
 
-            if (
-              marcadoresClientes.length === 0
-            ) {
-              map.setCenter(
-                ubicacionActual
-              );
-
-              map.setZoom(16);
-            } else {
-              map.fitBounds(bounds);
+            if (!mapaCentradoPrimeraVez) {
+              map.panTo(ubicacionActual);
+              map.setZoom(17);
+              mapaCentradoPrimeraVez = true;
             }
 
-            cargando?.classList.remove(
-              "show"
-            );
+            cargando.classList.remove("show");
           },
 
           error => {
-            cargando?.classList.remove(
-              "show"
+            cargando.classList.remove("show");
+
+            let mensaje =
+              "No se pudo obtener la ubicación.";
+
+            if (
+              error.code ===
+              error.PERMISSION_DENIED
+            ) {
+              mensaje =
+                "Permiso de ubicación rechazado.";
+            }
+
+            if (
+              error.code ===
+              error.POSITION_UNAVAILABLE
+            ) {
+              mensaje =
+                "La señal GPS no está disponible.";
+            }
+
+            if (
+              error.code ===
+              error.TIMEOUT
+            ) {
+              mensaje =
+                "La búsqueda de ubicación tardó demasiado.";
+            }
+
+            estadoUbicacion.textContent =
+              mensaje;
+
+            estadoUbicacion.classList.add(
+              "error"
             );
+
+            indicadorEnVivo.classList.add(
+              "offline"
+            );
+
+            indicadorEnVivo.innerHTML = `
+              <span class="live-dot"></span>
+              SIN SEÑAL
+            `;
 
             console.warn(
               "Error de ubicación:",
               error
             );
-
-            alert(
-              "Ubicación actual no disponible. Verifica que el GPS y los permisos estén activados."
-            );
           },
 
           {
             enableHighAccuracy: true,
-            timeout: 15000,
-            maximumAge: 5000
+            timeout: 20000,
+            maximumAge: 0
           }
         );
     }
 
+    function actualizarMarcadorUsuario(
+      posicion,
+      precision,
+      velocidad
+    ) {
+      if (!marcadorUsuario) {
+        marcadorUsuario =
+          new google.maps.Marker({
+            position: posicion,
+            map: map,
+            title:
+              "Ubicación actual del dispositivo",
+
+            icon: {
+              path:
+                google.maps.SymbolPath.CIRCLE,
+
+              scale: 10,
+              fillColor: "#087be7",
+              fillOpacity: 1,
+              strokeColor: "#ffffff",
+              strokeWeight: 4
+            },
+
+            zIndex: 9999
+          });
+
+        circuloPrecision =
+          new google.maps.Circle({
+            map: map,
+            center: posicion,
+            radius: precision,
+
+            strokeColor: "#087be7",
+            strokeOpacity: 0.5,
+            strokeWeight: 1,
+
+            fillColor: "#087be7",
+            fillOpacity: 0.12
+          });
+
+        infoUsuario =
+          new google.maps.InfoWindow();
+
+        marcadorUsuario.addListener(
+          "click",
+          () => {
+            mostrarInformacionUsuario();
+          }
+        );
+      } else {
+        marcadorUsuario.setPosition(
+          posicion
+        );
+
+        circuloPrecision.setCenter(
+          posicion
+        );
+
+        circuloPrecision.setRadius(
+          precision
+        );
+      }
+
+      marcadorUsuario.precision =
+        precision;
+
+      marcadorUsuario.velocidad =
+        velocidad;
+    }
+
+    function mostrarInformacionUsuario() {
+      if (
+        !ubicacionActual ||
+        !marcadorUsuario
+      ) {
+        return;
+      }
+
+      const precision =
+        Math.round(
+          marcadorUsuario.precision || 0
+        );
+
+      const velocidad =
+        marcadorUsuario.velocidad !== null &&
+        marcadorUsuario.velocidad !== undefined
+          ? (
+              marcadorUsuario.velocidad * 3.6
+            ).toFixed(1)
+          : "0.0";
+
+      infoUsuario.setContent(`
+        <div style="
+          font-family:Arial,sans-serif;
+          min-width:210px;
+          padding:5px;
+        ">
+
+          <div style="
+            display:flex;
+            align-items:center;
+            gap:10px;
+            margin-bottom:12px;
+          ">
+
+            <div style="
+              width:42px;
+              height:42px;
+              border-radius:14px;
+              background:#e4f3ff;
+              color:#087be7;
+              display:flex;
+              align-items:center;
+              justify-content:center;
+              font-size:19px;
+            ">
+              <i class="fa-solid fa-location-crosshairs"></i>
+            </div>
+
+            <div>
+              <strong style="
+                display:block;
+                color:#111;
+                font-size:14px;
+              ">
+                Tu ubicación actual
+              </strong>
+
+              <span style="
+                display:block;
+                margin-top:3px;
+                color:#159638;
+                font-size:11px;
+                font-weight:700;
+              ">
+                Seguimiento en tiempo real
+              </span>
+            </div>
+
+          </div>
+
+          <div style="
+            color:#5f6570;
+            font-size:12px;
+            line-height:1.7;
+          ">
+            <b>Latitud:</b>
+            ${ubicacionActual.lat.toFixed(6)}
+            <br>
+
+            <b>Longitud:</b>
+            ${ubicacionActual.lng.toFixed(6)}
+            <br>
+
+            <b>Precisión:</b>
+            ${precision} metros
+            <br>
+
+            <b>Velocidad:</b>
+            ${velocidad} km/h
+          </div>
+
+        </div>
+      `);
+
+      infoUsuario.open({
+        anchor: marcadorUsuario,
+        map: map
+      });
+    }
+
     function verificarReinicioVisitas() {
       const ahora = new Date();
+
       const hoy =
         ahora.toLocaleDateString();
 
@@ -1068,6 +1495,10 @@
       ) {
         window.ventanaMapaActual.close();
       }
+
+      if (infoUsuario) {
+        infoUsuario.close();
+      }
     }
 
     function trazarRuta(lat, lng) {
@@ -1078,6 +1509,8 @@
 
         return;
       }
+
+      cerrarVentanasAbiertas();
 
       const request = {
         origin: ubicacionActual,
@@ -1118,7 +1551,7 @@
     function centrarUbicacionUsuario() {
       if (!ubicacionActual) {
         alert(
-          "Todavía no se ha encontrado tu ubicación."
+          "Todavía no se ha encontrado la ubicación del dispositivo."
         );
 
         return;
@@ -1128,11 +1561,30 @@
         ubicacionActual
       );
 
-      map.setZoom(17);
+      map.setZoom(18);
+
+      mostrarInformacionUsuario();
     }
 
     function mostrarTodosLosMarcadores() {
-      if (!bounds || bounds.isEmpty()) {
+      const nuevosLimites =
+        new google.maps.LatLngBounds();
+
+      marcadoresClientes.forEach(
+        marcador => {
+          nuevosLimites.extend(
+            marcador.getPosition()
+          );
+        }
+      );
+
+      if (ubicacionActual) {
+        nuevosLimites.extend(
+          ubicacionActual
+        );
+      }
+
+      if (nuevosLimites.isEmpty()) {
         alert(
           "No hay ubicaciones disponibles para mostrar."
         );
@@ -1140,7 +1592,7 @@
         return;
       }
 
-      map.fitBounds(bounds);
+      map.fitBounds(nuevosLimites);
 
       google.maps.event.addListenerOnce(
         map,
@@ -1251,6 +1703,10 @@
 
     window.initMap = initMap;
     window.trazarRuta = trazarRuta;
+    window.centrarUbicacionUsuario =
+      centrarUbicacionUsuario;
+    window.mostrarTodosLosMarcadores =
+      mostrarTodosLosMarcadores;
   </script>
 
   <script
