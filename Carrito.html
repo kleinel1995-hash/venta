@@ -149,71 +149,11 @@
     .container {
       width: min(100%, 760px);
       margin: 0 auto;
-      padding: 22px 16px;
-    }
-
-    .cart-summary-card {
-      position: relative;
-      overflow: hidden;
-      margin-bottom: 20px;
-      padding: 22px;
-      border-radius: 22px;
-      background: linear-gradient(135deg, #101010, #252525);
-      color: #fff;
-      box-shadow: 0 9px 28px rgba(0, 0, 0, 0.18);
-    }
-
-    .cart-summary-card::before {
-      content: "";
-      position: absolute;
-      top: -55px;
-      right: -45px;
-      width: 150px;
-      height: 150px;
-      border-radius: 50%;
-      background: rgba(242, 106, 33, 0.16);
-    }
-
-    .cart-summary-card::after {
-      content: "";
-      position: absolute;
-      right: 55px;
-      bottom: -75px;
-      width: 130px;
-      height: 130px;
-      border-radius: 50%;
-      background: rgba(242, 106, 33, 0.08);
-    }
-
-    .cart-summary-content {
-      position: relative;
-      z-index: 2;
-    }
-
-    .summary-label {
-      margin-bottom: 7px;
-      color: var(--orange);
-      font-size: 13px;
-      font-weight: 800;
-      letter-spacing: 0.8px;
-      text-transform: uppercase;
-    }
-
-    .summary-title {
-      margin-bottom: 8px;
-      font-size: 25px;
-      line-height: 1.2;
-    }
-
-    .summary-text {
-      max-width: 470px;
-      color: #c9c9c9;
-      font-size: 14px;
-      line-height: 1.55;
+      padding: 20px 16px;
     }
 
     .section-title {
-      margin: 25px 3px 14px;
+      margin: 4px 3px 14px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -222,7 +162,7 @@
 
     .section-title h2 {
       color: #111;
-      font-size: 19px;
+      font-size: 20px;
     }
 
     .section-title span {
@@ -403,12 +343,6 @@
       font-size: 63px;
     }
 
-    .empty-cart img {
-      width: 170px;
-      max-width: 100%;
-      margin-bottom: 15px;
-    }
-
     .empty-cart h3 {
       margin-bottom: 8px;
       color: #111;
@@ -419,7 +353,6 @@
       max-width: 320px;
       color: var(--muted);
       font-size: 14px;
-      font-weight: 400;
       line-height: 1.5;
     }
 
@@ -604,12 +537,8 @@
         padding: 17px 10px;
       }
 
-      .cart-summary-card {
-        padding: 20px 18px;
-      }
-
-      .summary-title {
-        font-size: 22px;
+      .section-title {
+        margin-top: 2px;
       }
 
       .cart-item {
@@ -634,10 +563,6 @@
       .price-value,
       .subtotal-value {
         font-size: 13px;
-      }
-
-      .cart-bottom-row {
-        grid-column: 1 / -1;
       }
 
       .checkout-bar {
@@ -754,26 +679,6 @@
 
   <main class="container">
 
-    <section class="cart-summary-card">
-
-      <div class="cart-summary-content">
-
-        <div class="summary-label">
-          Pedido actual
-        </div>
-
-        <h1 class="summary-title">
-          Productos seleccionados
-        </h1>
-
-        <p class="summary-text">
-          Revisa las cantidades y el total de tu compra antes de finalizar el pedido.
-        </p>
-
-      </div>
-
-    </section>
-
     <div class="section-title">
 
       <h2>Mi pedido</h2>
@@ -808,18 +713,12 @@
 
   <nav class="bottom-nav">
 
-    <a
-      href="menu.html"
-      class="nav-item"
-    >
+    <a href="menu.html" class="nav-item">
       <i class="fa-solid fa-house"></i>
       <span>Inicio</span>
     </a>
 
-    <a
-      href="mapa.html"
-      class="nav-item"
-    >
+    <a href="mapa.html" class="nav-item">
       <i class="fa-solid fa-map-location-dot"></i>
       <span>Mapa</span>
     </a>
@@ -841,10 +740,7 @@
       <span>Carrito</span>
     </a>
 
-    <a
-      href="Usuario.html"
-      class="nav-item"
-    >
+    <a href="Usuario.html" class="nav-item">
       <i class="fa-solid fa-gear"></i>
 
       <span
@@ -938,8 +834,7 @@
           </div>
         `;
 
-        cartTotal.innerText =
-          "$0.00";
+        cartTotal.innerText = "$0.00";
 
         cantidadProductosTexto.textContent =
           "0 productos";
@@ -963,25 +858,19 @@
         const card =
           document.createElement("article");
 
-        card.className =
-          "cart-item";
+        card.className = "cart-item";
 
         card.innerHTML = `
           <div class="cart-image-wrapper">
 
             <img
-              src="${
-                escaparHTML(
-                  item.image ||
-                  "https://via.placeholder.com/105?text=Producto"
-                )
-              }"
-              alt="${
-                escaparHTML(
-                  item.name ||
-                  "Producto"
-                )
-              }"
+              src="${escaparHTML(
+                item.image ||
+                "https://via.placeholder.com/105?text=Producto"
+              )}"
+              alt="${escaparHTML(
+                item.name || "Producto"
+              )}"
               onerror="
                 this.onerror=null;
                 this.src='https://via.placeholder.com/105?text=Producto';
@@ -994,8 +883,7 @@
 
             <h4>
               ${escaparHTML(
-                item.name ||
-                "Producto"
+                item.name || "Producto"
               )}
             </h4>
 
@@ -1036,9 +924,7 @@
                   −
                 </button>
 
-                <span>
-                  ${cantidad}
-                </span>
+                <span>${cantidad}</span>
 
                 <button
                   type="button"
@@ -1105,8 +991,7 @@
           ? "99+"
           : totalQty;
 
-      cartCount.innerText =
-        texto;
+      cartCount.innerText = texto;
 
       cartCount.style.display =
         totalQty > 0
@@ -1128,8 +1013,7 @@
       index,
       change
     ) {
-      const item =
-        cart[index];
+      const item = cart[index];
 
       const prod =
         products.find(
@@ -1187,18 +1071,13 @@
             cancelButtonColor:
               "#737985"
           }).then(result => {
-            if (
-              result.isConfirmed
-            ) {
+            if (result.isConfirmed) {
               devolverAlInventario(
                 item.name,
                 1
               );
 
-              cart.splice(
-                index,
-                1
-              );
+              cart.splice(index, 1);
 
               saveAll();
               renderCart();
@@ -1243,18 +1122,13 @@
         cancelButtonColor:
           "#737985"
       }).then(result => {
-        if (
-          result.isConfirmed
-        ) {
+        if (result.isConfirmed) {
           devolverAlInventario(
             cart[index].name,
             cart[index].quantity
           );
 
-          cart.splice(
-            index,
-            1
-          );
+          cart.splice(index, 1);
 
           saveAll();
           renderCart();
@@ -1371,9 +1245,7 @@
 
       cart = [];
 
-      localStorage.removeItem(
-        "cart"
-      );
+      localStorage.removeItem("cart");
 
       saveAll();
       renderCart();
