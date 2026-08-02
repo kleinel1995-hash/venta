@@ -118,7 +118,7 @@
       box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.03);
     }
 
-    .header-button.cart {
+    .header-button.confirm {
       color: var(--orange);
     }
 
@@ -356,21 +356,6 @@
       line-height: 1.5;
     }
 
-    .empty-cart-button {
-      margin-top: 18px;
-      padding: 12px 18px;
-      border: none;
-      border-radius: 14px;
-      background: linear-gradient(135deg, #e95414, #a83b0b);
-      color: #fff;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 14px;
-      font-weight: 800;
-    }
-
     /* BARRA DE TOTAL */
 
     .checkout-bar {
@@ -412,29 +397,23 @@
       overflow-wrap: anywhere;
     }
 
-    .btn-finalizar {
-      min-height: 52px;
-      padding: 12px 20px;
-      border: none;
-      border-radius: 16px;
-      background: linear-gradient(135deg, #e95414, #a83b0b);
-      color: #fff;
+    .checkout-products {
+      min-height: 48px;
+      padding: 10px 15px;
+      border-radius: 15px;
+      background: var(--orange-light);
+      color: var(--orange);
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 9px;
-      font-size: 14px;
+      gap: 8px;
+      font-size: 13px;
       font-weight: 800;
       white-space: nowrap;
-      box-shadow: 0 6px 17px rgba(242, 106, 33, 0.3);
     }
 
-    .btn-finalizar:hover {
-      opacity: 0.95;
-    }
-
-    .btn-finalizar:active {
-      transform: scale(0.97);
+    .checkout-products i {
+      font-size: 18px;
     }
 
     /* MENÚ INFERIOR */
@@ -574,10 +553,10 @@
         font-size: 19px;
       }
 
-      .btn-finalizar {
-        min-height: 49px;
-        padding: 11px 14px;
-        font-size: 13px;
+      .checkout-products {
+        min-height: 46px;
+        padding: 9px 12px;
+        font-size: 12px;
       }
     }
 
@@ -625,9 +604,13 @@
         font-size: 17px;
       }
 
-      .btn-finalizar {
-        padding: 10px 12px;
-        font-size: 12px;
+      .checkout-products {
+        padding: 9px 10px;
+        font-size: 11px;
+      }
+
+      .checkout-products i {
+        font-size: 16px;
       }
 
       .nav-item {
@@ -661,11 +644,12 @@
 
     <button
       type="button"
-      class="header-button cart"
-      onclick="window.location.href='Carrito.html'"
-      aria-label="Carrito"
+      class="header-button confirm"
+      onclick="finalizarPedido()"
+      aria-label="Finalizar pedido"
+      title="Finalizar pedido"
     >
-      <i class="fa-solid fa-bag-shopping"></i>
+      <i class="fa-solid fa-circle-check"></i>
 
       <span
         id="cart-count"
@@ -700,14 +684,13 @@
       <strong id="cartTotal">$0.00</strong>
     </div>
 
-    <button
-      type="button"
-      class="btn-finalizar"
-      onclick="finalizarPedido()"
-    >
-      <i class="fa-solid fa-circle-check"></i>
-      Finalizar pedido
-    </button>
+    <div class="checkout-products">
+      <i class="fa-solid fa-cart-shopping"></i>
+
+      <span id="checkoutCantidad">
+        0 productos
+      </span>
+    </div>
 
   </section>
 
@@ -775,6 +758,11 @@
         "cantidadProductosTexto"
       );
 
+    const checkoutCantidad =
+      document.getElementById(
+        "checkoutCantidad"
+      );
+
     let cart =
       JSON.parse(
         localStorage.getItem("cart")
@@ -823,21 +811,19 @@
               Agrega productos desde el inventario para crear un nuevo pedido.
             </p>
 
-            <a
-              href="inventario.html"
-              class="empty-cart-button"
-            >
-              <i class="fa-solid fa-boxes-stacked"></i>
-              Ver inventario
-            </a>
-
           </div>
         `;
 
-        cartTotal.innerText = "$0.00";
+        cartTotal.innerText =
+          "$0.00";
 
         cantidadProductosTexto.textContent =
           "0 productos";
+
+        if (checkoutCantidad) {
+          checkoutCantidad.textContent =
+            "0 productos";
+        }
 
         updateCartCount();
         actualizarBurbujaUsuario();
@@ -968,10 +954,18 @@
           0
         );
 
-      cantidadProductosTexto.textContent =
+      const textoCantidad =
         totalCantidad === 1
           ? "1 producto"
           : `${totalCantidad} productos`;
+
+      cantidadProductosTexto.textContent =
+        textoCantidad;
+
+      if (checkoutCantidad) {
+        checkoutCantidad.textContent =
+          textoCantidad;
+      }
 
       updateCartCount();
     }
@@ -991,7 +985,8 @@
           ? "99+"
           : totalQty;
 
-      cartCount.innerText = texto;
+      cartCount.innerText =
+        texto;
 
       cartCount.style.display =
         totalQty > 0
@@ -1013,7 +1008,8 @@
       index,
       change
     ) {
-      const item = cart[index];
+      const item =
+        cart[index];
 
       const prod =
         products.find(
@@ -1031,9 +1027,11 @@
         ) {
           Swal.fire({
             title: "Sin stock",
-            text: "No hay más unidades disponibles.",
+            text:
+              "No hay más unidades disponibles.",
             icon: "warning",
-            confirmButtonColor: "#f26a21"
+            confirmButtonColor:
+              "#f26a21"
           });
 
           return;
@@ -1077,7 +1075,10 @@
                 1
               );
 
-              cart.splice(index, 1);
+              cart.splice(
+                index,
+                1
+              );
 
               saveAll();
               renderCart();
@@ -1128,7 +1129,10 @@
             cart[index].quantity
           );
 
-          cart.splice(index, 1);
+          cart.splice(
+            index,
+            1
+          );
 
           saveAll();
           renderCart();
@@ -1190,10 +1194,60 @@
           0
         );
 
+      Swal.fire({
+        title:
+          "¿Finalizar pedido?",
+
+        html: `
+          <div style="
+            color:#4b5563;
+            line-height:1.7;
+          ">
+            Se registrará el pedido por un total de:
+
+            <strong style="
+              display:block;
+              margin-top:10px;
+              color:#111;
+              font-size:22px;
+            ">
+              $${formatearMoneda(total)}
+            </strong>
+          </div>
+        `,
+
+        icon: "question",
+
+        showCancelButton: true,
+
+        confirmButtonText:
+          "Sí, finalizar",
+
+        cancelButtonText:
+          "Cancelar",
+
+        confirmButtonColor:
+          "#f26a21",
+
+        cancelButtonColor:
+          "#737985"
+      }).then(resultado => {
+        if (!resultado.isConfirmed) {
+          return;
+        }
+
+        registrarPedido(total);
+      });
+    }
+
+    function registrarPedido(total) {
       const fecha =
         new Date().toLocaleString(
           "es-DO"
         );
+
+      const clienteSeleccionado =
+        obtenerClienteSeleccionado();
 
       const pedido = {
         fecha,
@@ -1226,7 +1280,17 @@
           "pendiente",
 
         despachado:
-          false
+          false,
+
+        cliente:
+          clienteSeleccionado
+            ? clienteSeleccionado.nombre ||
+              clienteSeleccionado.negocio ||
+              ""
+            : "",
+
+        clienteId:
+          clienteSeleccionado?.id ?? null
       };
 
       const historial =
@@ -1243,9 +1307,16 @@
         JSON.stringify(historial)
       );
 
+      guardarPedidoEnHistorialCliente(
+        pedido,
+        clienteSeleccionado
+      );
+
       cart = [];
 
-      localStorage.removeItem("cart");
+      localStorage.removeItem(
+        "cart"
+      );
 
       saveAll();
       renderCart();
@@ -1261,7 +1332,6 @@
             line-height:1.7;
           ">
             Tu pedido fue registrado correctamente.
-            <br>
 
             <strong style="
               display:block;
@@ -1285,6 +1355,118 @@
         window.location.href =
           "Pedidos.html";
       });
+    }
+
+    function obtenerClienteSeleccionado() {
+      try {
+        return JSON.parse(
+          localStorage.getItem(
+            "clienteSeleccionado"
+          ) || "null"
+        );
+      } catch (error) {
+        return null;
+      }
+    }
+
+    function guardarPedidoEnHistorialCliente(
+      pedido,
+      clienteSeleccionado
+    ) {
+      if (!clienteSeleccionado) {
+        return;
+      }
+
+      let clientes = [];
+
+      try {
+        clientes =
+          JSON.parse(
+            localStorage.getItem(
+              "clientes"
+            ) || "[]"
+          );
+      } catch (error) {
+        clientes = [];
+      }
+
+      if (!Array.isArray(clientes)) {
+        return;
+      }
+
+      let indice =
+        Number.isInteger(
+          clienteSeleccionado.id
+        )
+          ? clienteSeleccionado.id
+          : -1;
+
+      if (
+        indice < 0 ||
+        !clientes[indice]
+      ) {
+        indice =
+          clientes.findIndex(cliente => {
+            const mismoTelefono =
+              clienteSeleccionado.telefono &&
+              cliente.telefono ===
+                clienteSeleccionado.telefono;
+
+            const mismoNombre =
+              clienteSeleccionado.nombre &&
+              cliente.nombre ===
+                clienteSeleccionado.nombre;
+
+            return (
+              mismoTelefono ||
+              mismoNombre
+            );
+          });
+      }
+
+      if (
+        indice < 0 ||
+        !clientes[indice]
+      ) {
+        return;
+      }
+
+      if (
+        !Array.isArray(
+          clientes[indice].historial
+        )
+      ) {
+        clientes[indice].historial = [];
+      }
+
+      pedido.productos.forEach(
+        producto => {
+          clientes[indice].historial.push({
+            producto:
+              producto.nombre,
+
+            cantidad:
+              producto.cantidad,
+
+            precio:
+              producto.precio,
+
+            subtotal:
+              producto.subtotal,
+
+            fecha:
+              pedido.fecha,
+
+            estado:
+              pedido.estado
+          });
+        }
+      );
+
+      localStorage.setItem(
+        "clientes",
+        JSON.stringify(clientes)
+      );
     }
 
     function actualizarBurbujaUsuario() {
