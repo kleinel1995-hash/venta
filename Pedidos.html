@@ -255,6 +255,11 @@
       color: var(--yellow);
     }
 
+    .status-badge.parcial {
+      background: var(--orange-light);
+      color: var(--orange);
+    }
+
     .status-badge.despachado {
       background: var(--blue-light);
       color: var(--blue);
@@ -350,6 +355,53 @@
     .producto-info p strong {
       color: #111;
       font-size: 14px;
+    }
+
+    .pending-label {
+      margin-left: auto;
+      padding: 6px 9px;
+      border-radius: 999px;
+      background: var(--yellow-light);
+      color: var(--yellow);
+      font-size: 10px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    /* DESPACHADOS */
+
+    .dispatched-section {
+      margin-top: 15px;
+      padding: 13px;
+      border: 1px solid #cde9d2;
+      border-radius: 16px;
+      background: var(--green-light);
+    }
+
+    .dispatched-section-title {
+      margin-bottom: 9px;
+      color: var(--green);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .dispatched-item {
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(21, 150, 56, 0.16);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      color: #315c39;
+      font-size: 12px;
+    }
+
+    .dispatched-item:last-child {
+      border-bottom: none;
+    }
+
+    .dispatched-item strong {
+      color: #174c25;
     }
 
     /* RESUMEN */
@@ -831,6 +883,11 @@
           ? datos
           : [];
       } catch (error) {
+        console.warn(
+          `No se pudo leer ${key}:`,
+          error
+        );
+
         return [];
       }
     }
@@ -871,14 +928,38 @@
       );
     }
 
+    function calcularSubtotalProducto(producto) {
+      if (producto.subtotal != null) {
+        return Number(producto.subtotal || 0);
+      }
+
+      return (
+        Number(producto.precio || 0) *
+        Number(producto.cantidad || 0)
+      );
+    }
+
+    function calcularTotalProductos(productos) {
+      return (productos || []).reduce(
+        (total, producto) =>
+          total + calcularSubtotalProducto(producto),
+        0
+      );
+    }
+
     function getVendedorSesionLegible() {
       try {
         const usuario = JSON.parse(
           localStorage.getItem("usuarioSesion") || "null"
         );
 
-        if (usuario?.nombre) return String(usuario.nombre);
-        if (usuario?.usuario) return String(usuario.usuario);
+        if (usuario?.nombre) {
+          return String(usuario.nombre);
+        }
+
+        if (usuario?.usuario) {
+          return String(usuario.usuario);
+        }
       } catch (error) {}
 
       try {
@@ -886,9 +967,17 @@
           localStorage.getItem("currentUser") || "null"
         );
 
-        if (usuario?.name) return String(usuario.name);
-        if (usuario?.username) return String(usuario.username);
-        if (usuario?.role) return String(usuario.role);
+        if (usuario?.name) {
+          return String(usuario.name);
+        }
+
+        if (usuario?.username) {
+          return String(usuario.username);
+        }
+
+        if (usuario?.role) {
+          return String(usuario.role);
+        }
       } catch (error) {}
 
       return (
@@ -901,7 +990,9 @@
     function normalizaClienteObj(cliente) {
       if (!cliente) return null;
 
-      const obj = { ...cliente };
+      const obj = {
+        ...cliente
+      };
 
       obj.negocio =
         obj.negocio ||
@@ -991,82 +1082,75 @@
       if (productos.length === 0) {
         Swal.fire({
           position: "center",
-          title: "Sin productos",
-          text: "Este pedido no tiene productos para despachar.",
-          icon: "warning",
+          title: "Sin artículos pendientes",
+          text: "Este pedido ya no tiene artículos pendientes para despachar.",
+          icon: "info",
           confirmButtonColor: "#f26a21"
         });
 
         return;
       }
 
-      const aprobadosGuardados =
-        Array.isArray(pedido.productosAprobados)
-          ? pedido.productosAprobados
-          : productos.map(() => false);
-
       const listaHTML = productos.map(
-        (producto, productoIndex) => {
-          const aprobado =
-            aprobadosGuardados[productoIndex] === true;
+        (producto, productoIndex) => `
+          <label
+            class="dispatch-item"
+            id="dispatchItem-${productoIndex}"
+          >
 
-          return `
-            <label
-              class="dispatch-item ${aprobado ? "approved" : ""}"
-              id="dispatchItem-${productoIndex}"
+            <img
+              class="dispatch-image"
+              src="${escaparHTML(
+                producto.imagen ||
+                "https://via.placeholder.com/48?text=P"
+              )}"
+              alt="${escaparHTML(
+                producto.nombre || "Producto"
+              )}"
+              onerror="
+                this.onerror=null;
+                this.src='https://via.placeholder.com/48?text=P';
+              "
             >
 
-              <img
-                class="dispatch-image"
-                src="${escaparHTML(
-                  producto.imagen ||
-                  "https://via.placeholder.com/48?text=P"
-                )}"
-                alt="${escaparHTML(
+            <div class="dispatch-details">
+
+              <strong>
+                ${escaparHTML(
                   producto.nombre || "Producto"
-                )}"
-              >
+                )}
+              </strong>
 
-              <div class="dispatch-details">
-
-                <strong>
-                  ${escaparHTML(
-                    producto.nombre || "Producto"
-                  )}
-                </strong>
-
-                <span>
-                  Cantidad:
-                  ${Number(
-                    producto.cantidad || 0
-                  ).toLocaleString("es-DO")}
-                </span>
-
-              </div>
-
-              <span class="dispatch-check">
-
-                <input
-                  type="checkbox"
-                  class="dispatch-checkbox"
-                  data-index="${productoIndex}"
-                  ${aprobado ? "checked" : ""}
-                >
-
-                <span class="custom-check">
-                  <i class="fa-solid fa-check"></i>
-                </span>
-
+              <span>
+                Cantidad:
+                ${Number(
+                  producto.cantidad || 0
+                ).toLocaleString("es-DO")}
               </span>
 
-            </label>
-          `;
-        }
+            </div>
+
+            <span class="dispatch-check">
+
+              <input
+                type="checkbox"
+                class="dispatch-checkbox"
+                data-index="${productoIndex}"
+              >
+
+              <span class="custom-check">
+                <i class="fa-solid fa-check"></i>
+              </span>
+
+            </span>
+
+          </label>
+        `
       ).join("");
 
       Swal.fire({
         position: "center",
-        title: "Confirmar artículos",
+        title: "Seleccionar artículos",
 
         html: `
           <div
@@ -1083,7 +1167,7 @@
 
         width: 520,
         showCancelButton: true,
-        confirmButtonText: "Confirmar despacho",
+        confirmButtonText: "Enviar aprobados",
         cancelButtonText: "Cancelar",
         confirmButtonColor: "#f26a21",
         cancelButtonColor: "#737985",
@@ -1145,59 +1229,85 @@
             )
           );
 
-          const estados =
-            checkboxes.map(
-              checkbox => checkbox.checked
-            );
+          const indicesAprobados =
+            checkboxes
+              .filter(
+                checkbox =>
+                  checkbox.checked
+              )
+              .map(
+                checkbox =>
+                  Number(
+                    checkbox.dataset.index
+                  )
+              );
 
-          const todosAprobados =
-            estados.every(
-              estado => estado === true
-            );
-
-          if (!todosAprobados) {
+          if (
+            indicesAprobados.length === 0
+          ) {
             Swal.showValidationMessage(
-              "Debes aprobar todos los artículos antes de confirmar."
+              "Debes aprobar al menos un artículo."
             );
 
             return false;
           }
 
-          return estados;
+          return indicesAprobados;
         }
       }).then(resultado => {
         if (!resultado.isConfirmed) {
           return;
         }
 
-        confirmarDespacho(
+        confirmarDespachoParcial(
           index,
           resultado.value
         );
       });
     }
 
-    function confirmarDespacho(
+    function confirmarDespachoParcial(
       index,
-      productosAprobados
+      indicesAprobados
     ) {
       const pedido = historial[index];
 
-      if (!pedido) return;
+      if (
+        !pedido ||
+        !Array.isArray(indicesAprobados) ||
+        indicesAprobados.length === 0
+      ) {
+        return;
+      }
 
-      const todosAprobados =
-        Array.isArray(productosAprobados) &&
-        productosAprobados.length ===
-          (pedido.productos || []).length &&
-        productosAprobados.every(
-          aprobado => aprobado === true
+      const productosOriginales =
+        Array.isArray(pedido.productos)
+          ? pedido.productos
+          : [];
+
+      const articulosAprobados =
+        productosOriginales.filter(
+          (producto, productoIndex) =>
+            indicesAprobados.includes(
+              productoIndex
+            )
         );
 
-      if (!todosAprobados) {
+      const articulosPendientes =
+        productosOriginales.filter(
+          (producto, productoIndex) =>
+            !indicesAprobados.includes(
+              productoIndex
+            )
+        );
+
+      if (
+        articulosAprobados.length === 0
+      ) {
         Swal.fire({
           position: "center",
-          title: "Despacho no confirmado",
-          text: "Todos los artículos deben estar aprobados.",
+          title: "Sin artículos aprobados",
+          text: "No se seleccionó ningún artículo para enviar.",
           icon: "warning",
           confirmButtonColor: "#f26a21"
         });
@@ -1205,12 +1315,54 @@
         return;
       }
 
-      pedido.despachado = true;
-      pedido.productosAprobados =
-        productosAprobados;
+      const fechaDespacho =
+        new Date().toLocaleString(
+          "es-DO"
+        );
 
-      pedido.fechaDespacho =
-        new Date().toLocaleString("es-DO");
+      const totalDespachado =
+        calcularTotalProductos(
+          articulosAprobados
+        );
+
+      if (
+        !Array.isArray(
+          pedido.despachosParciales
+        )
+      ) {
+        pedido.despachosParciales = [];
+      }
+
+      pedido.despachosParciales.push({
+        fecha: fechaDespacho,
+        productos: articulosAprobados,
+        total: totalDespachado,
+        vendedor:
+          pedido.vendedor ||
+          getVendedorSesionLegible()
+      });
+
+      pedido.productosDespachados = [
+        ...(
+          Array.isArray(
+            pedido.productosDespachados
+          )
+            ? pedido.productosDespachados
+            : []
+        ),
+        ...articulosAprobados
+      ];
+
+      pedido.productos =
+        articulosPendientes;
+
+      pedido.totalPendiente =
+        calcularTotalProductos(
+          articulosPendientes
+        );
+
+      pedido.fechaUltimoDespacho =
+        fechaDespacho;
 
       if (!pedido.vendedor) {
         pedido.vendedor =
@@ -1219,11 +1371,27 @@
 
       if (!pedido.clienteInfo) {
         const cliente =
-          obtenerClienteParaPedido(pedido);
+          obtenerClienteParaPedido(
+            pedido
+          );
 
         if (cliente) {
-          pedido.clienteInfo = cliente;
+          pedido.clienteInfo =
+            cliente;
         }
+      }
+
+      if (
+        articulosPendientes.length === 0
+      ) {
+        pedido.despachado = true;
+        pedido.estado = "despachado";
+        pedido.fechaDespacho =
+          fechaDespacho;
+      } else {
+        pedido.despachado = false;
+        pedido.estado =
+          "despacho parcial";
       }
 
       guardarLS(
@@ -1236,9 +1404,54 @@
       Swal.fire({
         position: "center",
         icon: "success",
-        title: "Pedido despachado",
-        text: "Todos los artículos fueron aprobados correctamente.",
-        confirmButtonColor: "#f26a21"
+
+        title:
+          articulosPendientes.length === 0
+            ? "Pedido despachado"
+            : "Despacho parcial realizado",
+
+        html: `
+          <div style="
+            color:#4b5563;
+            line-height:1.7;
+          ">
+            Se enviaron
+
+            <strong style="
+              color:#159638;
+            ">
+              ${articulosAprobados.length}
+            </strong>
+
+            ${
+              articulosAprobados.length === 1
+                ? "artículo aprobado"
+                : "artículos aprobados"
+            }.
+
+            ${
+              articulosPendientes.length > 0
+                ? `
+                  <br>
+
+                  Quedan pendientes:
+
+                  <strong style="
+                    color:#e52424;
+                  ">
+                    ${articulosPendientes.length}
+                  </strong>
+                `
+                : `
+                  <br>
+                  No quedan artículos pendientes.
+                `
+            }
+          </div>
+        `,
+
+        confirmButtonColor:
+          "#f26a21"
       });
     }
 
@@ -1247,6 +1460,21 @@
     };
 
     function mostrarModal(pedido, index) {
+      if (
+        !pedido.despachado ||
+        (pedido.productos || []).length > 0
+      ) {
+        Swal.fire({
+          position: "center",
+          title: "Pedido pendiente",
+          text: "Debes despachar todos los artículos antes de registrar la entrega.",
+          icon: "warning",
+          confirmButtonColor: "#f26a21"
+        });
+
+        return;
+      }
+
       const modal =
         document.createElement("div");
 
@@ -1271,6 +1499,7 @@
               type="button"
               class="contado"
             >
+              <i class="fa-solid fa-money-bill-wave"></i>
               Al contado
             </button>
 
@@ -1278,6 +1507,7 @@
               type="button"
               class="credito"
             >
+              <i class="fa-solid fa-credit-card"></i>
               A crédito
             </button>
 
@@ -1294,24 +1524,71 @@
       `;
 
       const clienteFinal =
-        obtenerClienteParaPedido(pedido);
+        obtenerClienteParaPedido(
+          pedido
+        );
 
       const vendedor =
         getVendedorSesionLegible();
 
-      modal.querySelector(".cancelar").onclick =
-        () => modal.remove();
+      const productosEntregados =
+        Array.isArray(
+          pedido.productosDespachados
+        )
+          ? pedido.productosDespachados
+          : [];
 
-      modal.querySelector(".contado").onclick =
-        () => {
-          ventasRealizadas.push({
+      const totalEntregado =
+        calcularTotalProductos(
+          productosEntregados
+        );
+
+      modal
+        .querySelector(
+          ".cancelar"
+        )
+        .onclick = () => {
+          modal.remove();
+        };
+
+      modal
+        .querySelector(
+          ".contado"
+        )
+        .onclick = () => {
+          const venta = {
             ...pedido,
-            clienteInfo: clienteFinal,
-            vendedor:
-              pedido.vendedor || vendedor
-          });
 
-          historial.splice(index, 1);
+            productos:
+              productosEntregados,
+
+            total:
+              totalEntregado,
+
+            clienteInfo:
+              clienteFinal,
+
+            vendedor:
+              pedido.vendedor ||
+              vendedor,
+
+            estado:
+              "entregado",
+
+            fechaEntrega:
+              new Date().toLocaleString(
+                "es-DO"
+              )
+          };
+
+          ventasRealizadas.push(
+            venta
+          );
+
+          historial.splice(
+            index,
+            1
+          );
 
           guardarLS(
             "ventasRealizadas",
@@ -1325,21 +1602,57 @@
 
           modal.remove();
           renderHistorial();
+
+          Swal.fire({
+            position: "center",
+            icon: "success",
+            title: "Venta registrada",
+            text: "La entrega fue registrada al contado.",
+            confirmButtonColor: "#f26a21"
+          });
         };
 
-      modal.querySelector(".credito").onclick =
-        () => {
-          cuentasPorCobrar.push({
+      modal
+        .querySelector(
+          ".credito"
+        )
+        .onclick = () => {
+          const cuenta = {
             ...pedido,
-            clienteInfo: clienteFinal,
-            vendedor:
-              pedido.vendedor || vendedor,
-            estado: "pendiente",
-            creadoEn:
-              new Date().toISOString()
-          });
 
-          historial.splice(index, 1);
+            productos:
+              productosEntregados,
+
+            total:
+              totalEntregado,
+
+            clienteInfo:
+              clienteFinal,
+
+            vendedor:
+              pedido.vendedor ||
+              vendedor,
+
+            estado:
+              "pendiente",
+
+            creadoEn:
+              new Date().toISOString(),
+
+            fechaEntrega:
+              new Date().toLocaleString(
+                "es-DO"
+              )
+          };
+
+          cuentasPorCobrar.push(
+            cuenta
+          );
+
+          historial.splice(
+            index,
+            1
+          );
 
           guardarLS(
             "cuentasPorCobrar",
@@ -1353,14 +1666,36 @@
 
           modal.remove();
           renderHistorial();
+
+          Swal.fire({
+            position: "center",
+            icon: "success",
+            title: "Crédito registrado",
+            text: "La cuenta por cobrar fue creada correctamente.",
+            confirmButtonColor: "#f26a21"
+          });
         };
 
-      document.body.appendChild(modal);
+      modal.addEventListener(
+        "click",
+        event => {
+          if (
+            event.target === modal
+          ) {
+            modal.remove();
+          }
+        }
+      );
+
+      document.body.appendChild(
+        modal
+      );
     }
 
     window.entregarPedido =
       function(index) {
-        const pedido = historial[index];
+        const pedido =
+          historial[index];
 
         if (!pedido) return;
 
@@ -1371,7 +1706,9 @@
 
         if (!pedido.clienteInfo) {
           pedido.clienteInfo =
-            obtenerClienteParaPedido(pedido);
+            obtenerClienteParaPedido(
+              pedido
+            );
         }
 
         guardarLS(
@@ -1379,18 +1716,177 @@
           historial
         );
 
-        mostrarModal(pedido, index);
+        mostrarModal(
+          pedido,
+          index
+        );
       };
 
+    function crearProductosHTML(
+      productos,
+      mostrarPendiente = true
+    ) {
+      if (
+        !Array.isArray(productos) ||
+        productos.length === 0
+      ) {
+        return `
+          <p style="
+            color:#737985;
+            font-size:13px;
+          ">
+            No hay artículos pendientes.
+          </p>
+        `;
+      }
+
+      return productos.map(
+        producto => {
+          const cantidad =
+            Number(
+              producto.cantidad || 0
+            );
+
+          const precio =
+            Number(
+              producto.precio || 0
+            );
+
+          const subtotal =
+            calcularSubtotalProducto(
+              producto
+            );
+
+          return `
+            <div class="producto">
+
+              <div class="producto-image">
+
+                <img
+                  src="${escaparHTML(
+                    producto.imagen ||
+                    "https://via.placeholder.com/58?text=P"
+                  )}"
+                  alt="${escaparHTML(
+                    producto.nombre ||
+                    "Producto"
+                  )}"
+                  onerror="
+                    this.onerror=null;
+                    this.src='https://via.placeholder.com/58?text=P';
+                  "
+                >
+
+              </div>
+
+              <div class="producto-info">
+
+                <p>
+                  <strong>
+                    ${escaparHTML(
+                      producto.nombre ||
+                      "Producto"
+                    )}
+                  </strong>
+                </p>
+
+                <p>
+                  Cantidad:
+                  ${cantidad.toLocaleString(
+                    "es-DO"
+                  )}
+                </p>
+
+                <p>
+                  Precio:
+                  $${formatearMoneda(
+                    precio
+                  )}
+                </p>
+
+                <p>
+                  Subtotal:
+                  $${formatearMoneda(
+                    subtotal
+                  )}
+                </p>
+
+              </div>
+
+              ${
+                mostrarPendiente
+                  ? `
+                    <span class="pending-label">
+                      Pendiente
+                    </span>
+                  `
+                  : ""
+              }
+
+            </div>
+          `;
+        }
+      ).join("");
+    }
+
+    function crearDespachadosHTML(
+      productos
+    ) {
+      if (
+        !Array.isArray(productos) ||
+        productos.length === 0
+      ) {
+        return "";
+      }
+
+      return `
+        <div class="dispatched-section">
+
+          <div class="dispatched-section-title">
+            <i class="fa-solid fa-circle-check"></i>
+            Artículos despachados
+          </div>
+
+          ${productos.map(
+            producto => `
+              <div class="dispatched-item">
+
+                <strong>
+                  ${escaparHTML(
+                    producto.nombre ||
+                    "Producto"
+                  )}
+                </strong>
+
+                <span>
+                  Cantidad:
+                  ${Number(
+                    producto.cantidad || 0
+                  ).toLocaleString(
+                    "es-DO"
+                  )}
+                </span>
+
+              </div>
+            `
+          ).join("")}
+
+        </div>
+      `;
+    }
+
     function renderHistorial() {
-      historialContainer.innerHTML = "";
+      historialContainer.innerHTML =
+        "";
 
       ordersCount.textContent =
         historial.length === 1
           ? "1 pedido"
           : `${historial.length} pedidos`;
 
-      if (historial.length === 0) {
+      if (
+        historial.length === 0
+      ) {
         historialContainer.innerHTML = `
           <div class="empty-state">
 
@@ -1410,230 +1906,248 @@
         return;
       }
 
-      historial.forEach((pedido, index) => {
-        const cliente =
-          obtenerClienteParaPedido(pedido);
+      historial.forEach(
+        (pedido, index) => {
+          const cliente =
+            obtenerClienteParaPedido(
+              pedido
+            );
 
-        const productosHtml =
-          (pedido.productos || []).map(
-            producto => {
-              const cantidad =
-                Number(producto.cantidad || 0);
+          const productosPendientes =
+            Array.isArray(
+              pedido.productos
+            )
+              ? pedido.productos
+              : [];
 
-              const precio =
-                Number(producto.precio || 0);
+          const productosDespachados =
+            Array.isArray(
+              pedido.productosDespachados
+            )
+              ? pedido.productosDespachados
+              : [];
 
-              const subtotal =
-                producto.subtotal != null
-                  ? Number(producto.subtotal)
-                  : precio * cantidad;
+          const totalmenteDespachado =
+            pedido.despachado === true &&
+            productosPendientes.length === 0;
 
-              return `
-                <div class="producto">
+          const parcialmenteDespachado =
+            !totalmenteDespachado &&
+            productosDespachados.length > 0;
 
-                  <div class="producto-image">
+          let claseEstado =
+            "pendiente";
 
-                    <img
-                      src="${escaparHTML(
-                        producto.imagen ||
-                        "https://via.placeholder.com/58?text=P"
-                      )}"
-                      alt="${escaparHTML(
-                        producto.nombre || "Producto"
-                      )}"
-                    >
+          let textoEstado =
+            "Pendiente";
 
-                  </div>
+          if (totalmenteDespachado) {
+            claseEstado =
+              "despachado";
 
-                  <div class="producto-info">
+            textoEstado =
+              "Despachado";
+          } else if (
+            parcialmenteDespachado
+          ) {
+            claseEstado =
+              "parcial";
 
-                    <p>
-                      <strong>
-                        ${escaparHTML(
-                          producto.nombre || "Producto"
-                        )}
-                      </strong>
-                    </p>
+            textoEstado =
+              "Parcial";
+          }
 
-                    <p>
-                      Cantidad: ${cantidad}
-                    </p>
+          const totalMostrado =
+            productosPendientes.length > 0
+              ? calcularTotalProductos(
+                  productosPendientes
+                )
+              : calcularTotalProductos(
+                  productosDespachados
+                );
 
-                    <p>
-                      Precio:
-                      $${formatearMoneda(precio)}
-                    </p>
+          const tarjeta =
+            document.createElement(
+              "article"
+            );
 
-                    <p>
-                      Subtotal:
-                      $${formatearMoneda(subtotal)}
-                    </p>
+          tarjeta.className =
+            "venta";
 
-                  </div>
+          tarjeta.innerHTML = `
+            <div class="venta-header">
+
+              <div class="venta-heading">
+
+                <div class="venta-icon">
+                  <i class="fa-solid fa-box"></i>
+                </div>
+
+                <div class="venta-heading-text">
+
+                  <strong>
+                    ${escaparHTML(
+                      cliente?.negocio ||
+                      "Pedido pendiente"
+                    )}
+                  </strong>
+
+                  <span>
+                    ${escaparHTML(
+                      pedido.fecha ||
+                      "Sin fecha"
+                    )}
+                  </span>
 
                 </div>
-              `;
-            }
-          ).join("");
 
-        const despachado =
-          pedido.despachado === true;
-
-        const tarjeta =
-          document.createElement("article");
-
-        tarjeta.className = "venta";
-
-        tarjeta.innerHTML = `
-          <div class="venta-header">
-
-            <div class="venta-heading">
-
-              <div class="venta-icon">
-                <i class="fa-solid fa-box"></i>
               </div>
 
-              <div class="venta-heading-text">
+              <span class="status-badge ${claseEstado}">
+                ${textoEstado}
+              </span>
 
-                <strong>
+            </div>
+
+            <div class="cliente-info">
+
+              <p>
+                <i class="fa-solid fa-store"></i>
+
+                <span>
+                  <strong>Negocio:</strong>
+
                   ${escaparHTML(
                     cliente?.negocio ||
-                    "Pedido pendiente"
+                    "No seleccionado"
+                  )}
+                </span>
+              </p>
+
+              <p>
+                <i class="fa-solid fa-phone"></i>
+
+                <span>
+                  <strong>Teléfono:</strong>
+
+                  ${escaparHTML(
+                    cliente?.telefono ||
+                    "-"
+                  )}
+                </span>
+              </p>
+
+              <p>
+                <i class="fa-solid fa-location-dot"></i>
+
+                <span>
+                  <strong>Dirección:</strong>
+
+                  ${escaparHTML(
+                    cliente?.direccion ||
+                    "-"
+                  )}
+                </span>
+              </p>
+
+            </div>
+
+            <div class="products-title">
+              ${
+                productosPendientes.length > 0
+                  ? "Artículos pendientes"
+                  : "Pedido preparado"
+              }
+            </div>
+
+            ${crearProductosHTML(
+              productosPendientes,
+              true
+            )}
+
+            ${crearDespachadosHTML(
+              productosDespachados
+            )}
+
+            <div class="order-summary">
+
+              <div class="total">
+
+                <span>
+                  ${
+                    productosPendientes.length > 0
+                      ? "Total pendiente"
+                      : "Total despachado"
+                  }
+                </span>
+
+                <strong>
+                  $${formatearMoneda(
+                    totalMostrado
                   )}
                 </strong>
 
-                <span>
-                  ${escaparHTML(
-                    pedido.fecha || "Sin fecha"
-                  )}
-                </span>
-
               </div>
 
-            </div>
+              <span class="seller-pill">
+                <i class="fa-solid fa-user"></i>
 
-            <span class="status-badge ${
-              despachado
-                ? "despachado"
-                : "pendiente"
-            }">
-              ${
-                despachado
-                  ? "Despachado"
-                  : "Pendiente"
-              }
-            </span>
-
-          </div>
-
-          <div class="cliente-info">
-
-            <p>
-              <i class="fa-solid fa-store"></i>
-
-              <span>
-                <strong>Negocio:</strong>
                 ${escaparHTML(
-                  cliente?.negocio ||
-                  "No seleccionado"
+                  pedido.vendedor ||
+                  getVendedorSesionLegible()
                 )}
               </span>
-            </p>
-
-            <p>
-              <i class="fa-solid fa-phone"></i>
-
-              <span>
-                <strong>Teléfono:</strong>
-                ${escaparHTML(
-                  cliente?.telefono || "-"
-                )}
-              </span>
-            </p>
-
-            <p>
-              <i class="fa-solid fa-location-dot"></i>
-
-              <span>
-                <strong>Dirección:</strong>
-                ${escaparHTML(
-                  cliente?.direccion || "-"
-                )}
-              </span>
-            </p>
-
-          </div>
-
-          <div class="products-title">
-            Productos del pedido
-          </div>
-
-          ${productosHtml}
-
-          <div class="order-summary">
-
-            <div class="total">
-
-              <span>Total del pedido</span>
-
-              <strong>
-                $${formatearMoneda(
-                  pedido.total
-                )}
-              </strong>
 
             </div>
 
-            <span class="seller-pill">
-              <i class="fa-solid fa-user"></i>
+            <div class="order-actions">
 
-              ${escaparHTML(
-                pedido.vendedor ||
-                getVendedorSesionLegible()
-              )}
-            </span>
+              <button
+                type="button"
+                class="btn dispatch-btn"
+                onclick="despachar(${index})"
+                ${
+                  totalmenteDespachado
+                    ? "disabled"
+                    : ""
+                }
+              >
+                <i class="${
+                  totalmenteDespachado
+                    ? "fa-solid fa-circle-check"
+                    : "fa-solid fa-boxes-packing"
+                }"></i>
 
-          </div>
+                ${
+                  totalmenteDespachado
+                    ? "Despachado"
+                    : parcialmenteDespachado
+                      ? "Despachar restantes"
+                      : "Despachar"
+                }
+              </button>
 
-          <div class="order-actions">
+              <button
+                type="button"
+                class="btn deliver-btn ${
+                  totalmenteDespachado
+                    ? ""
+                    : "hidden"
+                }"
+                onclick="entregarPedido(${index})"
+              >
+                <i class="fa-solid fa-truck-fast"></i>
+                Entregar
+              </button>
 
-            <button
-              type="button"
-              class="btn dispatch-btn"
-              onclick="despachar(${index})"
-              ${despachado ? "disabled" : ""}
-            >
-              <i class="${
-                despachado
-                  ? "fa-solid fa-circle-check"
-                  : "fa-solid fa-boxes-packing"
-              }"></i>
+            </div>
+          `;
 
-              ${
-                despachado
-                  ? "Despachado"
-                  : "Despachar"
-              }
-            </button>
-
-            <button
-              type="button"
-              class="btn deliver-btn ${
-                despachado ? "" : "hidden"
-              }"
-              onclick="entregarPedido(${index})"
-            >
-              <i class="fa-solid fa-truck-fast"></i>
-              Entregar
-            </button>
-
-          </div>
-        `;
-
-        historialContainer.appendChild(
-          tarjeta
-        );
-      });
+          historialContainer.appendChild(
+            tarjeta
+          );
+        }
+      );
     }
 
     function recargarPedidos() {
@@ -1673,6 +2187,50 @@
           historial =
             cargarArregloLocalStorage(
               "historialPedidos"
+            );
+
+          renderHistorial();
+        }
+
+        if (
+          evento.key ===
+          "ventasRealizadas"
+        ) {
+          ventasRealizadas =
+            cargarArregloLocalStorage(
+              "ventasRealizadas"
+            );
+        }
+
+        if (
+          evento.key ===
+          "cuentasPorCobrar"
+        ) {
+          cuentasPorCobrar =
+            cargarArregloLocalStorage(
+              "cuentasPorCobrar"
+            );
+        }
+      }
+    );
+
+    document.addEventListener(
+      "visibilitychange",
+      () => {
+        if (!document.hidden) {
+          historial =
+            cargarArregloLocalStorage(
+              "historialPedidos"
+            );
+
+          ventasRealizadas =
+            cargarArregloLocalStorage(
+              "ventasRealizadas"
+            );
+
+          cuentasPorCobrar =
+            cargarArregloLocalStorage(
+              "cuentasPorCobrar"
             );
 
           renderHistorial();
