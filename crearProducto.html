@@ -1,145 +1,803 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
   <title>Crear Producto</title>
+
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+  >
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
   <style>
-    body {
-      margin: 0;
-      font-family: 'Arial', sans-serif;
-      background: #f4f4f4;
+    :root {
+      --orange: #f26a21;
+      --orange-dark: #a83b0b;
+      --orange-light: #fff1e8;
+      --black: #080808;
+      --white: #ffffff;
+      --background: #f4f5f7;
+      --text: #111827;
+      --muted: #737985;
+      --line: #e7e8eb;
+      --blue: #087be7;
+      --blue-light: #e4f3ff;
+      --green: #159638;
+      --green-light: #eaf8e9;
+      --red: #e52424;
     }
-    .app-header {
-      background-color: #000000;
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    html,
+    body {
+      min-height: 100%;
+    }
+
+    body {
+      background: var(--background);
+      color: var(--text);
+      padding-top: 78px;
+      padding-bottom: 40px;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button,
+    label,
+    input {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    /* ENCABEZADO */
+
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 1200;
+      width: 100%;
+      height: 78px;
+      padding: 0 18px;
+      background: var(--black);
+      color: var(--white);
+      display: grid;
+      grid-template-columns: 52px minmax(0, 1fr) 52px;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 3px 15px rgba(0, 0, 0, 0.25);
+    }
+
+    .header-title {
+      min-width: 0;
       display: flex;
       align-items: center;
-      padding: 15px;
-      gap: 10px;
-      color: white;
-    }
-    .app-header h1 {
-      font-size: 18px;
-      margin: 0;
-    }
-    .back-btn {
-      background: none;
-      border: none;
-      font-size: 20px;
-      color: white;
-      cursor: pointer;
-    }
-    .form-container {
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-    }
-    .upload-box {
-      background: #e6f0ff;
-      border: 2px dashed #3399ff;
-      color: #3399ff;
+      justify-content: center;
+      gap: 11px;
+      font-size: 21px;
+      font-weight: 800;
       text-align: center;
-      padding: 30px;
-      cursor: pointer;
-      border-radius: 10px;
     }
-    .upload-box #preview {
+
+    .header-title i {
+      color: var(--orange);
+      font-size: 24px;
+    }
+
+    .header-title span {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .header-button {
+      width: 48px;
+      height: 48px;
+      border: 1px solid #373737;
+      border-radius: 15px;
+      background: linear-gradient(145deg, #191919, #080808);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 21px;
+      box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.03);
+    }
+
+    .header-button.save {
+      color: var(--orange);
+    }
+
+    .header-button:active {
+      transform: scale(0.96);
+    }
+
+    /* CONTENIDO */
+
+    .container {
+      width: min(100%, 760px);
+      margin: 0 auto;
+      padding: 22px 16px;
+    }
+
+    .page-heading {
+      margin-bottom: 18px;
+    }
+
+    .page-heading h1 {
+      margin-bottom: 7px;
+      color: #111;
+      font-size: 23px;
+    }
+
+    .page-heading p {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    /* FORMULARIO */
+
+    .form-card {
+      padding: 20px;
+      border: 1px solid #ededed;
+      border-radius: 22px;
+      background: #fff;
+      box-shadow: 0 7px 22px rgba(0, 0, 0, 0.07);
+    }
+
+    .form-container {
+      display: grid;
+      gap: 17px;
+    }
+
+    .field-group {
+      display: grid;
+      gap: 7px;
+    }
+
+    .field-group label {
+      color: #20242b;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .required {
+      color: var(--red);
+    }
+
+    .info {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 500;
+    }
+
+    .input-wrapper {
+      position: relative;
+    }
+
+    .input-wrapper i {
+      position: absolute;
+      top: 50%;
+      left: 15px;
+      transform: translateY(-50%);
+      width: 18px;
+      color: var(--orange);
       font-size: 16px;
+      text-align: center;
+      pointer-events: none;
     }
+
     input[type="text"],
     input[type="number"] {
-      padding: 10px;
-      font-size: 16px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
       width: 100%;
-      box-sizing: border-box;
+      height: 52px;
+      padding: 0 14px 0 46px;
+      border: 1px solid #dfe2e6;
+      border-radius: 15px;
+      background: #fff;
+      color: #111;
+      font-size: 15px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
     }
-    .create-btn {
-      width:50%;
-      align-item:center;
-      padding: 15px;
-      background-color: #000000;
-      color: #fff;
-      font-weight: bold;
-      border: none;
-      border-radius: 50px;
-      font-size: 16px;
+
+    input:focus {
+      border-color: var(--orange);
+      box-shadow: 0 0 0 3px rgba(242, 106, 33, 0.12);
+    }
+
+    input::placeholder {
+      color: #a0a5ad;
+    }
+
+    /* IMAGEN */
+
+    .upload-box {
+      min-height: 235px;
+      padding: 20px;
+      border: 2px dashed #e3a079;
+      border-radius: 20px;
+      background: var(--orange-light);
+      color: var(--orange);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
       cursor: pointer;
+      overflow: hidden;
+      transition: border-color 0.2s, background 0.2s;
     }
-    .info {
+
+    .upload-box:hover {
+      border-color: var(--orange);
+      background: #ffe9da;
+    }
+
+    .upload-content {
+      width: 100%;
+      min-height: 190px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+    }
+
+    .upload-icon {
+      width: 72px;
+      height: 72px;
+      border-radius: 21px;
+      background: #fff;
+      color: var(--orange);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 29px;
+      box-shadow: 0 7px 20px rgba(242, 106, 33, 0.15);
+    }
+
+    .upload-content strong {
+      color: #111;
+      font-size: 15px;
+    }
+
+    .upload-content span {
+      color: var(--muted);
       font-size: 12px;
-      color: gray;
+    }
+
+    .upload-preview {
+      position: relative;
+      width: 100%;
+      min-height: 190px;
+    }
+
+    .upload-preview img {
+      width: 100%;
+      height: 250px;
+      border-radius: 16px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .change-image {
+      position: absolute;
+      right: 10px;
+      bottom: 10px;
+      padding: 9px 12px;
+      border-radius: 12px;
+      background: rgba(0, 0, 0, 0.78);
+      color: #fff;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    /* FILAS */
+
+    .two-columns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    /* BOTÓN */
+
+    .create-btn {
+      width: 100%;
+      min-height: 54px;
+      margin-top: 4px;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #e95414, #a83b0b);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      font-size: 15px;
+      font-weight: 800;
+      box-shadow: 0 6px 18px rgba(242, 106, 33, 0.3);
+    }
+
+    .create-btn:hover {
+      opacity: 0.96;
+    }
+
+    .create-btn:active {
+      transform: scale(0.98);
+    }
+
+    /* RESPONSIVE */
+
+    @media (max-width: 620px) {
+      body {
+        padding-top: 70px;
+      }
+
+      .header {
+        height: 70px;
+        padding: 0 12px;
+        grid-template-columns: 45px minmax(0, 1fr) 45px;
+        gap: 8px;
+      }
+
+      .header-button {
+        width: 43px;
+        height: 43px;
+        border-radius: 14px;
+        font-size: 19px;
+      }
+
+      .header-title {
+        gap: 8px;
+        font-size: 18px;
+      }
+
+      .header-title i {
+        font-size: 21px;
+      }
+
+      .container {
+        padding: 17px 10px;
+      }
+
+      .page-heading h1 {
+        font-size: 20px;
+      }
+
+      .form-card {
+        padding: 15px;
+      }
+
+      .upload-box {
+        min-height: 210px;
+        padding: 15px;
+      }
+
+      .upload-preview img {
+        height: 220px;
+      }
+    }
+
+    @media (max-width: 430px) {
+      .header-title span {
+        font-size: 16px;
+      }
+
+      .two-columns {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
+
 <body>
-  <header class="app-header">
-    <button class="back-btn" onclick="history.back()">←</button>
-    <h1>Crear producto</h1>
+
+  <header class="header">
+
+    <button
+      type="button"
+      class="header-button"
+      onclick="history.back()"
+      aria-label="Volver"
+    >
+      <i class="fa-solid fa-arrow-left"></i>
+    </button>
+
+    <div class="header-title">
+      <i class="fa-solid fa-box-open"></i>
+      <span>Crear producto</span>
+    </div>
+
+    <button
+      type="button"
+      class="header-button save"
+      onclick="crearProducto()"
+      aria-label="Guardar producto"
+    >
+      <i class="fa-solid fa-floppy-disk"></i>
+    </button>
+
   </header>
-  <main class="form-container">
-    <label class="upload-box">
-      <input type="file" accept="image/*" hidden onchange="previewImage(event)" />
-      <div id="preview">Cargar imagen</div>
-    </label>
-    <label>Nombre del producto *</label>
-    <input type="text" id="nameInput" placeholder="Nombre" />
-    <label>Cantidad disponible</label>
-    <input type="number" id="quantityInput" placeholder="Cantidad" />
-    <label>Precio *</label>
-    <input type="number" id="priceInput" placeholder="Precio" />
-    <label>Costo <span class="info">(opcional)</span></label>
-    <input type="number" id="costInput" placeholder="costo" />
-    <label>Categoría</label>
-    <input type="text" id="categoryInput" placeholder="Ej: Alimentos" />
-    <button class="create-btn">Crear producto</button>
+
+  <main class="container">
+
+    <div class="page-heading">
+
+      <h1>Nuevo producto</h1>
+
+      <p>
+        Completa la información del artículo para agregarlo al inventario.
+      </p>
+
+    </div>
+
+    <section class="form-card">
+
+      <div class="form-container">
+
+        <div class="field-group">
+
+          <label>
+            Imagen del producto
+          </label>
+
+          <label class="upload-box">
+
+            <input
+              type="file"
+              accept="image/*"
+              hidden
+              onchange="previewImage(event)"
+            >
+
+            <div
+              id="preview"
+              class="upload-content"
+            >
+
+              <div class="upload-icon">
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+              </div>
+
+              <strong>Cargar imagen</strong>
+
+              <span>
+                Toca aquí para seleccionar una imagen
+              </span>
+
+            </div>
+
+          </label>
+
+        </div>
+
+        <div class="field-group">
+
+          <label for="nameInput">
+            Nombre del producto
+            <span class="required">*</span>
+          </label>
+
+          <div class="input-wrapper">
+
+            <i class="fa-solid fa-tag"></i>
+
+            <input
+              type="text"
+              id="nameInput"
+              placeholder="Nombre del producto"
+            >
+
+          </div>
+
+        </div>
+
+        <div class="field-group">
+
+          <label for="quantityInput">
+            Cantidad disponible
+          </label>
+
+          <div class="input-wrapper">
+
+            <i class="fa-solid fa-boxes-stacked"></i>
+
+            <input
+              type="number"
+              id="quantityInput"
+              placeholder="Cantidad"
+              min="0"
+              step="1"
+              inputmode="numeric"
+            >
+
+          </div>
+
+        </div>
+
+        <div class="two-columns">
+
+          <div class="field-group">
+
+            <label for="costInput">
+              Costo
+              <span class="info">(opcional)</span>
+            </label>
+
+            <div class="input-wrapper">
+
+              <i class="fa-solid fa-money-bill-wave"></i>
+
+              <input
+                type="number"
+                id="costInput"
+                placeholder="Costo"
+                min="0"
+                step="0.01"
+                inputmode="decimal"
+              >
+
+            </div>
+
+          </div>
+
+          <div class="field-group">
+
+            <label for="priceInput">
+              Precio
+              <span class="required">*</span>
+            </label>
+
+            <div class="input-wrapper">
+
+              <i class="fa-solid fa-dollar-sign"></i>
+
+              <input
+                type="number"
+                id="priceInput"
+                placeholder="Precio"
+                min="0"
+                step="0.01"
+                inputmode="decimal"
+              >
+
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="field-group">
+
+          <label for="categoryInput">
+            Categoría
+          </label>
+
+          <div class="input-wrapper">
+
+            <i class="fa-solid fa-layer-group"></i>
+
+            <input
+              type="text"
+              id="categoryInput"
+              placeholder="Ejemplo: Alimentos"
+            >
+
+          </div>
+
+        </div>
+
+        <button
+          type="button"
+          class="create-btn"
+          onclick="crearProducto()"
+        >
+          <i class="fa-solid fa-circle-plus"></i>
+          Crear producto
+        </button>
+
+      </div>
+
+    </section>
+
   </main>
+
   <script>
     function previewImage(event) {
-      const preview = document.getElementById('preview');
-      const file = event.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = () => {
-          preview.innerHTML = `<img src="${reader.result}" style="width:100%; border-radius:10px;" />`;
-          preview.dataset.image = reader.result;
-        };
-        reader.readAsDataURL(file);
-      }
-    }
-    document.querySelector('.create-btn').addEventListener('click', () => {
-      const nameInput = document.getElementById('nameInput');
-      const quantityInput = document.getElementById('quantityInput');
-      const priceInput = document.getElementById('priceInput');
-      const costInput = document.getElementById('costInput');
-      const categoryInput = document.getElementById('categoryInput');
-      const preview = document.getElementById('preview');
-      const product = {
-        image: preview.dataset.image || '',
-        name: nameInput.value.trim(),
-        quantity: parseInt(quantityInput.value) || 0,
-        price: parseFloat(priceInput.value) || 0,
-        cost: parseFloat(costInput.value) || 0,
-        category: categoryInput.value.trim()
-      };
-      if (!product.name || !product.price) {
-        alert('El nombre y el precio son obligatorios');
+      const preview =
+        document.getElementById(
+          "preview"
+        );
+
+      const file =
+        event.target.files[0];
+
+      if (!file) {
         return;
       }
-      let products = JSON.parse(localStorage.getItem('products')) || [];
+
+      const reader =
+        new FileReader();
+
+      reader.onload = () => {
+        preview.className =
+          "upload-preview";
+
+        preview.innerHTML = `
+          <img
+            src="${reader.result}"
+            alt="Vista previa del producto"
+          >
+
+          <span class="change-image">
+            <i class="fa-solid fa-camera"></i>
+            Cambiar imagen
+          </span>
+        `;
+
+        preview.dataset.image =
+          reader.result;
+      };
+
+      reader.readAsDataURL(file);
+    }
+
+    function crearProducto() {
+      const nameInput =
+        document.getElementById(
+          "nameInput"
+        );
+
+      const quantityInput =
+        document.getElementById(
+          "quantityInput"
+        );
+
+      const priceInput =
+        document.getElementById(
+          "priceInput"
+        );
+
+      const costInput =
+        document.getElementById(
+          "costInput"
+        );
+
+      const categoryInput =
+        document.getElementById(
+          "categoryInput"
+        );
+
+      const preview =
+        document.getElementById(
+          "preview"
+        );
+
+      const product = {
+        image:
+          preview.dataset.image ||
+          "",
+
+        name:
+          nameInput.value.trim(),
+
+        quantity:
+          parseInt(
+            quantityInput.value
+          ) || 0,
+
+        price:
+          parseFloat(
+            priceInput.value
+          ) || 0,
+
+        cost:
+          parseFloat(
+            costInput.value
+          ) || 0,
+
+        category:
+          categoryInput.value.trim()
+      };
+
+      if (
+        !product.name ||
+        !product.price
+      ) {
+        Swal.fire({
+          position: "center",
+          icon: "warning",
+          title: "Campos obligatorios",
+          text: "El nombre y el precio son obligatorios.",
+          confirmButtonColor: "#f26a21"
+        });
+
+        return;
+      }
+
+      let products = [];
+
+      try {
+        const datos =
+          JSON.parse(
+            localStorage.getItem(
+              "products"
+            ) || "[]"
+          );
+
+        products =
+          Array.isArray(datos)
+            ? datos
+            : [];
+      } catch (error) {
+        products = [];
+      }
+
       products.push(product);
-      localStorage.setItem('products', JSON.stringify(products));
-      alert('✅ Producto guardado con éxito');
-      nameInput.value = '';
-      quantityInput.value = '';
-      priceInput.value = '';
-      costInput.value = '';
-      categoryInput.value = '';
-      preview.innerHTML = 'Cargar imagen';
+
+      localStorage.setItem(
+        "products",
+        JSON.stringify(products)
+      );
+
+      Swal.fire({
+        position: "center",
+        icon: "success",
+        title: "Producto guardado",
+        text: "El producto fue creado correctamente.",
+        confirmButtonColor: "#f26a21"
+      });
+
+      nameInput.value = "";
+      quantityInput.value = "";
+      priceInput.value = "";
+      costInput.value = "";
+      categoryInput.value = "";
+
+      preview.className =
+        "upload-content";
+
+      preview.innerHTML = `
+        <div class="upload-icon">
+          <i class="fa-solid fa-cloud-arrow-up"></i>
+        </div>
+
+        <strong>Cargar imagen</strong>
+
+        <span>
+          Toca aquí para seleccionar una imagen
+        </span>
+      `;
+
       delete preview.dataset.image;
-    });
+    }
   </script>
+
 </body>
 </html>
