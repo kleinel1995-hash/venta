@@ -2035,7 +2035,8 @@
       mostrarListaDespacho(index);
     };
 
-    function mostrarModal(
+
+    async function mostrarModal(
       pedido,
       index
     ) {
@@ -2048,7 +2049,7 @@
         pedido.despachado !== true ||
         pendientes.length > 0
       ) {
-        Swal.fire({
+        await Swal.fire({
           position: "center",
           title: "Pedido pendiente",
           text: "Debes despachar todos los artículos antes de registrar la entrega.",
@@ -2074,7 +2075,7 @@
       if (
         productosEntregados.length === 0
       ) {
-        Swal.fire({
+        await Swal.fire({
           position: "center",
           title: "Entrega sin productos",
           text: "No se encontraron artículos despachados para registrar la venta.",
@@ -2085,55 +2086,9 @@
         return;
       }
 
-      procesandoEntrega = false;
-
-      const modal =
-        document.createElement("div");
-
-      modal.className = "modal";
-
-      modal.innerHTML = `
-        <div class="modal-content">
-
-          <div class="modal-icon">
-            <i class="fa-solid fa-hand-holding-dollar"></i>
-          </div>
-
-          <h3>Registrar entrega</h3>
-
-          <p>
-            Selecciona cómo deseas registrar esta venta.
-          </p>
-
-          <div class="payment-buttons">
-
-            <button
-              type="button"
-              class="contado"
-            >
-              <i class="fa-solid fa-money-bill-wave"></i>
-              Al contado
-            </button>
-
-            <button
-              type="button"
-              class="credito"
-            >
-              <i class="fa-solid fa-credit-card"></i>
-              A crédito
-            </button>
-
-          </div>
-
-          <button
-            type="button"
-            class="cancelar"
-          >
-            Cancelar
-          </button>
-
-        </div>
-      `;
+      if (procesandoEntrega) {
+        return;
+      }
 
       const clienteFinal =
         obtenerClienteParaPedido(pedido);
@@ -2151,164 +2106,279 @@
           productosEntregados
         );
 
-      function desactivarBotones() {
-        procesandoEntrega = true;
+      const resultado =
+        await Swal.fire({
+          position: "center",
+          title: "Registrar entrega",
 
-        modal
-          .querySelectorAll("button")
-          .forEach(boton => {
-            boton.disabled = true;
-          });
+          html: `
+            <div style="
+              margin-bottom:14px;
+              color:#737985;
+              font-size:14px;
+              line-height:1.5;
+            ">
+              Selecciona cómo deseas registrar esta venta.
+            </div>
+
+            <label
+              for="pagoContado"
+              style="
+                display:flex;
+                align-items:center;
+                gap:12px;
+                margin:9px 0;
+                padding:14px;
+                border:1px solid #cde9d2;
+                border-radius:14px;
+                background:#eaf8e9;
+                color:#159638;
+                cursor:pointer;
+                text-align:left;
+                font-weight:800;
+              "
+            >
+              <input
+                type="radio"
+                id="pagoContado"
+                name="tipoPagoEntrega"
+                value="contado"
+                style="
+                  width:20px;
+                  height:20px;
+                  accent-color:#159638;
+                "
+              >
+
+              <i class="fa-solid fa-money-bill-wave"></i>
+
+              <span>Al contado</span>
+            </label>
+
+            <label
+              for="pagoCredito"
+              style="
+                display:flex;
+                align-items:center;
+                gap:12px;
+                margin:9px 0;
+                padding:14px;
+                border:1px solid #f0d88d;
+                border-radius:14px;
+                background:#fff4cc;
+                color:#8a6200;
+                cursor:pointer;
+                text-align:left;
+                font-weight:800;
+              "
+            >
+              <input
+                type="radio"
+                id="pagoCredito"
+                name="tipoPagoEntrega"
+                value="credito"
+                style="
+                  width:20px;
+                  height:20px;
+                  accent-color:#b77900;
+                "
+              >
+
+              <i class="fa-solid fa-credit-card"></i>
+
+              <span>A crédito</span>
+            </label>
+          `,
+
+          showCancelButton: true,
+          confirmButtonText: "Registrar entrega",
+          cancelButtonText: "Cancelar",
+          confirmButtonColor: "#f26a21",
+          cancelButtonColor: "#737985",
+          focusConfirm: false,
+          allowOutsideClick: false,
+
+          preConfirm: () => {
+            const seleccionado =
+              document.querySelector(
+                'input[name="tipoPagoEntrega"]:checked'
+              );
+
+            if (!seleccionado) {
+              Swal.showValidationMessage(
+                "Selecciona si la venta es al contado o a crédito."
+              );
+
+              return false;
+            }
+
+            return seleccionado.value;
+          }
+        });
+
+      if (!resultado.isConfirmed) {
+        return;
       }
 
-      modal.querySelector(
-        ".cancelar"
-      ).onclick = () => {
-        if (!procesandoEntrega) {
-          modal.remove();
-        }
-      };
+      procesandoEntrega = true;
 
-      modal.querySelector(
-        ".contado"
-      ).onclick = () => {
-        if (procesandoEntrega) {
+      try {
+        if (resultado.value === "contado") {
+          const venta = {
+            id: generarId(),
+            pedidoId: pedido.id || "",
+
+            fecha:
+              pedido.fecha ||
+              new Date().toLocaleString(
+                "es-DO"
+              ),
+
+            fechaEntrega:
+              new Date().toLocaleString(
+                "es-DO"
+              ),
+
+            productos:
+              productosEntregados,
+
+            total:
+              totalEntregado,
+
+            clienteInfo:
+              clienteFinal,
+
+            vendedor,
+
+            estado:
+              "entregado",
+
+            tipoPago:
+              "contado"
+          };
+
+          ventasRealizadas.push(
+            venta
+          );
+
+          historial.splice(
+            index,
+            1
+          );
+
+          guardarLS(
+            "ventasRealizadas",
+            ventasRealizadas
+          );
+
+          guardarLS(
+            "historialPedidos",
+            historial
+          );
+
+          renderHistorial();
+
+          await Swal.fire({
+            position: "center",
+            icon: "success",
+            title: "Venta registrada",
+            text: "La entrega fue registrada al contado.",
+            confirmButtonColor: "#f26a21"
+          });
+
           return;
         }
 
-        desactivarBotones();
+        if (resultado.value === "credito") {
+          const cuenta = {
+            id: generarId(),
+            pedidoId: pedido.id || "",
 
-        const venta = {
-          id: generarId(),
-          pedidoId: pedido.id || "",
-          fecha:
-            pedido.fecha ||
-            new Date().toLocaleString(
-              "es-DO"
-            ),
-          fechaEntrega:
-            new Date().toLocaleString(
-              "es-DO"
-            ),
-          productos:
-            productosEntregados,
-          total:
-            totalEntregado,
-          clienteInfo:
-            clienteFinal,
-          vendedor,
-          estado:
-            "entregado",
-          tipoPago:
-            "contado"
-        };
+            fecha:
+              pedido.fecha ||
+              new Date().toLocaleString(
+                "es-DO"
+              ),
 
-        ventasRealizadas.push(venta);
-        historial.splice(index, 1);
+            fechaEntrega:
+              new Date().toLocaleString(
+                "es-DO"
+              ),
 
-        guardarLS(
-          "ventasRealizadas",
-          ventasRealizadas
+            creadoEn:
+              new Date().toISOString(),
+
+            productos:
+              productosEntregados,
+
+            total:
+              totalEntregado,
+
+            totalOriginal:
+              totalEntregado,
+
+            saldoPendiente:
+              totalEntregado,
+
+            abonos: [],
+
+            clienteInfo:
+              clienteFinal,
+
+            vendedor,
+
+            estado:
+              "pendiente",
+
+            tipoPago:
+              "credito"
+          };
+
+          cuentasPorCobrar.push(
+            cuenta
+          );
+
+          historial.splice(
+            index,
+            1
+          );
+
+          guardarLS(
+            "cuentasPorCobrar",
+            cuentasPorCobrar
+          );
+
+          guardarLS(
+            "historialPedidos",
+            historial
+          );
+
+          renderHistorial();
+
+          await Swal.fire({
+            position: "center",
+            icon: "success",
+            title: "Crédito registrado",
+            text: "La cuenta por cobrar fue creada correctamente.",
+            confirmButtonColor: "#f26a21"
+          });
+        }
+      } catch (error) {
+        console.error(
+          "Error registrando la entrega:",
+          error
         );
 
-        guardarLS(
-          "historialPedidos",
-          historial
-        );
-
-        modal.remove();
-        procesandoEntrega = false;
-        renderHistorial();
-
-        Swal.fire({
+        await Swal.fire({
           position: "center",
-          icon: "success",
-          title: "Venta registrada",
-          text: "La entrega fue registrada al contado.",
+          icon: "error",
+          title: "No se pudo registrar",
+          text: "Ocurrió un error al guardar la entrega.",
           confirmButtonColor: "#f26a21"
         });
-      };
-
-      modal.querySelector(
-        ".credito"
-      ).onclick = () => {
-        if (procesandoEntrega) {
-          return;
-        }
-
-        desactivarBotones();
-
-        const cuenta = {
-          id: generarId(),
-          pedidoId: pedido.id || "",
-          fecha:
-            pedido.fecha ||
-            new Date().toLocaleString(
-              "es-DO"
-            ),
-          fechaEntrega:
-            new Date().toLocaleString(
-              "es-DO"
-            ),
-          creadoEn:
-            new Date().toISOString(),
-          productos:
-            productosEntregados,
-          total:
-            totalEntregado,
-          totalOriginal:
-            totalEntregado,
-          saldoPendiente:
-            totalEntregado,
-          abonos: [],
-          clienteInfo:
-            clienteFinal,
-          vendedor,
-          estado:
-            "pendiente",
-          tipoPago:
-            "credito"
-        };
-
-        cuentasPorCobrar.push(cuenta);
-        historial.splice(index, 1);
-
-        guardarLS(
-          "cuentasPorCobrar",
-          cuentasPorCobrar
-        );
-
-        guardarLS(
-          "historialPedidos",
-          historial
-        );
-
-        modal.remove();
+      } finally {
         procesandoEntrega = false;
-        renderHistorial();
-
-        Swal.fire({
-          position: "center",
-          icon: "success",
-          title: "Crédito registrado",
-          text: "La cuenta por cobrar fue creada correctamente.",
-          confirmButtonColor: "#f26a21"
-        });
-      };
-
-      modal.addEventListener(
-        "click",
-        event => {
-          if (
-            event.target === modal &&
-            !procesandoEntrega
-          ) {
-            modal.remove();
-          }
-        }
-      );
-
-      document.body.appendChild(modal);
+      }
     }
 
     window.entregarPedido =
