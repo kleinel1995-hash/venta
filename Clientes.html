@@ -469,7 +469,7 @@
       background: #090909;
       border-radius: 24px 24px 0 0;
       display: grid;
-      grid-template-columns: repeat(5, 1fr);
+      grid-template-columns: repeat(4, 1fr);
       align-items: center;
       box-shadow: 0 -7px 24px rgba(0, 0, 0, 0.2);
     }
@@ -487,6 +487,12 @@
       justify-content: center;
       gap: 5px;
       font-size: 11px;
+      transition: 0.2s;
+    }
+
+    .nav-item:hover {
+      background: #1a1a1a;
+      color: #fff;
     }
 
     .nav-item i {
@@ -496,29 +502,6 @@
     .nav-item.active {
       background: linear-gradient(135deg, #e95414, #a83b0b);
       color: #fff;
-    }
-
-    .nav-item.new-button {
-      position: relative;
-      top: -28px;
-      width: 68px;
-      height: 68px;
-      margin: auto;
-      border-radius: 50%;
-      background: #171717;
-      color: #fff;
-      box-shadow: 0 7px 17px rgba(0, 0, 0, 0.35);
-    }
-
-    .nav-item.new-button i {
-      font-size: 28px;
-    }
-
-    .nav-item.new-button span {
-      position: absolute;
-      top: 72px;
-      color: #c6c6c6;
-      font-size: 11px;
     }
 
     /* SWEETALERT */
@@ -624,6 +607,14 @@
       .accion-btn i {
         font-size: 17px;
       }
+
+      .nav-item {
+        font-size: 10px;
+      }
+
+      .nav-item i {
+        font-size: 20px;
+      }
     }
   </style>
 </head>
@@ -693,28 +684,19 @@
       <span>Inicio</span>
     </a>
 
-    <button type="button" class="nav-item active">
-      <i class="fa-solid fa-user-group"></i>
-      <span>Clientes</span>
-    </button>
+    <a href="mapa.html" class="nav-item">
+      <i class="fa-solid fa-map-location-dot"></i>
+      <span>Mapa</span>
+    </a>
 
-    <button
-      type="button"
-      class="nav-item new-button"
-      onclick="irAgregarCliente()"
-    >
-      <i class="fa-solid fa-plus"></i>
-      <span>Nuevo</span>
-    </button>
-
-    <a href="reportes.html" class="nav-item">
-      <i class="fa-solid fa-chart-column"></i>
-      <span>Reportes</span>
+    <a href="carrito.html" class="nav-item">
+      <i class="fa-solid fa-cart-shopping"></i>
+      <span>Carrito</span>
     </a>
 
     <a href="configuracion.html" class="nav-item">
       <i class="fa-solid fa-gear"></i>
-      <span>Ajustes</span>
+      <span>Configuración</span>
     </a>
 
   </nav>
