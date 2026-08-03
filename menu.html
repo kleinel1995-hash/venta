@@ -2,7 +2,11 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
   <title>Panel Principal</title>
 
@@ -553,13 +557,21 @@
       </div>
 
       <div class="profile-data">
-        <span class="user-name" id="nombreUsuario">
+
+        <span
+          class="user-name"
+          id="nombreUsuario"
+        >
           Cargando...
         </span>
 
-        <span class="user-role" id="rolUsuario">
+        <span
+          class="user-role"
+          id="rolUsuario"
+        >
           Administrador
         </span>
+
       </div>
 
     </div>
@@ -598,8 +610,11 @@
     </section>
 
     <div class="section-title">
+
       <h2>Resumen de hoy</h2>
+
       <span id="fechaActual"></span>
+
     </div>
 
     <section class="summary-grid">
@@ -615,8 +630,18 @@
         </div>
 
         <div>
-          <div class="summary-label">Ventas de hoy</div>
-          <div class="summary-value" id="ventas">RD$0.00</div>
+
+          <div class="summary-label">
+            Ventas de hoy
+          </div>
+
+          <div
+            class="summary-value"
+            id="ventas"
+          >
+            RD$0.00
+          </div>
+
         </div>
 
       </article>
@@ -632,8 +657,18 @@
         </div>
 
         <div>
-          <div class="summary-label">Cuentas por cobrar</div>
-          <div class="summary-value" id="cobros">RD$0.00</div>
+
+          <div class="summary-label">
+            Cuentas por cobrar
+          </div>
+
+          <div
+            class="summary-value"
+            id="cobros"
+          >
+            RD$0.00
+          </div>
+
         </div>
 
       </article>
@@ -649,8 +684,18 @@
         </div>
 
         <div>
-          <div class="summary-label">Pedidos de hoy</div>
-          <div class="summary-value" id="pedidos">0</div>
+
+          <div class="summary-label">
+            Pedidos de hoy
+          </div>
+
+          <div
+            class="summary-value"
+            id="pedidos"
+          >
+            0
+          </div>
+
         </div>
 
       </article>
@@ -666,8 +711,18 @@
         </div>
 
         <div>
-          <div class="summary-label">Clientes registrados</div>
-          <div class="summary-value" id="clientes">0</div>
+
+          <div class="summary-label">
+            Clientes registrados
+          </div>
+
+          <div
+            class="summary-value"
+            id="clientes"
+          >
+            0
+          </div>
+
         </div>
 
       </article>
@@ -675,8 +730,11 @@
     </section>
 
     <div class="section-title">
+
       <h2>Acciones rápidas</h2>
+
       <span>Administración</span>
+
     </div>
 
     <section class="actions">
@@ -692,8 +750,13 @@
         </div>
 
         <div class="action-info">
+
           <strong>Nuevo pedido</strong>
-          <span>Selecciona un cliente y agrega productos.</span>
+
+          <span>
+            Selecciona un cliente y agrega productos.
+          </span>
+
         </div>
 
         <i class="fa-solid fa-chevron-right action-arrow"></i>
@@ -711,8 +774,13 @@
         </div>
 
         <div class="action-info">
+
           <strong>Ver mapa</strong>
-          <span>Consulta la ubicación de tus clientes.</span>
+
+          <span>
+            Consulta la ubicación de tus clientes.
+          </span>
+
         </div>
 
         <i class="fa-solid fa-chevron-right action-arrow"></i>
@@ -730,8 +798,15 @@
         </div>
 
         <div class="action-info">
-          <strong>Administrar productos</strong>
-          <span>Agrega, edita o elimina productos del inventario.</span>
+
+          <strong>
+            Administrar productos
+          </strong>
+
+          <span>
+            Agrega, edita o elimina productos del inventario.
+          </span>
+
         </div>
 
         <i class="fa-solid fa-chevron-right action-arrow"></i>
@@ -804,30 +879,60 @@
         .toLowerCase();
     }
 
+    function obtenerArrayLocalStorage(clave) {
+      try {
+        const datos = JSON.parse(
+          localStorage.getItem(clave) || "[]"
+        );
+
+        return Array.isArray(datos)
+          ? datos
+          : [];
+      } catch (error) {
+        console.warn(
+          `No se pudo leer ${clave}:`,
+          error
+        );
+
+        return [];
+      }
+    }
+
     function obtenerIdentidadesUsuario() {
       const identidades = new Set();
 
       const nombreUsuario =
-        localStorage.getItem("nombreUsuario");
+        localStorage.getItem(
+          "nombreUsuario"
+        );
 
       if (nombreUsuario) {
-        identidades.add(normaliza(nombreUsuario));
+        identidades.add(
+          normaliza(nombreUsuario)
+        );
       }
 
       try {
-        const usuarioSesion = JSON.parse(
-          localStorage.getItem("usuarioSesion") || "null"
-        );
+        const usuarioSesion =
+          JSON.parse(
+            localStorage.getItem(
+              "usuarioSesion"
+            ) || "null"
+          );
 
         if (usuarioSesion?.nombre) {
           identidades.add(
-            normaliza(usuarioSesion.nombre)
+            normaliza(
+              usuarioSesion.nombre
+            )
           );
         }
 
         if (usuarioSesion?.usuario) {
           identidades.add(
-            normaliza(usuarioSesion.usuario)
+            normaliza(
+              usuarioSesion.usuario
+            )
           );
         }
       } catch (error) {
@@ -838,25 +943,34 @@
       }
 
       try {
-        const currentUser = JSON.parse(
-          localStorage.getItem("currentUser") || "null"
-        );
+        const currentUser =
+          JSON.parse(
+            localStorage.getItem(
+              "currentUser"
+            ) || "null"
+          );
 
         if (currentUser?.name) {
           identidades.add(
-            normaliza(currentUser.name)
+            normaliza(
+              currentUser.name
+            )
           );
         }
 
         if (currentUser?.username) {
           identidades.add(
-            normaliza(currentUser.username)
+            normaliza(
+              currentUser.username
+            )
           );
         }
 
         if (currentUser?.role) {
           identidades.add(
-            normaliza(currentUser.role)
+            normaliza(
+              currentUser.role
+            )
           );
         }
       } catch (error) {
@@ -866,16 +980,22 @@
         );
       }
 
-      const rol = localStorage.getItem("rol");
+      const rol =
+        localStorage.getItem("rol");
 
       if (rol) {
-        identidades.add(normaliza(rol));
+        identidades.add(
+          normaliza(rol)
+        );
       }
 
       return identidades;
     }
 
-    function esDelUsuario(registro, identidades) {
+    function esDelUsuario(
+      registro,
+      identidades
+    ) {
       const candidato =
         registro?.vendedor ??
         registro?.usuario ??
@@ -893,31 +1013,15 @@
     }
 
     function esAdminActual() {
-      const rolActual = normaliza(
-        localStorage.getItem("rol")
-      );
+      const rolActual =
+        normaliza(
+          localStorage.getItem("rol")
+        );
 
       return (
         rolActual === "admin" ||
         rolActual === "administrador"
       );
-    }
-
-    function obtenerArrayLocalStorage(clave) {
-      try {
-        const datos = JSON.parse(
-          localStorage.getItem(clave) || "[]"
-        );
-
-        return Array.isArray(datos) ? datos : [];
-      } catch (error) {
-        console.warn(
-          `No se pudo leer ${clave}:`,
-          error
-        );
-
-        return [];
-      }
     }
 
     function convertirFecha(fecha) {
@@ -931,60 +1035,95 @@
           : fecha;
       }
 
-      const texto = String(fecha).trim();
+      const texto =
+        String(fecha).trim();
 
-      const partes = texto.split(",");
-      const fechaParte = (partes[0] || "").trim();
-      const horaParte = (partes[1] || "0:0:0").trim();
+      const partes =
+        texto.split(",");
 
-      const fechaNumeros = fechaParte
-        .split("/")
-        .map(numero => parseInt(numero, 10));
+      const fechaParte =
+        (partes[0] || "").trim();
 
-      if (fechaNumeros.length === 3) {
-        const [dia, mes, anio] = fechaNumeros;
+      const horaParte =
+        (partes[1] || "0:0:0").trim();
 
-        if (dia && mes && anio) {
-          const horaNumeros = horaParte
-            .split(":")
-            .map(numero => parseInt(numero, 10));
-
-          const hora = horaNumeros[0] || 0;
-          const minutos = horaNumeros[1] || 0;
-          const segundos = horaNumeros[2] || 0;
-
-          const fechaConvertida = new Date(
-            anio,
-            mes - 1,
-            dia,
-            hora,
-            minutos,
-            segundos
+      const fechaNumeros =
+        fechaParte
+          .split("/")
+          .map(numero =>
+            parseInt(numero, 10)
           );
 
-          return isNaN(fechaConvertida.getTime())
+      if (fechaNumeros.length === 3) {
+        const [
+          dia,
+          mes,
+          anio
+        ] = fechaNumeros;
+
+        if (dia && mes && anio) {
+          const horaNumeros =
+            horaParte
+              .split(":")
+              .map(numero =>
+                parseInt(numero, 10)
+              );
+
+          const hora =
+            horaNumeros[0] || 0;
+
+          const minutos =
+            horaNumeros[1] || 0;
+
+          const segundos =
+            horaNumeros[2] || 0;
+
+          const fechaConvertida =
+            new Date(
+              anio,
+              mes - 1,
+              dia,
+              hora,
+              minutos,
+              segundos
+            );
+
+          return isNaN(
+            fechaConvertida.getTime()
+          )
             ? null
             : fechaConvertida;
         }
       }
 
-      const fechaAlternativa = new Date(texto);
+      const fechaAlternativa =
+        new Date(texto);
 
-      return isNaN(fechaAlternativa.getTime())
+      return isNaN(
+        fechaAlternativa.getTime()
+      )
         ? null
         : fechaAlternativa;
     }
 
-    function esMismoDia(fechaA, fechaB) {
+    function esMismoDia(
+      fechaA,
+      fechaB
+    ) {
       return (
-        fechaA.getFullYear() === fechaB.getFullYear() &&
-        fechaA.getMonth() === fechaB.getMonth() &&
-        fechaA.getDate() === fechaB.getDate()
+        fechaA.getFullYear() ===
+          fechaB.getFullYear() &&
+        fechaA.getMonth() ===
+          fechaB.getMonth() &&
+        fechaA.getDate() ===
+          fechaB.getDate()
       );
     }
 
     function formatearMoneda(valor) {
-      return Number(valor || 0).toLocaleString(
+      return Number(
+        valor || 0
+      ).toLocaleString(
         "es-DO",
         {
           style: "currency",
@@ -996,10 +1135,14 @@
 
     function cargarUsuario() {
       const nombre =
-        localStorage.getItem("nombreUsuario");
+        localStorage.getItem(
+          "nombreUsuario"
+        );
 
       if (!nombre) {
-        window.location.href = "login.html";
+        window.location.href =
+          "login.html";
+
         return false;
       }
 
@@ -1020,9 +1163,13 @@
 
     function mostrarFechaActual() {
       const elemento =
-        document.getElementById("fechaActual");
+        document.getElementById(
+          "fechaActual"
+        );
 
-      if (!elemento) return;
+      if (!elemento) {
+        return;
+      }
 
       elemento.textContent =
         new Date().toLocaleDateString(
@@ -1062,98 +1209,141 @@
           "cuentasPorCobrar"
         );
 
-      const hoy = new Date();
+      const hoy =
+        new Date();
 
       const totalVentasHoy =
-        ventas.reduce((total, venta) => {
-          const fecha =
-            convertirFecha(venta.fecha);
+        ventas.reduce(
+          (total, venta) => {
+            const fecha =
+              convertirFecha(
+                venta.fecha ||
+                venta.fechaEntrega ||
+                venta.creadoEn
+              );
 
-          if (
-            !fecha ||
-            !esMismoDia(fecha, hoy)
-          ) {
+            if (
+              !fecha ||
+              !esMismoDia(
+                fecha,
+                hoy
+              )
+            ) {
+              return total;
+            }
+
+            if (
+              esAdmin ||
+              esDelUsuario(
+                venta,
+                identidades
+              )
+            ) {
+              return (
+                total +
+                Number(
+                  venta.total || 0
+                )
+              );
+            }
+
             return total;
-          }
-
-          if (
-            esAdmin ||
-            esDelUsuario(venta, identidades)
-          ) {
-            return total +
-              Number(venta.total || 0);
-          }
-
-          return total;
-        }, 0);
+          },
+          0
+        );
 
       const cobrosFiltrados =
-        cuentasPorCobrar.filter(cuenta => {
-          const fecha =
-            convertirFecha(cuenta.fecha);
+        cuentasPorCobrar.filter(
+          cuenta => {
+            const fecha =
+              convertirFecha(
+                cuenta.fecha ||
+                cuenta.fechaEntrega ||
+                cuenta.creadoEn
+              );
 
-          const perteneceAHoy =
-            fecha
-              ? esMismoDia(fecha, hoy)
-              : true;
+            const perteneceAHoy =
+              fecha
+                ? esMismoDia(
+                    fecha,
+                    hoy
+                  )
+                : true;
 
-          if (!perteneceAHoy) {
-            return false;
+            if (!perteneceAHoy) {
+              return false;
+            }
+
+            if (esAdmin) {
+              return true;
+            }
+
+            return esDelUsuario(
+              cuenta,
+              identidades
+            );
           }
-
-          if (esAdmin) {
-            return true;
-          }
-
-          return esDelUsuario(
-            cuenta,
-            identidades
-          );
-        });
+        );
 
       const totalCobros =
         cobrosFiltrados.reduce(
           (total, cuenta) => {
-            return total + Number(
-              cuenta.total ||
-              cuenta.monto ||
-              0
+            return (
+              total +
+              Number(
+                cuenta.saldoPendiente ??
+                cuenta.total ??
+                cuenta.monto ??
+                0
+              )
             );
           },
           0
         );
 
       const pedidosFiltrados =
-        historial.filter(pedido => {
-          const fecha =
-            convertirFecha(pedido.fecha);
+        historial.filter(
+          pedido => {
+            const fecha =
+              convertirFecha(
+                pedido.fecha ||
+                pedido.creadoEn
+              );
 
-          if (
-            !fecha ||
-            !esMismoDia(fecha, hoy)
-          ) {
-            return false;
+            if (
+              !fecha ||
+              !esMismoDia(
+                fecha,
+                hoy
+              )
+            ) {
+              return false;
+            }
+
+            if (esAdmin) {
+              return true;
+            }
+
+            return esDelUsuario(
+              pedido,
+              identidades
+            );
           }
-
-          if (esAdmin) {
-            return true;
-          }
-
-          return esDelUsuario(
-            pedido,
-            identidades
-          );
-        });
+        );
 
       document.getElementById(
         "ventas"
       ).textContent =
-        formatearMoneda(totalVentasHoy);
+        formatearMoneda(
+          totalVentasHoy
+        );
 
       document.getElementById(
         "cobros"
       ).textContent =
-        formatearMoneda(totalCobros);
+        formatearMoneda(
+          totalCobros
+        );
 
       document.getElementById(
         "pedidos"
@@ -1166,6 +1356,7 @@
         clientes.length;
 
       actualizarContadorCarrito();
+
       actualizarBurbujaUsuario(
         pedidosFiltrados
       );
@@ -1173,48 +1364,94 @@
 
     function verAdminProductos() {
       Swal.fire({
-        title: "Administrar productos",
-        text: "Ingrese la contraseña de administración.",
-        input: "password",
-        inputPlaceholder: "Contraseña",
+        position: "center",
+
+        title:
+          "Administrar productos",
+
+        text:
+          "Ingrese la contraseña de administración.",
+
+        input:
+          "password",
+
+        inputPlaceholder:
+          "Contraseña",
+
         inputAttributes: {
-          autocapitalize: "off",
-          autocomplete: "current-password"
+          autocapitalize:
+            "off",
+
+          autocomplete:
+            "current-password"
         },
-        showCancelButton: true,
-        confirmButtonText: "Continuar",
-        cancelButtonText: "Cancelar",
-        confirmButtonColor: "#f26a21"
+
+        showCancelButton:
+          true,
+
+        confirmButtonText:
+          "Continuar",
+
+        cancelButtonText:
+          "Cancelar",
+
+        confirmButtonColor:
+          "#f26a21",
+
+        cancelButtonColor:
+          "#737985",
+
+        inputValidator: valor => {
+          if (!valor) {
+            return "Introduce la contraseña.";
+          }
+        }
       }).then(resultado => {
         if (!resultado.isConfirmed) {
           return;
         }
 
-        if (resultado.value === "1234") {
+        if (
+          resultado.value ===
+          "1234"
+        ) {
           window.location.href =
-            "productos.html";
+            "administrar_inventario.html";
 
           return;
         }
 
         Swal.fire({
-          title: "Contraseña incorrecta",
-          text: "No tienes acceso a la administración de productos.",
-          icon: "error",
-          confirmButtonColor: "#f26a21"
+          position: "center",
+
+          title:
+            "Contraseña incorrecta",
+
+          text:
+            "No tienes acceso a la administración de productos.",
+
+          icon:
+            "error",
+
+          confirmButtonColor:
+            "#f26a21"
         });
       });
     }
 
     function mostrarOpciones() {
       Swal.fire({
+        position: "center",
+
         title: "Opciones",
+
         html: `
           <div style="
             display:grid;
             gap:10px;
             text-align:left;
           ">
+
             <button
               type="button"
               id="opcion-configuracion"
@@ -1237,6 +1474,7 @@
                   margin-right:9px;
                 "
               ></i>
+
               Configuración
             </button>
 
@@ -1257,14 +1495,23 @@
             >
               <i
                 class="fa-solid fa-trash"
-                style="margin-right:9px;"
+                style="
+                  margin-right:9px;
+                "
               ></i>
+
               Borrar todos los datos
             </button>
+
           </div>
         `,
-        showConfirmButton: false,
-        showCloseButton: true,
+
+        showConfirmButton:
+          false,
+
+        showCloseButton:
+          true,
+
         didOpen: () => {
           document
             .getElementById(
@@ -1295,14 +1542,31 @@
 
     function borrarDatos() {
       Swal.fire({
-        title: "¿Borrar todos los datos?",
-        text: "Se eliminarán clientes, ventas, productos, pedidos y demás registros guardados.",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#e52424",
-        cancelButtonColor: "#737985",
-        confirmButtonText: "Sí, borrar todo",
-        cancelButtonText: "Cancelar"
+        position: "center",
+
+        title:
+          "¿Borrar todos los datos?",
+
+        text:
+          "Se eliminarán clientes, ventas, productos, pedidos y demás registros guardados.",
+
+        icon:
+          "warning",
+
+        showCancelButton:
+          true,
+
+        confirmButtonColor:
+          "#e52424",
+
+        cancelButtonColor:
+          "#737985",
+
+        confirmButtonText:
+          "Sí, borrar todo",
+
+        cancelButtonText:
+          "Cancelar"
       }).then(resultado => {
         if (!resultado.isConfirmed) {
           return;
@@ -1311,11 +1575,22 @@
         localStorage.clear();
 
         Swal.fire({
-          title: "Datos eliminados",
-          text: "Todos los registros fueron eliminados correctamente.",
-          icon: "success",
-          confirmButtonColor: "#f26a21",
-          confirmButtonText: "Aceptar"
+          position: "center",
+
+          title:
+            "Datos eliminados",
+
+          text:
+            "Todos los registros fueron eliminados correctamente.",
+
+          icon:
+            "success",
+
+          confirmButtonColor:
+            "#f26a21",
+
+          confirmButtonText:
+            "Aceptar"
         }).then(() => {
           window.location.href =
             "login.html";
@@ -1329,23 +1604,34 @@
           "cart-count"
         );
 
-      if (!badge) return;
+      if (!badge) {
+        return;
+      }
 
       const carrito =
-        obtenerArrayLocalStorage("cart");
+        obtenerArrayLocalStorage(
+          "cart"
+        );
 
       const total =
-        carrito.reduce((suma, producto) => {
-          return suma + Number(
-            producto.quantity ||
-            producto.cantidad ||
-            0
-          );
-        }, 0);
+        carrito.reduce(
+          (suma, producto) => {
+            return (
+              suma +
+              Number(
+                producto.quantity ||
+                producto.cantidad ||
+                0
+              )
+            );
+          },
+          0
+        );
 
-      badge.textContent = total > 99
-        ? "99+"
-        : total;
+      badge.textContent =
+        total > 99
+          ? "99+"
+          : total;
 
       badge.style.display =
         total > 0
@@ -1361,7 +1647,9 @@
           "user-count"
         );
 
-      if (!badge) return;
+      if (!badge) {
+        return;
+      }
 
       const pedidos =
         Array.isArray(
@@ -1377,15 +1665,20 @@
         "en proceso",
         "procesando",
         "por entregar",
-        "no entregado"
+        "no entregado",
+        "despacho parcial"
       ];
 
       const pendientes =
-        pedidos.filter(pedido => {
-          return estadosPendientes.includes(
-            normaliza(pedido.estado)
-          );
-        }).length;
+        pedidos.filter(
+          pedido => {
+            return estadosPendientes.includes(
+              normaliza(
+                pedido.estado
+              )
+            );
+          }
+        ).length;
 
       const total =
         pendientes > 0
@@ -1422,12 +1715,9 @@
           "historialPedidos",
           "ventasRealizadas",
           "cuentasPorCobrar",
-          "clientes"
+          "clientes",
+          "cart"
         ];
-
-        if (evento.key === "cart") {
-          actualizarContadorCarrito();
-        }
 
         if (
           clavesRecargables.includes(
@@ -1451,7 +1741,7 @@
     window.addEventListener(
       "pageshow",
       () => {
-        actualizarContadorCarrito();
+        cargarResumen();
       }
     );
   </script>
