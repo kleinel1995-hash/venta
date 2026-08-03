@@ -97,9 +97,9 @@
     .profile-icon {
       width: 48px;
       height: 48px;
+      border: 1px solid #383838;
       border-radius: 15px;
       background: linear-gradient(145deg, #202020, #090909);
-      border: 1px solid #383838;
       color: var(--orange);
       display: flex;
       align-items: center;
@@ -204,9 +204,9 @@
     }
 
     .welcome-title {
+      margin-bottom: 8px;
       font-size: 25px;
       line-height: 1.2;
-      margin-bottom: 8px;
     }
 
     .welcome-text {
@@ -225,8 +225,8 @@
     }
 
     .section-title h2 {
-      font-size: 19px;
       color: #111;
+      font-size: 19px;
     }
 
     .section-title span {
@@ -327,7 +327,9 @@
       gap: 14px;
       text-align: left;
       box-shadow: 0 7px 22px rgba(0, 0, 0, 0.07);
-      transition: transform 0.2s, box-shadow 0.2s;
+      transition:
+        transform 0.2s,
+        box-shadow 0.2s;
     }
 
     .action-button:hover {
@@ -373,8 +375,8 @@
     .action-info strong {
       display: block;
       margin-bottom: 5px;
-      font-size: 16px;
       color: #111;
+      font-size: 16px;
     }
 
     .action-info span {
@@ -400,8 +402,8 @@
       width: min(100%, 760px);
       height: 84px;
       padding: 7px 12px 5px;
-      background: #090909;
       border-radius: 24px 24px 0 0;
+      background: #090909;
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       align-items: center;
@@ -422,7 +424,9 @@
       justify-content: center;
       gap: 5px;
       font-size: 11px;
-      transition: background 0.2s, color 0.2s;
+      transition:
+        background 0.2s,
+        color 0.2s;
     }
 
     .nav-item:hover {
@@ -451,11 +455,11 @@
       border-radius: 999px;
       background: var(--red);
       color: #fff;
+      display: none;
       font-size: 10px;
       font-weight: 800;
       line-height: 15px;
       text-align: center;
-      display: none;
     }
 
     /* RESPONSIVE */
@@ -742,7 +746,7 @@
       <button
         type="button"
         class="action-button order"
-        onclick="location.href='Clientes.html'"
+        onclick="window.location.href='Clientes.html'"
       >
 
         <div class="action-icon">
@@ -766,7 +770,7 @@
       <button
         type="button"
         class="action-button map"
-        onclick="location.href='mapa.html'"
+        onclick="window.location.href='mapa.html'"
       >
 
         <div class="action-icon">
@@ -790,7 +794,7 @@
       <button
         type="button"
         class="action-button products"
-        onclick="verAdminProductos()"
+        onclick="window.location.href='administrar_inventario.html'"
       >
 
         <div class="action-icon">
@@ -799,9 +803,7 @@
 
         <div class="action-info">
 
-          <strong>
-            Administrar productos
-          </strong>
+          <strong>Administrar productos</strong>
 
           <span>
             Agrega, edita o elimina productos del inventario.
@@ -913,12 +915,11 @@
       }
 
       try {
-        const usuarioSesion =
-          JSON.parse(
-            localStorage.getItem(
-              "usuarioSesion"
-            ) || "null"
-          );
+        const usuarioSesion = JSON.parse(
+          localStorage.getItem(
+            "usuarioSesion"
+          ) || "null"
+        );
 
         if (usuarioSesion?.nombre) {
           identidades.add(
@@ -943,12 +944,11 @@
       }
 
       try {
-        const currentUser =
-          JSON.parse(
-            localStorage.getItem(
-              "currentUser"
-            ) || "null"
-          );
+        const currentUser = JSON.parse(
+          localStorage.getItem(
+            "currentUser"
+          ) || "null"
+        );
 
         if (currentUser?.name) {
           identidades.add(
@@ -962,14 +962,6 @@
           identidades.add(
             normaliza(
               currentUser.username
-            )
-          );
-        }
-
-        if (currentUser?.role) {
-          identidades.add(
-            normaliza(
-              currentUser.role
             )
           );
         }
@@ -1013,10 +1005,9 @@
     }
 
     function esAdminActual() {
-      const rolActual =
-        normaliza(
-          localStorage.getItem("rol")
-        );
+      const rolActual = normaliza(
+        localStorage.getItem("rol")
+      );
 
       return (
         rolActual === "admin" ||
@@ -1030,13 +1021,26 @@
       }
 
       if (fecha instanceof Date) {
-        return isNaN(fecha.getTime())
+        return isNaN(
+          fecha.getTime()
+        )
           ? null
           : fecha;
       }
 
       const texto =
         String(fecha).trim();
+
+      const fechaDirecta =
+        new Date(texto);
+
+      if (
+        !isNaN(
+          fechaDirecta.getTime()
+        )
+      ) {
+        return fechaDirecta;
+      }
 
       const partes =
         texto.split(",");
@@ -1054,56 +1058,49 @@
             parseInt(numero, 10)
           );
 
-      if (fechaNumeros.length === 3) {
+      if (
+        fechaNumeros.length === 3
+      ) {
         const [
           dia,
           mes,
           anio
         ] = fechaNumeros;
 
-        if (dia && mes && anio) {
-          const horaNumeros =
-            horaParte
-              .split(":")
-              .map(numero =>
-                parseInt(numero, 10)
-              );
-
-          const hora =
-            horaNumeros[0] || 0;
-
-          const minutos =
-            horaNumeros[1] || 0;
-
-          const segundos =
-            horaNumeros[2] || 0;
-
-          const fechaConvertida =
-            new Date(
-              anio,
-              mes - 1,
-              dia,
-              hora,
-              minutos,
-              segundos
+        const horaNumeros =
+          horaParte
+            .split(":")
+            .map(numero =>
+              parseInt(numero, 10)
             );
 
-          return isNaN(
-            fechaConvertida.getTime()
-          )
-            ? null
-            : fechaConvertida;
-        }
+        const hora =
+          horaNumeros[0] || 0;
+
+        const minutos =
+          horaNumeros[1] || 0;
+
+        const segundos =
+          horaNumeros[2] || 0;
+
+        const fechaConvertida =
+          new Date(
+            anio,
+            mes - 1,
+            dia,
+            hora,
+            minutos,
+            segundos
+          );
+
+        return isNaN(
+          fechaConvertida.getTime()
+        )
+          ? null
+          : fechaConvertida;
       }
 
-      const fechaAlternativa =
-        new Date(texto);
-
-      return isNaN(
-        fechaAlternativa.getTime()
-      )
-        ? null
-        : fechaAlternativa;
+      return null;
     }
 
     function esMismoDia(
@@ -1128,7 +1125,8 @@
         {
           style: "currency",
           currency: "DOP",
-          minimumFractionDigits: 2
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
         }
       );
     }
@@ -1217,8 +1215,9 @@
           (total, venta) => {
             const fecha =
               convertirFecha(
-                venta.fecha ||
                 venta.fechaEntrega ||
+                venta.fechaVenta ||
+                venta.fecha ||
                 venta.creadoEn
               );
 
@@ -1257,8 +1256,8 @@
           cuenta => {
             const fecha =
               convertirFecha(
-                cuenta.fecha ||
                 cuenta.fechaEntrega ||
+                cuenta.fecha ||
                 cuenta.creadoEn
               );
 
@@ -1362,83 +1361,6 @@
       );
     }
 
-    function verAdminProductos() {
-      Swal.fire({
-        position: "center",
-
-        title:
-          "Administrar productos",
-
-        text:
-          "Ingrese la contraseña de administración.",
-
-        input:
-          "password",
-
-        inputPlaceholder:
-          "Contraseña",
-
-        inputAttributes: {
-          autocapitalize:
-            "off",
-
-          autocomplete:
-            "current-password"
-        },
-
-        showCancelButton:
-          true,
-
-        confirmButtonText:
-          "Continuar",
-
-        cancelButtonText:
-          "Cancelar",
-
-        confirmButtonColor:
-          "#f26a21",
-
-        cancelButtonColor:
-          "#737985",
-
-        inputValidator: valor => {
-          if (!valor) {
-            return "Introduce la contraseña.";
-          }
-        }
-      }).then(resultado => {
-        if (!resultado.isConfirmed) {
-          return;
-        }
-
-        if (
-          resultado.value ===
-          "1234"
-        ) {
-          window.location.href =
-            "administrar_inventario.html";
-
-          return;
-        }
-
-        Swal.fire({
-          position: "center",
-
-          title:
-            "Contraseña incorrecta",
-
-          text:
-            "No tienes acceso a la administración de productos.",
-
-          icon:
-            "error",
-
-          confirmButtonColor:
-            "#f26a21"
-        });
-      });
-    }
-
     function mostrarOpciones() {
       Swal.fire({
         position: "center",
@@ -1506,11 +1428,8 @@
           </div>
         `,
 
-        showConfirmButton:
-          false,
-
-        showCloseButton:
-          true,
+        showConfirmButton: false,
+        showCloseButton: true,
 
         didOpen: () => {
           document
@@ -1568,14 +1487,17 @@
         cancelButtonText:
           "Cancelar"
       }).then(resultado => {
-        if (!resultado.isConfirmed) {
+        if (
+          !resultado.isConfirmed
+        ) {
           return;
         }
 
         localStorage.clear();
 
         Swal.fire({
-          position: "center",
+          position:
+            "center",
 
           title:
             "Datos eliminados",
@@ -1661,21 +1583,32 @@
             );
 
       const estadosPendientes = [
+        "",
         "pendiente",
+        "despacho parcial",
+        "parcial",
         "en proceso",
         "procesando",
         "por entregar",
-        "no entregado",
-        "despacho parcial"
+        "no entregado"
       ];
 
       const pendientes =
         pedidos.filter(
           pedido => {
-            return estadosPendientes.includes(
+            const estado =
               normaliza(
                 pedido.estado
-              )
+              );
+
+            if (
+              pedido.despachado === true
+            ) {
+              return false;
+            }
+
+            return estadosPendientes.includes(
+              estado
             );
           }
         ).length;
@@ -1747,4 +1680,4 @@
   </script>
 
 </body>
-</html> 
+</html>
