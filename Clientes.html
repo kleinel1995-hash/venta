@@ -2,18 +2,11 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lista de Clientes</title>
 
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
-  >
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
@@ -41,8 +34,7 @@
       font-family: Arial, Helvetica, sans-serif;
     }
 
-    html,
-    body {
+    html, body {
       min-height: 100%;
     }
 
@@ -52,22 +44,17 @@
       padding-bottom: 20px;
     }
 
-    button,
-    input {
+    button, input {
       font: inherit;
     }
 
-    button,
-    a,
-    input {
+    button, a, input {
       -webkit-tap-highlight-color: transparent;
     }
 
     button {
       cursor: pointer;
     }
-
-    /* ENCABEZADO */
 
     .header {
       position: sticky;
@@ -80,7 +67,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      box-shadow: 0 2px 14px rgba(0, 0, 0, 0.18);
+      box-shadow: 0 2px 14px rgba(0,0,0,.18);
     }
 
     .header-title {
@@ -103,13 +90,13 @@
       height: 48px;
       border: 1px solid #373737;
       border-radius: 15px;
-      background: linear-gradient(145deg, #191919, #080808);
+      background: linear-gradient(145deg,#191919,#080808);
       color: var(--white);
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 23px;
-      box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.03);
+      box-shadow: inset 0 0 10px rgba(255,255,255,.03);
     }
 
     .header-button.add {
@@ -117,18 +104,14 @@
     }
 
     .header-button:active {
-      transform: scale(0.96);
+      transform: scale(.96);
     }
 
-    /* CONTENIDO */
-
     .container {
-      width: min(100%, 760px);
+      width: min(100%,760px);
       margin: 0 auto;
       padding: 22px 16px;
     }
-
-    /* BUSCADOR */
 
     .search-box {
       position: relative;
@@ -145,12 +128,12 @@
       color: var(--text);
       font-size: 16px;
       outline: none;
-      box-shadow: 0 7px 22px rgba(0, 0, 0, 0.08);
+      box-shadow: 0 7px 22px rgba(0,0,0,.08);
     }
 
     .search-box input:focus {
       border-color: var(--orange);
-      box-shadow: 0 7px 24px rgba(242, 106, 33, 0.16);
+      box-shadow: 0 7px 24px rgba(242,106,33,.16);
     }
 
     .search-icon {
@@ -181,21 +164,19 @@
       background: #f1f2f4;
     }
 
-    /* TARJETA DEL CLIENTE */
-
     .cliente {
       position: relative;
       background: var(--white);
-      border: 1px solid #eeeeee;
+      border: 1px solid #eee;
       border-radius: 20px;
       margin-bottom: 20px;
       overflow: hidden;
-      box-shadow: 0 7px 22px rgba(0, 0, 0, 0.07);
+      box-shadow: 0 7px 22px rgba(0,0,0,.07);
     }
 
     .cliente-main {
       display: grid;
-      grid-template-columns: 88px minmax(0, 1fr) auto;
+      grid-template-columns: 88px minmax(0,1fr) auto;
       gap: 15px;
       align-items: start;
       padding: 22px 20px 18px;
@@ -315,18 +296,17 @@
       font-size: 14px;
       font-weight: 700;
       white-space: nowrap;
+      cursor: pointer;
     }
 
     .location-button:hover {
       background: #dff4dc;
     }
 
-    /* ACCIONES */
-
     .acciones {
       border-top: 1px solid var(--line);
       display: grid;
-      grid-template-columns: repeat(5, 1fr);
+      grid-template-columns: repeat(5,1fr);
       background: #fff;
     }
 
@@ -342,7 +322,7 @@
       justify-content: center;
       gap: 6px;
       font-size: 12px;
-      transition: background 0.2s, transform 0.2s;
+      transition: background .2s, transform .2s;
     }
 
     .accion-btn:last-child {
@@ -354,40 +334,24 @@
     }
 
     .accion-btn:active {
-      transform: scale(0.96);
+      transform: scale(.96);
     }
 
     .accion-btn i {
       font-size: 20px;
     }
 
-    .pedido-btn {
-      color: var(--blue);
-    }
-
-    .ver-btn {
-      color: var(--green);
-    }
-
-    .historial-btn {
-      color: var(--orange);
-    }
-
-    .info-btn {
-      color: var(--purple);
-    }
-
-    .eliminar-btn {
-      color: var(--red);
-    }
+    .pedido-btn { color: var(--blue); }
+    .ver-btn { color: var(--green); }
+    .historial-btn { color: var(--orange); }
+    .info-btn { color: var(--purple); }
+    .eliminar-btn { color: var(--red); }
 
     .ver-btn:disabled {
       color: var(--green);
-      opacity: 0.72;
+      opacity: .72;
       cursor: default;
     }
-
-    /* HISTORIAL */
 
     .historial {
       display: none;
@@ -411,12 +375,6 @@
       border-radius: 12px;
     }
 
-    .historial-item:last-child {
-      margin-bottom: 0;
-    }
-
-    /* MENÚ DE TRES PUNTOS */
-
     .menu-opciones {
       display: none;
       position: absolute;
@@ -428,7 +386,7 @@
       background: #fff;
       border: 1px solid #e5e7eb;
       border-radius: 14px;
-      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.16);
+      box-shadow: 0 12px 35px rgba(0,0,0,.16);
     }
 
     .menu-opciones.mostrar {
@@ -453,13 +411,6 @@
       background: #f4f5f6;
     }
 
-    .menu-opciones button:disabled {
-      opacity: 0.65;
-      cursor: default;
-    }
-
-    /* SIN RESULTADOS */
-
     .sin-clientes {
       text-align: center;
       padding: 50px 20px;
@@ -472,12 +423,6 @@
       margin-bottom: 15px;
     }
 
-    .sin-clientes p {
-      font-size: 16px;
-    }
-
-    /* SWEETALERT */
-
     .swal-cliente-info {
       text-align: left;
       line-height: 1.8;
@@ -489,9 +434,7 @@
       color: #111827;
     }
 
-    /* RESPONSIVE */
-
-    @media (max-width: 620px) {
+    @media (max-width:620px) {
       .header {
         height: 70px;
         padding: 0 12px;
@@ -518,7 +461,7 @@
       }
 
       .cliente-main {
-        grid-template-columns: 64px minmax(0, 1fr);
+        grid-template-columns: 64px minmax(0,1fr);
         gap: 12px;
         padding: 18px 14px 15px;
       }
@@ -570,13 +513,9 @@
       }
     }
 
-    @media (max-width: 380px) {
+    @media (max-width:380px) {
       .header-title span {
         font-size: 17px;
-      }
-
-      .acciones {
-        grid-template-columns: repeat(5, minmax(0, 1fr));
       }
 
       .accion-btn {
@@ -594,13 +533,10 @@
 <body>
 
   <header class="header">
-
-    <button
-      class="header-button"
-      type="button"
-      onclick="history.back()"
-      aria-label="Volver"
-    >
+    <button class="header-button"
+            type="button"
+            onclick="history.back()"
+            aria-label="Volver">
       <i class="fa-solid fa-arrow-left"></i>
     </button>
 
@@ -609,49 +545,37 @@
       <span>Lista de Clientes</span>
     </div>
 
-    <button
-      class="header-button add"
-      type="button"
-      onclick="irAgregarCliente()"
-      aria-label="Agregar cliente"
-    >
+    <button class="header-button add"
+            type="button"
+            onclick="irAgregarCliente()"
+            aria-label="Agregar cliente">
       <i class="fa-solid fa-plus"></i>
     </button>
-
   </header>
 
   <main class="container">
-
     <div class="search-box">
-
       <i class="fa-solid fa-magnifying-glass search-icon"></i>
 
-      <input
-        type="text"
-        id="buscador"
-        placeholder="Buscar cliente..."
-        autocomplete="off"
-        oninput="renderClientes()"
-      >
+      <input type="text"
+             id="buscador"
+             placeholder="Buscar cliente..."
+             autocomplete="off"
+             oninput="renderClientes()">
 
-      <button
-        class="filter-button"
-        type="button"
-        onclick="mostrarFiltros()"
-        aria-label="Filtrar clientes"
-      >
+      <button class="filter-button"
+              type="button"
+              onclick="mostrarFiltros()"
+              aria-label="Filtrar clientes">
         <i class="fa-solid fa-filter"></i>
       </button>
-
     </div>
 
     <div id="listaClientes"></div>
-
   </main>
 
   <script>
     let clientes = cargarClientes();
-
     let filtroEstado = "todos";
 
     function cargarClientes() {
@@ -660,15 +584,8 @@
           localStorage.getItem("clientes") || "[]"
         );
 
-        return Array.isArray(datos)
-          ? datos
-          : [];
+        return Array.isArray(datos) ? datos : [];
       } catch (error) {
-        console.warn(
-          "No se pudieron cargar los clientes:",
-          error
-        );
-
         return [];
       }
     }
@@ -681,16 +598,9 @@
     }
 
     function reiniciarVisitas() {
-      const ahora = new Date();
-
+      const hoy = new Date().toLocaleDateString("es-DO");
       const ultimaFecha =
-        localStorage.getItem(
-          "ultimaFechaVisita"
-        ) || "";
-
-      const hoy = ahora.toLocaleDateString(
-        "es-DO"
-      );
+        localStorage.getItem("ultimaFechaVisita") || "";
 
       if (hoy !== ultimaFecha) {
         clientes.forEach(cliente => {
@@ -709,9 +619,7 @@
     function eliminarCliente(index) {
       cerrarMenus();
 
-      if (!clientes[index]) {
-        return;
-      }
+      if (!clientes[index]) return;
 
       Swal.fire({
         position: "center",
@@ -721,42 +629,32 @@
         input: "password",
         inputLabel: "Contraseña",
         inputPlaceholder: "Ingrese la contraseña",
-        inputAttributes: {
-          autocapitalize: "off",
-          autocomplete: "current-password"
-        },
         showCancelButton: true,
         confirmButtonText: "Eliminar",
         cancelButtonText: "Cancelar",
         confirmButtonColor: "#e52424",
         cancelButtonColor: "#737985"
       }).then(result => {
-        if (!result.isConfirmed) {
-          return;
-        }
+        if (!result.isConfirmed) return;
 
         if (result.value !== "1234") {
           Swal.fire({
             position: "center",
-            title: "Contraseña incorrecta",
-            text: "No fue posible eliminar el cliente.",
             icon: "error",
+            title: "Contraseña incorrecta",
             confirmButtonColor: "#f26a21"
           });
-
           return;
         }
 
         clientes.splice(index, 1);
-
         guardarClientes();
         renderClientes();
 
         Swal.fire({
           position: "center",
-          title: "Cliente eliminado",
-          text: "El cliente fue eliminado correctamente.",
           icon: "success",
+          title: "Cliente eliminado",
           confirmButtonColor: "#f26a21"
         });
       });
@@ -765,12 +663,9 @@
     function marcarVisitado(index) {
       cerrarMenus();
 
-      if (!clientes[index]) {
-        return;
-      }
+      if (!clientes[index]) return;
 
       clientes[index].estado = "visitado";
-
       guardarClientes();
       renderClientes();
 
@@ -780,54 +675,81 @@
         icon: "success",
         title: "Cliente marcado como visitado",
         showConfirmButton: false,
-        timer: 1600,
-        timerProgressBar: true
+        timer: 1600
       });
     }
 
     function seleccionarCliente(index) {
       cerrarMenus();
 
-      if (!clientes[index]) {
-        return;
-      }
+      if (!clientes[index]) return;
 
       clientes[index].estado = "visitado";
-
       guardarClientes();
-
-      const clienteSeleccionado = {
-        ...clientes[index],
-        id: index
-      };
 
       localStorage.setItem(
         "clienteSeleccionado",
-        JSON.stringify(clienteSeleccionado)
+        JSON.stringify({
+          ...clientes[index],
+          id: index
+        })
       );
 
       window.location.href = "inventario.html";
     }
 
+    function verUbicacionCliente(index) {
+      cerrarMenus();
+
+      const cliente = clientes[index];
+
+      if (!cliente) return;
+
+      const latitud = parseFloat(cliente.latitud);
+      const longitud = parseFloat(cliente.longitud);
+
+      if (
+        !Number.isFinite(latitud) ||
+        !Number.isFinite(longitud) ||
+        latitud < -90 ||
+        latitud > 90 ||
+        longitud < -180 ||
+        longitud > 180
+      ) {
+        Swal.fire({
+          position: "center",
+          icon: "warning",
+          title: "Ubicación no disponible",
+          text: "Este cliente no tiene coordenadas válidas.",
+          confirmButtonColor: "#f26a21"
+        });
+
+        return;
+      }
+
+      localStorage.setItem(
+        "clienteMapaSeleccionado",
+        JSON.stringify({
+          ...cliente,
+          id: index,
+          latitud,
+          longitud
+        })
+      );
+
+      window.location.href = "mapa.html";
+    }
+
     function toggleHistorial(index) {
       cerrarMenus();
 
-      const historial =
-        document.getElementById(
-          `historial-${index}`
-        );
-
-      if (historial) {
-        historial.classList.toggle(
-          "mostrar"
-        );
-      }
+      document
+        .getElementById(`historial-${index}`)
+        ?.classList.toggle("mostrar");
     }
 
     function toggleOpciones(index, event) {
-      if (event) {
-        event.stopPropagation();
-      }
+      event?.stopPropagation();
 
       const menuActual =
         document.getElementById(
@@ -838,26 +760,18 @@
         .querySelectorAll(".menu-opciones")
         .forEach(menu => {
           if (menu !== menuActual) {
-            menu.classList.remove(
-              "mostrar"
-            );
+            menu.classList.remove("mostrar");
           }
         });
 
-      if (menuActual) {
-        menuActual.classList.toggle(
-          "mostrar"
-        );
-      }
+      menuActual?.classList.toggle("mostrar");
     }
 
     function cerrarMenus() {
       document
         .querySelectorAll(".menu-opciones")
         .forEach(menu => {
-          menu.classList.remove(
-            "mostrar"
-          );
+          menu.classList.remove("mostrar");
         });
     }
 
@@ -865,90 +779,31 @@
       cerrarMenus();
 
       const cliente = clientes[index];
-
-      if (!cliente) {
-        return;
-      }
+      if (!cliente) return;
 
       const nombreCompleto = [
         cliente.nombre,
         cliente.apellido
-      ]
-        .filter(Boolean)
-        .join(" ");
+      ].filter(Boolean).join(" ");
 
       Swal.fire({
         position: "center",
-
         title: "Información del cliente",
-
         html: `
           <div class="swal-cliente-info">
-
-            <b>Nombre:</b>
-            ${escaparHTML(
-              nombreCompleto || "-"
-            )}
-            <br>
-
-            <b>Cédula:</b>
-            ${escaparHTML(
-              cliente.cedula || "-"
-            )}
-            <br>
-
-            <b>Teléfono:</b>
-            ${escaparHTML(
-              cliente.telefono || "-"
-            )}
-            <br>
-
-            <b>Dirección:</b>
-            ${escaparHTML(
-              cliente.direccion || "-"
-            )}
-            <br>
-
-            <b>Negocio:</b>
-            ${escaparHTML(
-              cliente.negocio || "-"
-            )}
-            <br>
-
-            <b>Ruta:</b>
-            ${escaparHTML(
-              cliente.ruta || "-"
-            )}
-            <br>
-
-            <b>Correo:</b>
-            ${escaparHTML(
-              cliente.correo || "-"
-            )}
-            <br>
-
-            <b>Latitud:</b>
-            ${escaparHTML(
-              cliente.latitud || "-"
-            )}
-            <br>
-
-            <b>Longitud:</b>
-            ${escaparHTML(
-              cliente.longitud || "-"
-            )}
-            <br>
-
+            <b>Nombre:</b> ${escaparHTML(nombreCompleto || "-")}<br>
+            <b>Cédula:</b> ${escaparHTML(cliente.cedula || "-")}<br>
+            <b>Teléfono:</b> ${escaparHTML(cliente.telefono || "-")}<br>
+            <b>Dirección:</b> ${escaparHTML(cliente.direccion || "-")}<br>
+            <b>Negocio:</b> ${escaparHTML(cliente.negocio || "-")}<br>
+            <b>Ruta:</b> ${escaparHTML(cliente.ruta || "-")}<br>
+            <b>Correo:</b> ${escaparHTML(cliente.correo || "-")}<br>
+            <b>Latitud:</b> ${escaparHTML(cliente.latitud || "-")}<br>
+            <b>Longitud:</b> ${escaparHTML(cliente.longitud || "-")}<br>
             <b>Estado:</b>
-            ${
-              cliente.estado === "visitado"
-                ? "Visitado"
-                : "Por visitar"
-            }
-
+            ${cliente.estado === "visitado" ? "Visitado" : "Por visitar"}
           </div>
         `,
-
         icon: "info",
         confirmButtonText: "Cerrar",
         confirmButtonColor: "#f26a21"
@@ -963,19 +818,14 @@
     function mostrarFiltros() {
       Swal.fire({
         position: "center",
-
         title: "Filtrar clientes",
-
         input: "select",
-
         inputOptions: {
           todos: "Todos los clientes",
           visitado: "Visitados",
           visitar: "Por visitar"
         },
-
         inputValue: filtroEstado,
-
         showCancelButton: true,
         confirmButtonText: "Aplicar",
         cancelButtonText: "Cancelar",
@@ -993,23 +843,10 @@
 
     function renderClientes() {
       const contenedor =
-        document.getElementById(
-          "listaClientes"
-        );
-
-      const buscador =
-        document.getElementById(
-          "buscador"
-        );
-
-      if (!contenedor) {
-        return;
-      }
+        document.getElementById("listaClientes");
 
       const filtro = normalizarTexto(
-        buscador
-          ? buscador.value
-          : ""
+        document.getElementById("buscador")?.value || ""
       );
 
       contenedor.innerHTML = "";
@@ -1020,61 +857,33 @@
           index
         }))
         .filter(cliente => {
-          const nombreCompleto =
-            normalizarTexto(
-              `${cliente.nombre || ""} ${cliente.apellido || ""}`
-            );
-
-          const negocio =
-            normalizarTexto(
-              cliente.negocio || ""
-            );
-
-          const telefono =
-            normalizarTexto(
-              cliente.telefono || ""
-            );
-
-          const direccion =
-            normalizarTexto(
-              cliente.direccion || ""
-            );
+          const nombreCompleto = normalizarTexto(
+            `${cliente.nombre || ""} ${cliente.apellido || ""}`
+          );
 
           const coincideTexto =
-            nombreCompleto.includes(
-              filtro
-            ) ||
-            negocio.includes(filtro) ||
-            telefono.includes(filtro) ||
-            direccion.includes(filtro);
+            nombreCompleto.includes(filtro) ||
+            normalizarTexto(cliente.negocio || "").includes(filtro) ||
+            normalizarTexto(cliente.telefono || "").includes(filtro) ||
+            normalizarTexto(cliente.direccion || "").includes(filtro);
 
           const estado =
-            cliente.estado ||
-            "visitar";
+            cliente.estado || "visitar";
 
           const coincideEstado =
             filtroEstado === "todos" ||
             estado === filtroEstado;
 
-          return (
-            coincideTexto &&
-            coincideEstado
-          );
+          return coincideTexto && coincideEstado;
         });
 
       if (filtrados.length === 0) {
         contenedor.innerHTML = `
           <div class="sin-clientes">
-
             <i class="fa-regular fa-folder-open"></i>
-
-            <p>
-              No se encontraron clientes.
-            </p>
-
+            <p>No se encontraron clientes.</p>
           </div>
         `;
-
         return;
       }
 
@@ -1093,51 +902,34 @@
           index
         } = cliente;
 
-        const nombreCompleto = [
-          nombre,
-          apellido
-        ]
-          .filter(Boolean)
-          .join(" ");
-
-        const div =
-          document.createElement(
-            "article"
-          );
-
-        div.className = "cliente";
+        const nombreCompleto =
+          [nombre, apellido]
+            .filter(Boolean)
+            .join(" ");
 
         const historialHTML =
           Array.isArray(historial) &&
           historial.length
             ? historial.map(pedido => `
                 <div class="historial-item">
-
                   <strong>
                     <i class="fa-solid fa-box"></i>
-
                     ${escaparHTML(
                       pedido.producto ||
                       pedido.nombre ||
                       "Producto"
                     )}
                   </strong>
-
                   <br>
-
                   Cantidad:
                   ${escaparHTML(
                     pedido.cantidad || "0"
                   )}
-
                   <br>
-
                   Fecha:
                   ${escaparHTML(
-                    pedido.fecha ||
-                    "Sin fecha"
+                    pedido.fecha || "Sin fecha"
                   )}
-
                 </div>
               `).join("")
             : "<em>Sin historial aún.</em>";
@@ -1150,12 +942,15 @@
           );
 
         const hayUbicacion =
-          latitud !== undefined &&
-          longitud !== undefined &&
-          String(latitud).trim() !== "" &&
-          String(longitud).trim() !== "";
+          Number.isFinite(parseFloat(latitud)) &&
+          Number.isFinite(parseFloat(longitud));
 
-        div.innerHTML = `
+        const tarjeta =
+          document.createElement("article");
+
+        tarjeta.className = "cliente";
+
+        tarjeta.innerHTML = `
           <div class="cliente-main">
 
             <div class="cliente-icon">
@@ -1163,7 +958,6 @@
             </div>
 
             <div class="cliente-content">
-
               <h3>
                 ${escaparHTML(
                   negocio ||
@@ -1173,19 +967,11 @@
               </h3>
 
               ${
-                nombreCompleto &&
-                negocio
+                nombreCompleto && negocio
                   ? `
                     <div class="cliente-line">
-
                       <i class="fa-solid fa-user"></i>
-
-                      <span>
-                        ${escaparHTML(
-                          nombreCompleto
-                        )}
-                      </span>
-
+                      <span>${escaparHTML(nombreCompleto)}</span>
                     </div>
                   `
                   : ""
@@ -1195,15 +981,8 @@
                 telefono
                   ? `
                     <div class="cliente-line">
-
                       <i class="fa-solid fa-phone"></i>
-
-                      <span>
-                        ${escaparHTML(
-                          telefono
-                        )}
-                      </span>
-
+                      <span>${escaparHTML(telefono)}</span>
                     </div>
                   `
                   : ""
@@ -1213,15 +992,8 @@
                 direccion
                   ? `
                     <div class="cliente-line">
-
                       <i class="fa-solid fa-location-dot"></i>
-
-                      <span>
-                        ${escaparHTML(
-                          direccion
-                        )}
-                      </span>
-
+                      <span>${escaparHTML(direccion)}</span>
                     </div>
                   `
                   : ""
@@ -1231,20 +1003,12 @@
                 correo
                   ? `
                     <div class="cliente-line">
-
                       <i class="fa-solid fa-envelope"></i>
-
-                      <span>
-                        ${escaparHTML(
-                          correo
-                        )}
-                      </span>
-
+                      <span>${escaparHTML(correo)}</span>
                     </div>
                   `
                   : ""
               }
-
             </div>
 
             <div class="cliente-side">
@@ -1283,30 +1047,23 @@
               ${
                 hayUbicacion
                   ? `
-                    <a
+                    <button
+                      type="button"
                       class="location-button"
-                      href="https://www.google.com/maps?q=${encodeURIComponent(
-                        latitud
-                      )},${encodeURIComponent(
-                        longitud
-                      )}"
-                      target="_blank"
-                      rel="noopener noreferrer"
+                      onclick="verUbicacionCliente(${index})"
                     >
                       <i class="fa-solid fa-location-dot"></i>
                       Ver ubicación
-                    </a>
+                    </button>
                   `
                   : ""
               }
-
             </div>
 
             <div
               class="menu-opciones"
               id="menu-opciones-${index}"
             >
-
               <button
                 type="button"
                 onclick="seleccionarCliente(${index})"
@@ -1315,22 +1072,17 @@
                   class="fa-solid fa-cart-plus"
                   style="color:#087be7"
                 ></i>
-
                 Crear pedido
               </button>
 
               ${
                 estado === "visitado"
                   ? `
-                    <button
-                      type="button"
-                      disabled
-                    >
+                    <button type="button" disabled>
                       <i
                         class="fa-solid fa-circle-check"
                         style="color:#159638"
                       ></i>
-
                       Cliente visitado
                     </button>
                   `
@@ -1343,7 +1095,6 @@
                         class="fa-solid fa-user-check"
                         style="color:#159638"
                       ></i>
-
                       Marcar visitado
                     </button>
                   `
@@ -1357,7 +1108,6 @@
                   class="fa-solid fa-clock-rotate-left"
                   style="color:#f26a21"
                 ></i>
-
                 Ver historial
               </button>
 
@@ -1369,9 +1119,25 @@
                   class="fa-solid fa-circle-info"
                   style="color:#7128df"
                 ></i>
-
                 Información
               </button>
+
+              ${
+                hayUbicacion
+                  ? `
+                    <button
+                      type="button"
+                      onclick="verUbicacionCliente(${index})"
+                    >
+                      <i
+                        class="fa-solid fa-map-location-dot"
+                        style="color:#159638"
+                      ></i>
+                      Ver en el mapa
+                    </button>
+                  `
+                  : ""
+              }
 
               <button
                 type="button"
@@ -1381,10 +1147,8 @@
                   class="fa-solid fa-trash"
                   style="color:#e52424"
                 ></i>
-
                 Eliminar
               </button>
-
             </div>
 
           </div>
@@ -1461,13 +1225,12 @@
           </div>
         `;
 
-        contenedor.appendChild(div);
+        contenedor.appendChild(tarjeta);
       });
     }
 
     function obtenerIconoNegocio(texto) {
-      const valor =
-        normalizarTexto(texto);
+      const valor = normalizarTexto(texto);
 
       if (
         valor.includes("supermercado") ||
@@ -1483,15 +1246,11 @@
         return "fa-solid fa-basket-shopping";
       }
 
-      if (
-        valor.includes("farmacia")
-      ) {
+      if (valor.includes("farmacia")) {
         return "fa-solid fa-prescription-bottle-medical";
       }
 
-      if (
-        valor.includes("colmado")
-      ) {
+      if (valor.includes("colmado")) {
         return "fa-solid fa-shop";
       }
 
@@ -1502,10 +1261,7 @@
       return String(texto || "")
         .toLowerCase()
         .normalize("NFD")
-        .replace(
-          /[\u0300-\u036f]/g,
-          ""
-        );
+        .replace(/[\u0300-\u036f]/g, "");
     }
 
     function escaparHTML(valor) {
@@ -1517,51 +1273,35 @@
         .replaceAll("'", "&#039;");
     }
 
-    document.addEventListener(
-      "click",
-      event => {
-        if (
-          !event.target.closest(
-            ".menu-dots"
-          ) &&
-          !event.target.closest(
-            ".menu-opciones"
-          )
-        ) {
-          cerrarMenus();
-        }
+    document.addEventListener("click", event => {
+      if (
+        !event.target.closest(".menu-dots") &&
+        !event.target.closest(".menu-opciones")
+      ) {
+        cerrarMenus();
       }
-    );
+    });
 
-    window.addEventListener(
-      "storage",
-      event => {
-        if (event.key === "clientes") {
-          clientes = cargarClientes();
-          renderClientes();
-        }
+    window.addEventListener("storage", event => {
+      if (event.key === "clientes") {
+        clientes = cargarClientes();
+        renderClientes();
       }
-    );
+    });
 
-    document.addEventListener(
-      "visibilitychange",
-      () => {
-        if (!document.hidden) {
-          clientes = cargarClientes();
-          reiniciarVisitas();
-          renderClientes();
-        }
-      }
-    );
-
-    document.addEventListener(
-      "DOMContentLoaded",
-      () => {
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden) {
         clientes = cargarClientes();
         reiniciarVisitas();
         renderClientes();
       }
-    );
+    });
+
+    document.addEventListener("DOMContentLoaded", () => {
+      clientes = cargarClientes();
+      reiniciarVisitas();
+      renderClientes();
+    });
   </script>
 
 </body>
