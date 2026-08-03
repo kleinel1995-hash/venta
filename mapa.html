@@ -2,18 +2,21 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
-
-  <title>Mapa de Clientes</title>
+  <title>Ubicación del Cliente</title>
 
   <link
     rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
   >
+
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  >
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   <style>
     :root {
@@ -29,8 +32,6 @@
       --green: #159638;
       --green-light: #eaf8e9;
       --blue: #087be7;
-      --blue-light: #e4f3ff;
-      --red: #e52424;
     }
 
     * {
@@ -40,55 +41,41 @@
       font-family: Arial, Helvetica, sans-serif;
     }
 
-    html,
-    body {
+    html, body {
       width: 100%;
-      height: 100%;
-      overflow: hidden;
-      background: var(--background);
+      min-height: 100%;
     }
 
-    button,
-    a {
+    body {
+      background: var(--background);
+      color: var(--text);
+      padding-top: 78px;
+    }
+
+    button, a {
+      font: inherit;
       -webkit-tap-highlight-color: transparent;
     }
 
     button {
-      font: inherit;
       cursor: pointer;
     }
-
-    /* ENCABEZADO */
 
     .header {
       position: fixed;
       top: 0;
       left: 0;
-      z-index: 1200;
+      z-index: 1500;
       width: 100%;
       height: 78px;
       padding: 0 18px;
       background: var(--black);
       color: var(--white);
-      display: flex;
+      display: grid;
+      grid-template-columns: 52px minmax(0,1fr) 52px;
       align-items: center;
-      justify-content: space-between;
-      box-shadow: 0 3px 15px rgba(0, 0, 0, 0.25);
-    }
-
-    .header-title {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 11px;
-      font-size: 21px;
-      font-weight: 800;
-      text-align: center;
-    }
-
-    .header-title i {
-      color: var(--orange);
-      font-size: 24px;
+      gap: 12px;
+      box-shadow: 0 3px 15px rgba(0,0,0,.25);
     }
 
     .header-button {
@@ -96,13 +83,12 @@
       height: 48px;
       border: 1px solid #373737;
       border-radius: 15px;
-      background: linear-gradient(145deg, #191919, #080808);
-      color: var(--white);
+      background: linear-gradient(145deg,#191919,#080808);
+      color: #fff;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 22px;
-      box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.03);
+      font-size: 21px;
     }
 
     .header-button.location {
@@ -110,424 +96,250 @@
     }
 
     .header-button:active {
-      transform: scale(0.96);
+      transform: scale(.96);
     }
 
-    /* MAPA */
-
-    #map {
-      position: fixed;
-      top: 78px;
-      left: 0;
-      width: 100%;
-      height: calc(100% - 162px);
-      background: #e8eaed;
-    }
-
-    /* TARJETA SUPERIOR */
-
-    .map-status {
-      position: fixed;
-      z-index: 1000;
-      top: 95px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: min(calc(100% - 28px), 500px);
-      padding: 14px 16px;
-      border: 1px solid #ececec;
-      border-radius: 17px;
-      background: rgba(255, 255, 255, 0.96);
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.14);
-      backdrop-filter: blur(8px);
-    }
-
-    .map-status-icon {
-      width: 43px;
-      height: 43px;
-      border-radius: 14px;
-      background: var(--blue-light);
-      color: var(--blue);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 19px;
-      flex-shrink: 0;
-    }
-
-    .map-status-content {
+    .header-title {
       min-width: 0;
-      flex: 1;
-    }
-
-    .map-status-content strong {
-      display: block;
-      margin-bottom: 3px;
-      color: #111;
-      font-size: 14px;
-    }
-
-    .map-status-content span {
-      display: block;
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.35;
-    }
-
-    .clients-count {
-      min-width: 36px;
-      height: 36px;
-      padding: 0 9px;
-      border-radius: 999px;
-      background: var(--green-light);
-      color: var(--green);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 13px;
-      font-weight: 800;
-    }
-
-    /* CONTROLES FLOTANTES */
-
-    .map-controls {
-      position: fixed;
-      z-index: 1150;
-      right: 12px;
-      bottom: 100px;
-      display: flex;
-      flex-direction: column;
       gap: 10px;
-    }
-
-    .map-control-button {
-      width: 50px;
-      height: 50px;
-      border: 1px solid #e7e7e7;
-      border-radius: 16px;
-      background: #fff;
-      color: #111;
-      display: flex;
-      align-items: center;
-      justify-content: center;
       font-size: 20px;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.17);
-    }
-
-    .map-control-button.primary {
-      border-color: transparent;
-      background: linear-gradient(135deg, #e95414, #a83b0b);
-      color: #fff;
-    }
-
-    .map-control-button:active {
-      transform: scale(0.95);
-    }
-
-    /* MENÚ INFERIOR */
-
-    .bottom-nav {
-      position: fixed;
-      z-index: 1300;
-      left: 50%;
-      bottom: 0;
-      transform: translateX(-50%);
-      width: min(100%, 760px);
-      height: 84px;
-      padding: 7px 12px 5px;
-      background: #090909;
-      border-radius: 24px 24px 0 0;
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      align-items: center;
-      box-shadow: 0 -7px 24px rgba(0, 0, 0, 0.24);
-    }
-
-    .nav-item {
-      position: relative;
-      height: 67px;
-      border: none;
-      border-radius: 15px;
-      background: transparent;
-      color: #b8b8b8;
-      text-decoration: none;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 5px;
-      font-size: 11px;
-      transition: background 0.2s, color 0.2s;
-    }
-
-    .nav-item:hover {
-      background: #1a1a1a;
-      color: #fff;
-    }
-
-    .nav-item i {
-      font-size: 22px;
-    }
-
-    .nav-item.active {
-      background: linear-gradient(135deg, #e95414, #a83b0b);
-      color: #fff;
-      font-weight: 700;
-    }
-
-    .nav-badge {
-      position: absolute;
-      top: 4px;
-      right: calc(50% - 25px);
-      min-width: 19px;
-      height: 19px;
-      padding: 0 5px;
-      border: 2px solid #090909;
-      border-radius: 999px;
-      background: var(--red);
-      color: #fff;
-      font-size: 10px;
       font-weight: 800;
-      line-height: 15px;
-      text-align: center;
-      display: none;
     }
 
-    /* VENTANA DE CLIENTE */
-
-    .cliente-popup {
-      width: 235px;
-      padding: 4px 2px 2px;
-      color: var(--text);
-      font-family: Arial, Helvetica, sans-serif;
+    .header-title i {
+      color: var(--orange);
+      font-size: 23px;
     }
 
-    .cliente-popup-header {
-      margin-bottom: 12px;
-      display: flex;
+    .header-title span {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .page {
+      width: min(100%,1000px);
+      margin: 0 auto;
+      padding: 18px 14px 30px;
+    }
+
+    .client-card {
+      margin-bottom: 15px;
+      padding: 16px;
+      border: 1px solid #ededed;
+      border-radius: 18px;
+      background: #fff;
+      display: grid;
+      grid-template-columns: 55px minmax(0,1fr);
+      gap: 13px;
       align-items: center;
-      gap: 10px;
+      box-shadow: 0 7px 22px rgba(0,0,0,.07);
     }
 
-    .cliente-popup-icon {
-      width: 43px;
-      height: 43px;
-      border-radius: 14px;
+    .client-icon {
+      width: 55px;
+      height: 55px;
+      border-radius: 17px;
+      background: var(--orange-light);
+      color: var(--orange);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 19px;
-      flex-shrink: 0;
+      font-size: 23px;
     }
 
-    .cliente-popup-title {
+    .client-data {
       min-width: 0;
     }
 
-    .cliente-popup-title strong {
-      display: block;
+    .client-data h2 {
+      margin-bottom: 6px;
       color: #111;
-      font-size: 15px;
-      line-height: 1.25;
+      font-size: 18px;
       overflow-wrap: anywhere;
     }
 
-    .cliente-popup-title span {
-      display: block;
-      margin-top: 3px;
-      font-size: 12px;
-      font-weight: 700;
-    }
-
-    .cliente-popup-line {
-      margin-bottom: 8px;
-      display: flex;
-      align-items: flex-start;
-      gap: 8px;
-      color: #5f6570;
+    .client-data p {
+      margin: 4px 0;
+      color: var(--muted);
       font-size: 13px;
       line-height: 1.4;
+      overflow-wrap: anywhere;
     }
 
-    .cliente-popup-line i {
-      width: 16px;
-      margin-top: 2px;
+    .client-data p i {
+      width: 18px;
+      margin-right: 5px;
       color: var(--orange);
       text-align: center;
     }
 
-    .route-button {
+    .map-card {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid #ededed;
+      border-radius: 20px;
+      background: #fff;
+      box-shadow: 0 7px 22px rgba(0,0,0,.09);
+    }
+
+    #map {
       width: 100%;
-      min-height: 42px;
-      margin-top: 7px;
+      height: 570px;
+      background: #e6e8eb;
+    }
+
+    .map-actions {
+      padding: 13px;
+      border-top: 1px solid var(--line);
+      background: #fff;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .action-button {
+      min-height: 49px;
       padding: 10px 13px;
       border: none;
-      border-radius: 13px;
-      background: linear-gradient(135deg, #e95414, #a83b0b);
-      color: #fff;
+      border-radius: 14px;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
       font-size: 13px;
       font-weight: 800;
+      text-decoration: none;
     }
 
-    /* MENSAJE CARGANDO */
-
-    .loading-location {
-      position: fixed;
-      z-index: 1500;
-      left: 50%;
-      bottom: 100px;
-      transform: translateX(-50%);
-      padding: 11px 16px;
-      border-radius: 999px;
-      background: #111;
-      color: #fff;
-      display: none;
-      align-items: center;
-      gap: 9px;
-      font-size: 12px;
-      box-shadow: 0 7px 22px rgba(0, 0, 0, 0.25);
-      white-space: nowrap;
-    }
-
-    .loading-location.show {
-      display: flex;
-    }
-
-    .loading-location i {
+    .center-button {
+      background: var(--orange-light);
       color: var(--orange);
     }
 
-    /* AVISO SIN CLIENTES */
+    .route-button {
+      background: var(--green-light);
+      color: var(--green);
+    }
 
-    .empty-map-message {
-      position: fixed;
-      z-index: 1050;
-      top: 180px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: min(calc(100% - 32px), 420px);
-      padding: 18px;
-      border: 1px solid #ececec;
-      border-radius: 18px;
-      background: rgba(255, 255, 255, 0.97);
-      color: var(--muted);
+    .empty-state {
+      min-height: calc(100vh - 120px);
+      padding: 35px 20px;
+      border: 1px solid #ededed;
+      border-radius: 20px;
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
       text-align: center;
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.14);
-      display: none;
+      box-shadow: 0 7px 22px rgba(0,0,0,.07);
     }
 
-    .empty-map-message.show {
-      display: block;
+    .empty-state i {
+      width: 100px;
+      height: 100px;
+      margin-bottom: 17px;
+      border-radius: 50%;
+      background: var(--orange-light);
+      color: var(--orange);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 42px;
     }
 
-    .empty-map-message i {
-      display: block;
-      margin-bottom: 10px;
-      color: #b8bdc5;
-      font-size: 35px;
+    .empty-state h2 {
+      margin-bottom: 8px;
+      color: #111;
+      font-size: 21px;
     }
 
-    .empty-map-message strong {
+    .empty-state p {
+      max-width: 330px;
+      margin-bottom: 18px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .empty-state button {
+      min-height: 48px;
+      padding: 10px 18px;
+      border: none;
+      border-radius: 14px;
+      background: linear-gradient(
+        135deg,
+        var(--orange),
+        var(--orange-dark)
+      );
+      color: #fff;
+      font-weight: 800;
+    }
+
+    .leaflet-popup-content {
+      min-width: 200px;
+      margin: 14px;
+    }
+
+    .popup-client strong {
       display: block;
-      margin-bottom: 5px;
+      margin-bottom: 7px;
       color: #111;
       font-size: 15px;
     }
 
-    .empty-map-message span {
+    .popup-client span {
+      display: block;
+      margin-top: 4px;
+      color: #555d68;
       font-size: 12px;
-      line-height: 1.45;
+      line-height: 1.4;
     }
 
-    /* RESPONSIVE */
+    @media (max-width:620px) {
+      body {
+        padding-top: 70px;
+      }
 
-    @media (max-width: 620px) {
       .header {
         height: 70px;
         padding: 0 12px;
+        grid-template-columns: 45px minmax(0,1fr) 45px;
+        gap: 8px;
       }
 
       .header-button {
         width: 43px;
         height: 43px;
-        font-size: 20px;
+        border-radius: 14px;
+        font-size: 19px;
       }
 
       .header-title {
-        font-size: 18px;
-      }
-
-      .header-title i {
-        font-size: 21px;
-      }
-
-      #map {
-        top: 70px;
-        height: calc(100% - 154px);
-      }
-
-      .map-status {
-        top: 83px;
-        width: calc(100% - 20px);
-        padding: 11px 12px;
-      }
-
-      .map-status-icon {
-        width: 39px;
-        height: 39px;
         font-size: 17px;
       }
 
-      .map-status-content strong {
-        font-size: 13px;
+      .page {
+        padding: 12px 9px 20px;
       }
 
-      .map-status-content span {
-        font-size: 11px;
-      }
-
-      .map-controls {
-        right: 10px;
-        bottom: 96px;
-      }
-
-      .map-control-button {
-        width: 46px;
-        height: 46px;
-        border-radius: 14px;
-        font-size: 18px;
-      }
-
-      .loading-location {
-        bottom: 96px;
-      }
-
-      .empty-map-message {
-        top: 160px;
+      #map {
+        height: calc(100vh - 290px);
+        min-height: 400px;
       }
     }
 
-    @media (max-width: 390px) {
+    @media (max-width:390px) {
       .header-title span {
-        font-size: 16px;
+        font-size: 15px;
       }
 
-      .map-status-content span {
-        max-width: 180px;
-      }
-
-      .nav-item {
-        font-size: 10px;
-      }
-
-      .nav-item i {
-        font-size: 20px;
+      .map-actions {
+        grid-template-columns: 1fr;
       }
     }
   </style>
@@ -540,7 +352,7 @@
     <button
       type="button"
       class="header-button"
-      onclick="window.location.href='menu.html'"
+      onclick="volverClientes()"
       aria-label="Volver"
     >
       <i class="fa-solid fa-arrow-left"></i>
@@ -548,1032 +360,51 @@
 
     <div class="header-title">
       <i class="fa-solid fa-map-location-dot"></i>
-      <span>Mapa de Clientes</span>
+      <span>Ubicación del cliente</span>
     </div>
 
     <button
       type="button"
       class="header-button location"
-      onclick="centrarUbicacionUsuario()"
-      aria-label="Mi ubicación"
+      onclick="centrarCliente()"
+      aria-label="Centrar ubicación"
+      title="Centrar ubicación"
     >
       <i class="fa-solid fa-location-crosshairs"></i>
     </button>
 
   </header>
 
-  <div class="map-status">
+  <main class="page" id="pageContent"></main>
 
-    <div class="map-status-icon">
-      <i class="fa-solid fa-route"></i>
-    </div>
-
-    <div class="map-status-content">
-      <strong>Ubicación de clientes</strong>
-
-      <span>
-        Toca un cliente para ver sus datos y calcular la ruta.
-      </span>
-    </div>
-
-    <div
-      class="clients-count"
-      id="clients-count"
-    >
-      0
-    </div>
-
-  </div>
-
-  <div id="map"></div>
-
-  <div
-    class="empty-map-message"
-    id="empty-map-message"
-  >
-    <i class="fa-solid fa-map-location-dot"></i>
-
-    <strong>No hay clientes con ubicación</strong>
-
-    <span>
-      Registra la latitud y longitud de un cliente para mostrarlo en el mapa.
-    </span>
-  </div>
-
-  <div class="map-controls">
-
-    <button
-      type="button"
-      class="map-control-button"
-      onclick="mostrarTodosLosMarcadores()"
-      aria-label="Mostrar todos"
-      title="Mostrar todos los clientes"
-    >
-      <i class="fa-solid fa-expand"></i>
-    </button>
-
-    <button
-      type="button"
-      class="map-control-button primary"
-      onclick="centrarUbicacionUsuario()"
-      aria-label="Centrar mi ubicación"
-      title="Mi ubicación"
-    >
-      <i class="fa-solid fa-location-crosshairs"></i>
-    </button>
-
-  </div>
-
-  <div
-    class="loading-location"
-    id="loading-location"
-  >
-    <i class="fa-solid fa-spinner fa-spin"></i>
-    <span>Buscando tu ubicación...</span>
-  </div>
-
-  <nav class="bottom-nav">
-
-    <a
-      href="menu.html"
-      class="nav-item"
-    >
-      <i class="fa-solid fa-house"></i>
-      <span>Inicio</span>
-    </a>
-
-    <a
-      href="mapa.html"
-      class="nav-item active"
-      aria-current="page"
-    >
-      <i class="fa-solid fa-map-location-dot"></i>
-      <span>Mapa</span>
-    </a>
-
-    <a
-      href="Carrito.html"
-      class="nav-item"
-    >
-      <i class="fa-solid fa-cart-shopping"></i>
-
-      <span
-        class="nav-badge"
-        id="cart-count"
-      >
-        0
-      </span>
-
-      <span>Carrito</span>
-    </a>
-
-    <a
-      href="Usuario.html"
-      class="nav-item"
-    >
-      <i class="fa-solid fa-gear"></i>
-      <span>Configuración</span>
-    </a>
-
-  </nav>
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+  ></script>
 
   <script>
-    let map;
-    let marcadorUsuario;
-    let circuloPrecision;
-    let infoUsuario;
-    let directionsService;
-    let directionsRenderer;
-    let ubicacionActual = null;
-    let marcadoresClientes = [];
-    let watchId = null;
-    let mapaCentradoPrimeraVez = false;
-    let ventanaMapaActual = null;
-
-    function initMap() {
-      map = new google.maps.Map(
-        document.getElementById("map"),
-        {
-          center: {
-            lat: 18.4861,
-            lng: -69.9312
-          },
-
-          zoom: 13,
-          mapTypeId: "roadmap",
-          disableDefaultUI: true,
-          zoomControl: true,
-          gestureHandling: "greedy",
-
-          styles: [
-            {
-              featureType: "poi",
-              elementType: "all",
-              stylers: [
-                {
-                  visibility: "off"
-                }
-              ]
-            },
-
-            {
-              featureType: "transit",
-              elementType: "all",
-              stylers: [
-                {
-                  visibility: "off"
-                }
-              ]
-            },
-
-            {
-              featureType: "road",
-              elementType: "labels.icon",
-              stylers: [
-                {
-                  visibility: "off"
-                }
-              ]
-            },
-
-            {
-              featureType: "administrative",
-              elementType: "labels",
-              stylers: [
-                {
-                  visibility: "off"
-                }
-              ]
-            },
-
-            {
-              featureType: "landscape",
-              elementType: "all",
-              stylers: [
-                {
-                  color: "#f2f2f2"
-                }
-              ]
-            },
-
-            {
-              featureType: "water",
-              elementType: "all",
-              stylers: [
-                {
-                  color: "#c9e1f9"
-                }
-              ]
-            }
-          ]
-        }
-      );
-
-      directionsService =
-        new google.maps.DirectionsService();
-
-      directionsRenderer =
-        new google.maps.DirectionsRenderer({
-          map: map,
-          suppressMarkers: false,
-          preserveViewport: false,
-
-          polylineOptions: {
-            strokeColor: "#f26a21",
-            strokeOpacity: 0.9,
-            strokeWeight: 6
-          }
-        });
-
-      verificarReinicioVisitas();
-      mostrarClientes();
-      iniciarGeolocalizacion();
-      actualizarContadorCarrito();
-    }
-
-    function iniciarGeolocalizacion() {
-      const cargando =
-        document.getElementById(
-          "loading-location"
-        );
-
-      if (!navigator.geolocation) {
-        console.warn(
-          "Este dispositivo no permite obtener la ubicación."
-        );
-
-        return;
-      }
-
-      cargando?.classList.add("show");
-
-      watchId =
-        navigator.geolocation.watchPosition(
-          position => {
-            const latitud =
-              position.coords.latitude;
-
-            const longitud =
-              position.coords.longitude;
-
-            const precision =
-              position.coords.accuracy || 0;
-
-            const velocidad =
-              position.coords.speed;
-
-            ubicacionActual = {
-              lat: latitud,
-              lng: longitud
-            };
-
-            actualizarMarcadorUsuario(
-              ubicacionActual,
-              precision,
-              velocidad
-            );
-
-            if (!mapaCentradoPrimeraVez) {
-              const clientesConUbicacion =
-                marcadoresClientes.length;
-
-              if (clientesConUbicacion === 0) {
-                map.panTo(ubicacionActual);
-                map.setZoom(17);
-              }
-
-              mapaCentradoPrimeraVez = true;
-            }
-
-            cargando?.classList.remove(
-              "show"
-            );
-          },
-
-          error => {
-            cargando?.classList.remove(
-              "show"
-            );
-
-            let mensaje =
-              "No se pudo obtener la ubicación.";
-
-            if (
-              error.code ===
-              error.PERMISSION_DENIED
-            ) {
-              mensaje =
-                "El permiso de ubicación fue rechazado.";
-            } else if (
-              error.code ===
-              error.POSITION_UNAVAILABLE
-            ) {
-              mensaje =
-                "La señal GPS no está disponible.";
-            } else if (
-              error.code ===
-              error.TIMEOUT
-            ) {
-              mensaje =
-                "La búsqueda de ubicación tardó demasiado.";
-            }
-
-            console.warn(mensaje, error);
-          },
-
-          {
-            enableHighAccuracy: true,
-            timeout: 20000,
-            maximumAge: 0
-          }
-        );
-    }
-
-    function actualizarMarcadorUsuario(
-      posicion,
-      precision,
-      velocidad
-    ) {
-      if (!marcadorUsuario) {
-        marcadorUsuario =
-          new google.maps.Marker({
-            position: posicion,
-            map: map,
-            title:
-              "Ubicación actual del dispositivo",
-
-            icon: {
-              path:
-                google.maps.SymbolPath.CIRCLE,
-
-              scale: 10,
-              fillColor: "#087be7",
-              fillOpacity: 1,
-              strokeColor: "#ffffff",
-              strokeWeight: 4
-            },
-
-            zIndex: 9999
-          });
-
-        circuloPrecision =
-          new google.maps.Circle({
-            map: map,
-            center: posicion,
-            radius: precision,
-
-            strokeColor: "#087be7",
-            strokeOpacity: 0.45,
-            strokeWeight: 1,
-
-            fillColor: "#087be7",
-            fillOpacity: 0.1
-          });
-
-        infoUsuario =
-          new google.maps.InfoWindow();
-
-        marcadorUsuario.addListener(
-          "click",
-          mostrarInformacionUsuario
-        );
-      } else {
-        marcadorUsuario.setPosition(
-          posicion
-        );
-
-        circuloPrecision.setCenter(
-          posicion
-        );
-
-        circuloPrecision.setRadius(
-          precision
-        );
-      }
-
-      marcadorUsuario.precision =
-        precision;
-
-      marcadorUsuario.velocidad =
-        velocidad;
-    }
-
-    function mostrarInformacionUsuario() {
-      if (
-        !ubicacionActual ||
-        !marcadorUsuario
-      ) {
-        return;
-      }
-
-      cerrarVentanasAbiertas();
-
-      const precision =
-        Math.round(
-          marcadorUsuario.precision || 0
-        );
-
-      const velocidad =
-        marcadorUsuario.velocidad !== null &&
-        marcadorUsuario.velocidad !== undefined
-          ? (
-              marcadorUsuario.velocidad * 3.6
-            ).toFixed(1)
-          : "0.0";
-
-      infoUsuario.setContent(`
-        <div style="
-          font-family:Arial,sans-serif;
-          min-width:210px;
-          padding:5px;
-        ">
-
-          <div style="
-            display:flex;
-            align-items:center;
-            gap:10px;
-            margin-bottom:12px;
-          ">
-
-            <div style="
-              width:42px;
-              height:42px;
-              border-radius:14px;
-              background:#e4f3ff;
-              color:#087be7;
-              display:flex;
-              align-items:center;
-              justify-content:center;
-              font-size:19px;
-            ">
-              <i class="fa-solid fa-location-crosshairs"></i>
-            </div>
-
-            <div>
-              <strong style="
-                display:block;
-                color:#111;
-                font-size:14px;
-              ">
-                Tu ubicación actual
-              </strong>
-
-              <span style="
-                display:block;
-                margin-top:3px;
-                color:#087be7;
-                font-size:11px;
-                font-weight:700;
-              ">
-                Dispositivo
-              </span>
-            </div>
-
-          </div>
-
-          <div style="
-            color:#5f6570;
-            font-size:12px;
-            line-height:1.7;
-          ">
-            <b>Latitud:</b>
-            ${ubicacionActual.lat.toFixed(6)}
-            <br>
-
-            <b>Longitud:</b>
-            ${ubicacionActual.lng.toFixed(6)}
-            <br>
-
-            <b>Precisión:</b>
-            ${precision} metros
-            <br>
-
-            <b>Velocidad:</b>
-            ${velocidad} km/h
-          </div>
-
-        </div>
-      `);
-
-      infoUsuario.open({
-        anchor: marcadorUsuario,
-        map: map
-      });
-    }
-
-    function verificarReinicioVisitas() {
-      const hoy =
-        new Date().toLocaleDateString();
-
-      const ultimaFecha =
-        localStorage.getItem(
-          "ultimaFechaVisita"
-        ) || "";
-
-      if (hoy === ultimaFecha) {
-        return;
-      }
-
-      const clientes =
-        obtenerClientes();
-
-      clientes.forEach(cliente => {
-        cliente.estado = "visitar";
-      });
-
-      localStorage.setItem(
-        "clientes",
-        JSON.stringify(clientes)
-      );
-
-      localStorage.setItem(
-        "ultimaFechaVisita",
-        hoy
-      );
-    }
-
-    function obtenerClientes() {
+    let mapa = null;
+    let marcadorCliente = null;
+    let clienteMapa = cargarClienteMapa();
+
+    function cargarClienteMapa() {
       try {
-        const clientes =
-          JSON.parse(
-            localStorage.getItem(
-              "clientes"
-            ) || "[]"
-          );
+        const cliente = JSON.parse(
+          localStorage.getItem(
+            "clienteMapaSeleccionado"
+          ) || "null"
+        );
 
-        return Array.isArray(clientes)
-          ? clientes
-          : [];
+        return cliente &&
+          typeof cliente === "object"
+            ? cliente
+            : null;
       } catch (error) {
-        console.warn(
-          "No se pudieron leer los clientes:",
-          error
-        );
-
-        return [];
+        return null;
       }
-    }
-
-    function mostrarClientes() {
-      const clientes =
-        obtenerClientes();
-
-      marcadoresClientes.forEach(
-        marcador => {
-          marcador.setMap(null);
-        }
-      );
-
-      marcadoresClientes = [];
-
-      const limitesClientes =
-        new google.maps.LatLngBounds();
-
-      let clientesConUbicacion = 0;
-
-      clientes.forEach((cliente, index) => {
-        const lat =
-          Number.parseFloat(
-            cliente.latitud
-          );
-
-        const lng =
-          Number.parseFloat(
-            cliente.longitud
-          );
-
-        const estado =
-          normalizarTexto(
-            cliente.estado || "visitar"
-          );
-
-        if (
-          !Number.isFinite(lat) ||
-          !Number.isFinite(lng)
-        ) {
-          console.warn(
-            `Cliente sin ubicación válida: ${
-              cliente.nombre ||
-              cliente.negocio ||
-              index + 1
-            }`,
-            cliente.latitud,
-            cliente.longitud
-          );
-
-          return;
-        }
-
-        clientesConUbicacion++;
-
-        const esVisitado =
-          estado === "visitado";
-
-        const colorMarcador =
-          esVisitado
-            ? "#159638"
-            : "#f26a21";
-
-        const marker =
-          new google.maps.Marker({
-            position: {
-              lat,
-              lng
-            },
-
-            map: map,
-
-            title:
-              cliente.negocio ||
-              cliente.nombre ||
-              "Cliente",
-
-            icon: {
-              path:
-                google.maps.SymbolPath.CIRCLE,
-
-              scale: 15,
-              fillColor: colorMarcador,
-              fillOpacity: 1,
-              strokeColor: "#ffffff",
-              strokeWeight: 4
-            },
-
-            label: {
-              text: String(
-                clientesConUbicacion
-              ),
-
-              color: "#ffffff",
-              fontSize: "11px",
-              fontWeight: "bold"
-            },
-
-            zIndex: 100 + index
-          });
-
-        marcadoresClientes.push(marker);
-
-        limitesClientes.extend(
-          marker.getPosition()
-        );
-
-        const nombreNegocio =
-          escaparHTML(
-            cliente.negocio ||
-            cliente.nombre ||
-            "Cliente"
-          );
-
-        const nombrePersona =
-          escaparHTML(
-            cliente.nombre ||
-            "No disponible"
-          );
-
-        const direccion =
-          escaparHTML(
-            cliente.direccion ||
-            "Dirección no disponible"
-          );
-
-        const telefono =
-          escaparHTML(
-            cliente.telefono ||
-            "No disponible"
-          );
-
-        const estadoTexto =
-          esVisitado
-            ? "Visitado"
-            : "Por visitar";
-
-        const colorFondo =
-          esVisitado
-            ? "#eaf8e9"
-            : "#fff1e8";
-
-        const contenido = `
-          <div class="cliente-popup">
-
-            <div class="cliente-popup-header">
-
-              <div
-                class="cliente-popup-icon"
-                style="
-                  background:${colorFondo};
-                  color:${colorMarcador};
-                "
-              >
-                <i class="fa-solid fa-store"></i>
-              </div>
-
-              <div class="cliente-popup-title">
-
-                <strong>
-                  ${nombreNegocio}
-                </strong>
-
-                <span style="
-                  color:${colorMarcador};
-                ">
-                  ${estadoTexto}
-                </span>
-
-              </div>
-
-            </div>
-
-            <div class="cliente-popup-line">
-              <i class="fa-solid fa-user"></i>
-
-              <span>
-                ${nombrePersona}
-              </span>
-            </div>
-
-            <div class="cliente-popup-line">
-              <i class="fa-solid fa-location-dot"></i>
-
-              <span>
-                ${direccion}
-              </span>
-            </div>
-
-            <div class="cliente-popup-line">
-              <i class="fa-solid fa-phone"></i>
-
-              <span>
-                ${telefono}
-              </span>
-            </div>
-
-            <button
-              type="button"
-              class="route-button"
-              onclick="trazarRuta(${lat}, ${lng})"
-            >
-              <i class="fa-solid fa-route"></i>
-              Cómo llegar
-            </button>
-
-          </div>
-        `;
-
-        const infoWindow =
-          new google.maps.InfoWindow({
-            content: contenido
-          });
-
-        marker.addListener(
-          "click",
-          () => {
-            cerrarVentanasAbiertas();
-
-            infoWindow.open({
-              anchor: marker,
-              map: map
-            });
-
-            ventanaMapaActual =
-              infoWindow;
-          }
-        );
-      });
-
-      const contador =
-        document.getElementById(
-          "clients-count"
-        );
-
-      const mensajeVacio =
-        document.getElementById(
-          "empty-map-message"
-        );
-
-      if (contador) {
-        contador.textContent =
-          clientesConUbicacion;
-      }
-
-      if (clientesConUbicacion > 0) {
-        mensajeVacio?.classList.remove(
-          "show"
-        );
-
-        map.fitBounds(
-          limitesClientes
-        );
-
-        google.maps.event.addListenerOnce(
-          map,
-          "bounds_changed",
-          () => {
-            if (map.getZoom() > 17) {
-              map.setZoom(17);
-            }
-          }
-        );
-      } else {
-        mensajeVacio?.classList.add(
-          "show"
-        );
-
-        map.setCenter({
-          lat: 18.4861,
-          lng: -69.9312
-        });
-
-        map.setZoom(13);
-      }
-    }
-
-    function cerrarVentanasAbiertas() {
-      if (ventanaMapaActual) {
-        ventanaMapaActual.close();
-        ventanaMapaActual = null;
-      }
-
-      if (infoUsuario) {
-        infoUsuario.close();
-      }
-    }
-
-    function trazarRuta(lat, lng) {
-      if (!ubicacionActual) {
-        alert(
-          "Todavía no se ha encontrado la ubicación del dispositivo. Activa el GPS e inténtalo nuevamente."
-        );
-
-        return;
-      }
-
-      cerrarVentanasAbiertas();
-
-      const solicitud = {
-        origin: ubicacionActual,
-
-        destination: {
-          lat,
-          lng
-        },
-
-        travelMode:
-          google.maps.TravelMode.DRIVING
-      };
-
-      directionsService.route(
-        solicitud,
-        (resultado, estado) => {
-          if (
-            estado ===
-            google.maps.DirectionsStatus.OK
-          ) {
-            directionsRenderer.setDirections(
-              resultado
-            );
-          } else {
-            console.warn(
-              "Error al calcular la ruta:",
-              estado
-            );
-
-            alert(
-              "No se pudo calcular la ruta."
-            );
-          }
-        }
-      );
-    }
-
-    function centrarUbicacionUsuario() {
-      if (!ubicacionActual) {
-        alert(
-          "Todavía no se ha encontrado la ubicación del dispositivo."
-        );
-
-        return;
-      }
-
-      map.panTo(
-        ubicacionActual
-      );
-
-      map.setZoom(18);
-
-      mostrarInformacionUsuario();
-    }
-
-    function mostrarTodosLosMarcadores() {
-      const limites =
-        new google.maps.LatLngBounds();
-
-      marcadoresClientes.forEach(
-        marcador => {
-          limites.extend(
-            marcador.getPosition()
-          );
-        }
-      );
-
-      if (ubicacionActual) {
-        limites.extend(
-          ubicacionActual
-        );
-      }
-
-      if (limites.isEmpty()) {
-        alert(
-          "No hay ubicaciones disponibles para mostrar."
-        );
-
-        return;
-      }
-
-      cerrarVentanasAbiertas();
-
-      directionsRenderer.set(
-        "directions",
-        null
-      );
-
-      map.fitBounds(limites);
-
-      google.maps.event.addListenerOnce(
-        map,
-        "bounds_changed",
-        () => {
-          if (map.getZoom() > 17) {
-            map.setZoom(17);
-          }
-        }
-      );
-    }
-
-    function actualizarContadorCarrito() {
-      const badge =
-        document.getElementById(
-          "cart-count"
-        );
-
-      if (!badge) {
-        return;
-      }
-
-      let carrito = [];
-
-      try {
-        const datos =
-          JSON.parse(
-            localStorage.getItem(
-              "cart"
-            ) || "[]"
-          );
-
-        carrito =
-          Array.isArray(datos)
-            ? datos
-            : [];
-      } catch (error) {
-        carrito = [];
-      }
-
-      const total =
-        carrito.reduce(
-          (suma, producto) => {
-            return suma + Number(
-              producto.quantity ||
-              producto.cantidad ||
-              0
-            );
-          },
-          0
-        );
-
-      badge.textContent =
-        total > 99
-          ? "99+"
-          : total;
-
-      badge.style.display =
-        total > 0
-          ? "inline-block"
-          : "none";
-    }
-
-    function normalizarTexto(valor) {
-      return String(valor || "")
-        .trim()
-        .toLowerCase()
-        .normalize("NFD")
-        .replace(
-          /[\u0300-\u036f]/g,
-          ""
-        );
     }
 
     function escaparHTML(valor) {
-      return String(valor)
+      return String(valor ?? "")
         .replaceAll("&", "&amp;")
         .replaceAll("<", "&lt;")
         .replaceAll(">", "&gt;")
@@ -1581,61 +412,309 @@
         .replaceAll("'", "&#039;");
     }
 
+    function coordenadasValidas(cliente) {
+      if (!cliente) return false;
+
+      const latitud =
+        parseFloat(cliente.latitud);
+
+      const longitud =
+        parseFloat(cliente.longitud);
+
+      return (
+        Number.isFinite(latitud) &&
+        Number.isFinite(longitud) &&
+        latitud >= -90 &&
+        latitud <= 90 &&
+        longitud >= -180 &&
+        longitud <= 180
+      );
+    }
+
+    function mostrarPagina() {
+      const contenedor =
+        document.getElementById(
+          "pageContent"
+        );
+
+      if (
+        !clienteMapa ||
+        !coordenadasValidas(clienteMapa)
+      ) {
+        contenedor.innerHTML = `
+          <section class="empty-state">
+
+            <i class="fa-solid fa-location-dot"></i>
+
+            <h2>
+              No hay ubicación seleccionada
+            </h2>
+
+            <p>
+              Regresa a la lista de clientes y pulsa Ver ubicación.
+            </p>
+
+            <button
+              type="button"
+              onclick="volverClientes()"
+            >
+              Ver clientes
+            </button>
+
+          </section>
+        `;
+
+        return;
+      }
+
+      const nombreCompleto = [
+        clienteMapa.nombre,
+        clienteMapa.apellido
+      ]
+        .filter(Boolean)
+        .join(" ");
+
+      contenedor.innerHTML = `
+        <section class="client-card">
+
+          <div class="client-icon">
+            <i class="fa-solid fa-store"></i>
+          </div>
+
+          <div class="client-data">
+
+            <h2>
+              ${escaparHTML(
+                clienteMapa.negocio ||
+                nombreCompleto ||
+                "Cliente"
+              )}
+            </h2>
+
+            ${
+              nombreCompleto &&
+              clienteMapa.negocio
+                ? `
+                  <p>
+                    <i class="fa-solid fa-user"></i>
+                    ${escaparHTML(nombreCompleto)}
+                  </p>
+                `
+                : ""
+            }
+
+            ${
+              clienteMapa.telefono
+                ? `
+                  <p>
+                    <i class="fa-solid fa-phone"></i>
+                    ${escaparHTML(
+                      clienteMapa.telefono
+                    )}
+                  </p>
+                `
+                : ""
+            }
+
+            ${
+              clienteMapa.direccion
+                ? `
+                  <p>
+                    <i class="fa-solid fa-location-dot"></i>
+                    ${escaparHTML(
+                      clienteMapa.direccion
+                    )}
+                  </p>
+                `
+                : ""
+            }
+
+          </div>
+
+        </section>
+
+        <section class="map-card">
+
+          <div id="map"></div>
+
+          <div class="map-actions">
+
+            <button
+              type="button"
+              class="action-button center-button"
+              onclick="centrarCliente()"
+            >
+              <i class="fa-solid fa-location-crosshairs"></i>
+              Centrar cliente
+            </button>
+
+            <a
+              class="action-button route-button"
+              href="https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(
+                clienteMapa.latitud
+              )},${encodeURIComponent(
+                clienteMapa.longitud
+              )}"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <i class="fa-solid fa-route"></i>
+              Cómo llegar
+            </a>
+
+          </div>
+
+        </section>
+      `;
+
+      setTimeout(
+        inicializarMapa,
+        50
+      );
+    }
+
+    function inicializarMapa() {
+      if (
+        !clienteMapa ||
+        !coordenadasValidas(clienteMapa)
+      ) {
+        return;
+      }
+
+      const latitud =
+        parseFloat(clienteMapa.latitud);
+
+      const longitud =
+        parseFloat(clienteMapa.longitud);
+
+      if (mapa) {
+        mapa.remove();
+        mapa = null;
+      }
+
+      mapa = L.map("map", {
+        zoomControl: true
+      }).setView(
+        [latitud, longitud],
+        17
+      );
+
+      L.tileLayer(
+        "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+        {
+          maxZoom: 19,
+          attribution:
+            "&copy; OpenStreetMap"
+        }
+      ).addTo(mapa);
+
+      const nombreCompleto = [
+        clienteMapa.nombre,
+        clienteMapa.apellido
+      ]
+        .filter(Boolean)
+        .join(" ");
+
+      marcadorCliente = L.marker(
+        [latitud, longitud]
+      )
+        .addTo(mapa)
+        .bindPopup(`
+          <div class="popup-client">
+
+            <strong>
+              ${escaparHTML(
+                clienteMapa.negocio ||
+                nombreCompleto ||
+                "Cliente"
+              )}
+            </strong>
+
+            ${
+              clienteMapa.direccion
+                ? `
+                  <span>
+                    ${escaparHTML(
+                      clienteMapa.direccion
+                    )}
+                  </span>
+                `
+                : ""
+            }
+
+            ${
+              clienteMapa.telefono
+                ? `
+                  <span>
+                    Teléfono:
+                    ${escaparHTML(
+                      clienteMapa.telefono
+                    )}
+                  </span>
+                `
+                : ""
+            }
+
+          </div>
+        `)
+        .openPopup();
+
+      setTimeout(() => {
+        mapa.invalidateSize();
+      }, 200);
+    }
+
+    function centrarCliente() {
+      if (
+        !mapa ||
+        !clienteMapa ||
+        !coordenadasValidas(clienteMapa)
+      ) {
+        return;
+      }
+
+      const latitud =
+        parseFloat(clienteMapa.latitud);
+
+      const longitud =
+        parseFloat(clienteMapa.longitud);
+
+      mapa.setView(
+        [latitud, longitud],
+        17,
+        {
+          animate: true
+        }
+      );
+
+      marcadorCliente?.openPopup();
+    }
+
+    function volverClientes() {
+      window.location.href =
+        "Clientes.html";
+    }
+
     window.addEventListener(
       "storage",
-      evento => {
-        if (evento.key === "cart") {
-          actualizarContadorCarrito();
-        }
+      event => {
+        if (
+          event.key ===
+          "clienteMapaSeleccionado"
+        ) {
+          clienteMapa =
+            cargarClienteMapa();
 
-        if (evento.key === "clientes") {
-          mostrarClientes();
+          mostrarPagina();
         }
       }
     );
 
     document.addEventListener(
-      "visibilitychange",
-      () => {
-        if (!document.hidden) {
-          actualizarContadorCarrito();
-          mostrarClientes();
-        }
-      }
+      "DOMContentLoaded",
+      mostrarPagina
     );
-
-    window.addEventListener(
-      "beforeunload",
-      () => {
-        if (
-          watchId !== null &&
-          navigator.geolocation
-        ) {
-          navigator.geolocation.clearWatch(
-            watchId
-          );
-        }
-      }
-    );
-
-    window.initMap =
-      initMap;
-
-    window.trazarRuta =
-      trazarRuta;
-
-    window.centrarUbicacionUsuario =
-      centrarUbicacionUsuario;
-
-    window.mostrarTodosLosMarcadores =
-      mostrarTodosLosMarcadores;
   </script>
-
-  <script
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCIaHCkpuglZoc8jgWfJRBZaedJvq6caBw&callback=initMap"
-    async
-    defer
-  ></script>
 
 </body>
 </html>
