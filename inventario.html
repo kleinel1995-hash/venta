@@ -60,8 +60,7 @@
       padding-top: 78px;
       padding-bottom: 110px;
 
-      transition:
-        padding-top 0.3s ease;
+      transition: padding-top 0.3s ease;
     }
 
     button,
@@ -83,12 +82,11 @@
     }
 
     /* =========================
-       ENCABEZADO
+       HEADER
     ========================== */
 
     .header {
       position: fixed;
-
       top: 0;
       left: 0;
 
@@ -122,7 +120,6 @@
       min-width: 0;
 
       display: flex;
-
       align-items: center;
       justify-content: center;
 
@@ -151,8 +148,7 @@
       width: 48px;
       height: 48px;
 
-      border:
-        1px solid #373737;
+      border: 1px solid #373737;
 
       border-radius: 15px;
 
@@ -166,7 +162,6 @@
       color: #fff;
 
       display: flex;
-
       align-items: center;
       justify-content: center;
 
@@ -238,8 +233,7 @@
 
       padding: 0 54px;
 
-      border:
-        1px solid #343434;
+      border: 1px solid #343434;
 
       border-radius: 17px;
 
@@ -270,8 +264,7 @@
       top: 50%;
       left: 19px;
 
-      transform:
-        translateY(-50%);
+      transform: translateY(-50%);
 
       color: var(--orange);
 
@@ -286,8 +279,7 @@
       top: 50%;
       right: 8px;
 
-      transform:
-        translateY(-50%);
+      transform: translateY(-50%);
 
       width: 39px;
       height: 39px;
@@ -301,7 +293,6 @@
       color: #333;
 
       display: flex;
-
       align-items: center;
       justify-content: center;
 
@@ -397,8 +388,7 @@
     }
 
     .product-card:hover {
-      transform:
-        translateY(-2px);
+      transform: translateY(-2px);
 
       box-shadow:
         0 11px 30px
@@ -410,8 +400,7 @@
 
       width: 100%;
 
-      aspect-ratio:
-        1 / 0.82;
+      aspect-ratio: 1 / 0.82;
 
       overflow: hidden;
 
@@ -503,11 +492,6 @@
       white-space: nowrap;
     }
 
-    /*
-      Ya no existe botón de información.
-      El botón agregar ocupa todo el ancho.
-    */
-
     .product-actions {
       display: block;
     }
@@ -541,6 +525,11 @@
 
       font-size: 12px;
       font-weight: 800;
+
+      transition:
+        transform 0.2s,
+        background 0.2s,
+        color 0.2s;
     }
 
     .add-button:disabled {
@@ -549,8 +538,16 @@
       color: #fff;
 
       cursor: not-allowed;
+    }
 
-      box-shadow: none;
+    .add-button.agregado {
+      background: var(--green-light);
+      color: var(--green);
+      border: 1px solid #bfe4c5;
+    }
+
+    .add-button.agregado i {
+      color: var(--green);
     }
 
     .add-button:active {
@@ -592,22 +589,18 @@
 
       font-size: 25px;
 
-      box-shadow:
-        0 10px 25px
-        rgba(168, 59, 11, 0.38);
+      /* SIN SOMBRA */
+      box-shadow: none;
 
       transition:
-        transform 0.2s,
-        box-shadow 0.2s;
+        transform 0.2s;
     }
 
     .floating-cart:hover {
-      transform:
-        translateY(-2px);
+      transform: translateY(-2px);
 
-      box-shadow:
-        0 13px 30px
-        rgba(168, 59, 11, 0.45);
+      /* SIN SOMBRA */
+      box-shadow: none;
     }
 
     .floating-cart:active {
@@ -911,8 +904,6 @@
   </header>
 
 
-  <!-- BUSCADOR -->
-
   <div
     class="search-panel"
     id="searchPanel"
@@ -946,8 +937,6 @@
 
   </div>
 
-
-  <!-- CONTENIDO -->
 
   <main class="container">
 
@@ -998,8 +987,6 @@
   </main>
 
 
-  <!-- BOTÓN FLOTANTE DEL CARRITO -->
-
   <button
     type="button"
     class="floating-cart"
@@ -1026,11 +1013,8 @@
       cargarProductos();
 
 
-    /* =========================
-       PRODUCTOS
-    ========================== */
-
     function cargarProductos() {
+
       try {
 
         const datos =
@@ -1052,7 +1036,9 @@
         );
 
         return [];
+
       }
+
     }
 
 
@@ -1065,10 +1051,6 @@
 
     }
 
-
-    /* =========================
-       CARRITO
-    ========================== */
 
     function obtenerCarrito() {
 
@@ -1156,9 +1138,63 @@
     }
 
 
-    /* =========================
-       BUSCADOR
-    ========================== */
+    function productoEstaEnCarrito(
+      producto
+    ) {
+
+      const carrito =
+        obtenerCarrito();
+
+      const nombre =
+        obtenerNombreProducto(
+          producto
+        );
+
+      const codigo =
+        String(
+          producto.code ||
+          producto.codigo ||
+          ""
+        ).trim();
+
+
+      return carrito.some(
+        item => {
+
+          const codigoItem =
+            String(
+              item.code ||
+              item.codigo ||
+              ""
+            ).trim();
+
+          const nombreItem =
+            normalizarTexto(
+              item.name ||
+              item.nombre
+            );
+
+          const mismoCodigo =
+            codigo &&
+            codigoItem &&
+            codigo === codigoItem;
+
+          const mismoNombre =
+            nombreItem ===
+            normalizarTexto(
+              nombre
+            );
+
+          return (
+            mismoCodigo ||
+            mismoNombre
+          );
+
+        }
+      );
+
+    }
+
 
     function toggleSearch() {
 
@@ -1287,10 +1323,6 @@
     }
 
 
-    /* =========================
-       RENDER PRODUCTOS
-    ========================== */
-
     function renderProductos(
       lista = products
     ) {
@@ -1369,6 +1401,11 @@
 
           const disponible =
             cantidad > 0;
+
+          const estaAgregado =
+            productoEstaEnCarrito(
+              producto
+            );
 
 
           const tarjeta =
@@ -1461,23 +1498,36 @@
 
                 <button
                   type="button"
-                  class="add-button"
+                  class="add-button ${
+                    estaAgregado
+                      ? "agregado"
+                      : ""
+                  }"
                   onclick="agregarAlCarrito(${indiceReal})"
                   ${
-                    disponible
-                      ? ""
-                      : "disabled"
+                    !disponible &&
+                    !estaAgregado
+                      ? "disabled"
+                      : ""
                   }
                 >
 
                   <i
-                    class="fa-solid fa-cart-plus"
+                    class="${
+                      estaAgregado
+                        ? "fa-solid fa-circle-check"
+                        : disponible
+                          ? "fa-solid fa-cart-plus"
+                          : "fa-solid fa-ban"
+                    }"
                   ></i>
 
                   ${
-                    disponible
-                      ? "Agregar"
-                      : "Agotado"
+                    estaAgregado
+                      ? "Agregado"
+                      : disponible
+                        ? "Agregar"
+                        : "Agotado"
                   }
 
                 </button>
@@ -1498,10 +1548,6 @@
 
     }
 
-
-    /* =========================
-       AGREGAR AL CARRITO
-    ========================== */
 
     function agregarAlCarrito(
       index
@@ -1533,7 +1579,7 @@
             "Sin stock",
 
           text:
-            "Este producto no tiene unidades disponibles.",
+            "Este producto no tiene más unidades disponibles.",
 
           icon:
             "warning",
@@ -1560,7 +1606,11 @@
           "center",
 
         title:
-          "Agregar al carrito",
+          productoEstaEnCarrito(
+            producto
+          )
+            ? "Agregar más unidades"
+            : "Agregar al carrito",
 
         html: `
 
@@ -1895,6 +1945,8 @@
 
       filtrarProductos();
 
+      actualizarContadorCarrito();
+
 
       Swal.fire({
 
@@ -1908,11 +1960,9 @@
           "success",
 
         title:
-          `${cantidadAgregar} ${
-            cantidadAgregar === 1
-              ? "unidad agregada"
-              : "unidades agregadas"
-          }`,
+          cantidadAgregar === 1
+            ? "Producto agregado"
+            : `${cantidadAgregar} unidades agregadas`,
 
         showConfirmButton:
           false,
@@ -1924,10 +1974,6 @@
 
     }
 
-
-    /* =========================
-       DATOS DEL PRODUCTO
-    ========================== */
 
     function obtenerNombreProducto(
       producto
@@ -1986,12 +2032,6 @@
         );
 
 
-      /*
-        Actualiza todos los formatos
-        que pueda estar usando el producto
-        para mantener compatibilidad.
-      */
-
       if (
         "quantity" in producto
       ) {
@@ -1999,12 +2039,14 @@
           cantidad;
       }
 
+
       if (
         "cantidad" in producto
       ) {
         producto.cantidad =
           cantidad;
       }
+
 
       if (
         "stock" in producto
@@ -2027,10 +2069,6 @@
 
     }
 
-
-    /* =========================
-       UTILIDADES
-    ========================== */
 
     function formatearMoneda(
       valor
@@ -2105,10 +2143,6 @@
     }
 
 
-    /* =========================
-       EVENTOS
-    ========================== */
-
     document.addEventListener(
       "DOMContentLoaded",
       () => {
@@ -2147,6 +2181,8 @@
         ) {
 
           actualizarContadorCarrito();
+
+          filtrarProductos();
 
         }
 
