@@ -15,21 +15,28 @@
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
   >
 
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
   <style>
     :root {
       --orange: #f26a21;
       --orange-dark: #a83b0b;
       --orange-light: #fff1e8;
+
       --black: #080808;
       --white: #ffffff;
+
       --background: #f4f5f7;
       --text: #111827;
       --muted: #737985;
       --line: #e7e8eb;
+
       --green: #159638;
       --green-light: #eaf8e9;
+
       --blue: #087be7;
       --blue-light: #e4f3ff;
+
       --red: #e52424;
     }
 
@@ -58,31 +65,53 @@
       cursor: pointer;
     }
 
-    /* ENCABEZADO */
+    /* =========================
+       ENCABEZADO
+    ========================== */
 
     .header {
       position: fixed;
       top: 0;
       left: 0;
       z-index: 1200;
+
       width: 100%;
       height: 78px;
+
       padding: 0 18px;
+
       background: var(--black);
       color: var(--white);
-      display: flex;
+
+      display: grid;
+
+      grid-template-columns:
+        52px
+        minmax(0, 1fr)
+        52px;
+
       align-items: center;
-      justify-content: space-between;
-      box-shadow: 0 3px 15px rgba(0, 0, 0, 0.25);
+
+      gap: 12px;
+
+      box-shadow:
+        0 3px 15px
+        rgba(0, 0, 0, 0.25);
     }
 
     .header-title {
+      min-width: 0;
+
       display: flex;
+
       align-items: center;
       justify-content: center;
+
       gap: 11px;
+
       font-size: 21px;
       font-weight: 800;
+
       text-align: center;
     }
 
@@ -91,21 +120,42 @@
       font-size: 24px;
     }
 
+    .header-title span {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
     .header-button {
       width: 48px;
       height: 48px;
+
       border: 1px solid #373737;
+
       border-radius: 15px;
-      background: linear-gradient(145deg, #191919, #080808);
+
+      background:
+        linear-gradient(
+          145deg,
+          #191919,
+          #080808
+        );
+
       color: var(--white);
+
       display: flex;
+
       align-items: center;
       justify-content: center;
+
       font-size: 22px;
-      box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.03);
+
+      box-shadow:
+        inset 0 0 10px
+        rgba(255, 255, 255, 0.03);
     }
 
-    .header-button.location {
+    .header-button.route {
       color: var(--orange);
     }
 
@@ -113,47 +163,91 @@
       transform: scale(0.96);
     }
 
-    /* MAPA */
+    /* =========================
+       MAPA
+    ========================== */
 
     #map {
       position: fixed;
+
       top: 78px;
       left: 0;
+
       width: 100%;
       height: calc(100% - 162px);
+
       background: #e8eaed;
     }
 
-    /* TARJETA SUPERIOR */
+    /* =========================
+       ESTADO SUPERIOR
+    ========================== */
 
     .map-status {
       position: fixed;
+
       z-index: 1000;
+
       top: 95px;
       left: 50%;
-      transform: translateX(-50%);
-      width: min(calc(100% - 28px), 500px);
+
+      transform:
+        translateX(-50%);
+
+      width:
+        min(
+          calc(100% - 28px),
+          500px
+        );
+
       padding: 14px 16px;
-      border: 1px solid #ececec;
+
+      border:
+        1px solid #ececec;
+
       border-radius: 17px;
-      background: rgba(255, 255, 255, 0.96);
+
+      background:
+        rgba(
+          255,
+          255,
+          255,
+          0.96
+        );
+
       display: flex;
+
       align-items: center;
+
       gap: 12px;
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.14);
-      backdrop-filter: blur(8px);
+
+      box-shadow:
+        0 8px 25px
+        rgba(0, 0, 0, 0.14);
+
+      backdrop-filter:
+        blur(8px);
     }
 
     .map-status-icon {
       width: 43px;
       height: 43px;
+
       border-radius: 14px;
-      background: var(--blue-light);
-      color: var(--blue);
+
+      background:
+        var(--blue-light);
+
+      color:
+        var(--blue);
+
       display: flex;
+
       align-items: center;
       justify-content: center;
+
       font-size: 19px;
+
       flex-shrink: 0;
     }
 
@@ -164,61 +258,105 @@
 
     .map-status-content strong {
       display: block;
+
       margin-bottom: 3px;
+
       color: #111;
+
       font-size: 14px;
     }
 
     .map-status-content span {
       display: block;
-      color: var(--muted);
+
+      color:
+        var(--muted);
+
       font-size: 12px;
+
       line-height: 1.35;
+
+      overflow-wrap: anywhere;
     }
 
     .clients-count {
       min-width: 36px;
       height: 36px;
+
       padding: 0 9px;
+
       border-radius: 999px;
-      background: var(--green-light);
-      color: var(--green);
+
+      background:
+        var(--green-light);
+
+      color:
+        var(--green);
+
       display: flex;
+
       align-items: center;
       justify-content: center;
+
       font-size: 13px;
       font-weight: 800;
     }
 
-    /* CONTROLES FLOTANTES */
+    /* =========================
+       CONTROLES FLOTANTES
+    ========================== */
 
     .map-controls {
       position: fixed;
+
       z-index: 1150;
+
       right: 12px;
       bottom: 100px;
+
       display: flex;
+
       flex-direction: column;
+
       gap: 10px;
     }
 
     .map-control-button {
       width: 50px;
       height: 50px;
-      border: 1px solid #e7e7e7;
+
+      border:
+        1px solid #e7e7e7;
+
       border-radius: 16px;
+
       background: #fff;
+
       color: #111;
+
       display: flex;
+
       align-items: center;
       justify-content: center;
+
       font-size: 20px;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.17);
+
+      box-shadow:
+        0 6px 20px
+        rgba(0, 0, 0, 0.17);
     }
 
     .map-control-button.primary {
-      border-color: transparent;
-      background: linear-gradient(135deg, #e95414, #a83b0b);
+      border-color:
+        transparent;
+
+      background:
+        linear-gradient(
+          135deg,
+          #e95414,
+          #a83b0b
+        );
+
       color: #fff;
     }
 
@@ -226,44 +364,92 @@
       transform: scale(0.95);
     }
 
-    /* MENÚ INFERIOR */
+    /* =========================
+       MENÚ INFERIOR
+    ========================== */
 
     .bottom-nav {
       position: fixed;
+
       z-index: 1300;
+
       left: 50%;
       bottom: 0;
-      transform: translateX(-50%);
-      width: min(100%, 760px);
+
+      transform:
+        translateX(-50%);
+
+      width:
+        min(
+          100%,
+          760px
+        );
+
       height: 84px;
-      padding: 7px 12px 5px;
-      background: #090909;
-      border-radius: 24px 24px 0 0;
+
+      padding:
+        7px
+        12px
+        5px;
+
+      background:
+        #090909;
+
+      border-radius:
+        24px
+        24px
+        0
+        0;
+
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+
+      grid-template-columns:
+        repeat(4, 1fr);
+
       align-items: center;
-      box-shadow: 0 -7px 24px rgba(0, 0, 0, 0.24);
+
+      box-shadow:
+        0 -7px 24px
+        rgba(0, 0, 0, 0.24);
     }
 
     .nav-item {
       position: relative;
+
       height: 67px;
+
       border: none;
+
       border-radius: 15px;
-      background: transparent;
-      color: #b8b8b8;
+
+      background:
+        transparent;
+
+      color:
+        #b8b8b8;
+
       text-decoration: none;
+
       display: flex;
+
       flex-direction: column;
+
       align-items: center;
       justify-content: center;
+
       gap: 5px;
+
       font-size: 11px;
-      transition: background 0.2s, color 0.2s;
+
+      transition:
+        background 0.2s,
+        color 0.2s;
     }
 
     .nav-item:hover {
-      background: #1a1a1a;
+      background:
+        #1a1a1a;
+
       color: #fff;
     }
 
@@ -272,53 +458,98 @@
     }
 
     .nav-item.active {
-      background: linear-gradient(135deg, #e95414, #a83b0b);
+      background:
+        linear-gradient(
+          135deg,
+          #e95414,
+          #a83b0b
+        );
+
       color: #fff;
+
       font-weight: 700;
     }
 
     .nav-badge {
       position: absolute;
+
       top: 4px;
-      right: calc(50% - 25px);
+
+      right:
+        calc(
+          50% - 25px
+        );
+
       min-width: 19px;
       height: 19px;
-      padding: 0 5px;
-      border: 2px solid #090909;
+
+      padding:
+        0 5px;
+
+      border:
+        2px solid #090909;
+
       border-radius: 999px;
-      background: var(--red);
+
+      background:
+        var(--red);
+
       color: #fff;
+
       font-size: 10px;
       font-weight: 800;
+
       line-height: 15px;
+
       text-align: center;
+
       display: none;
     }
 
-    /* VENTANA DE CLIENTE */
+    /* =========================
+       POPUP CLIENTE
+    ========================== */
 
     .cliente-popup {
       width: 235px;
-      padding: 4px 2px 2px;
-      color: var(--text);
-      font-family: Arial, Helvetica, sans-serif;
+
+      padding:
+        4px
+        2px
+        2px;
+
+      color:
+        var(--text);
+
+      font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
     }
 
     .cliente-popup-header {
       margin-bottom: 12px;
+
       display: flex;
+
       align-items: center;
+
       gap: 10px;
     }
 
     .cliente-popup-icon {
       width: 43px;
       height: 43px;
+
       border-radius: 14px;
+
       display: flex;
+
       align-items: center;
       justify-content: center;
+
       font-size: 19px;
+
       flex-shrink: 0;
     }
 
@@ -328,70 +559,126 @@
 
     .cliente-popup-title strong {
       display: block;
+
       color: #111;
+
       font-size: 15px;
+
       line-height: 1.25;
+
       overflow-wrap: anywhere;
     }
 
     .cliente-popup-title span {
       display: block;
+
       margin-top: 3px;
+
       font-size: 12px;
       font-weight: 700;
     }
 
     .cliente-popup-line {
       margin-bottom: 8px;
+
       display: flex;
+
       align-items: flex-start;
+
       gap: 8px;
+
       color: #5f6570;
+
       font-size: 13px;
+
       line-height: 1.4;
     }
 
     .cliente-popup-line i {
       width: 16px;
+
       margin-top: 2px;
-      color: var(--orange);
+
+      color:
+        var(--orange);
+
       text-align: center;
+
+      flex-shrink: 0;
     }
 
     .route-button {
       width: 100%;
+
       min-height: 42px;
+
       margin-top: 7px;
-      padding: 10px 13px;
+
+      padding:
+        10px
+        13px;
+
       border: none;
+
       border-radius: 13px;
-      background: linear-gradient(135deg, #e95414, #a83b0b);
+
+      background:
+        linear-gradient(
+          135deg,
+          #e95414,
+          #a83b0b
+        );
+
       color: #fff;
+
       display: flex;
+
       align-items: center;
       justify-content: center;
+
       gap: 8px;
+
       font-size: 13px;
       font-weight: 800;
     }
 
-    /* MENSAJE CARGANDO */
+    /* =========================
+       CARGANDO GPS
+    ========================== */
 
     .loading-location {
       position: fixed;
+
       z-index: 1500;
+
       left: 50%;
       bottom: 100px;
-      transform: translateX(-50%);
-      padding: 11px 16px;
+
+      transform:
+        translateX(-50%);
+
+      padding:
+        11px
+        16px;
+
       border-radius: 999px;
+
       background: #111;
+
       color: #fff;
+
       display: none;
+
       align-items: center;
+
       gap: 9px;
+
       font-size: 12px;
-      box-shadow: 0 7px 22px rgba(0, 0, 0, 0.25);
+
+      box-shadow:
+        0 7px 22px
+        rgba(0, 0, 0, 0.25);
+
       white-space: nowrap;
     }
 
@@ -400,25 +687,55 @@
     }
 
     .loading-location i {
-      color: var(--orange);
+      color:
+        var(--orange);
     }
 
-    /* AVISO SIN CLIENTES */
+    /* =========================
+       SIN CLIENTES
+    ========================== */
 
     .empty-map-message {
       position: fixed;
+
       z-index: 1050;
+
       top: 180px;
       left: 50%;
-      transform: translateX(-50%);
-      width: min(calc(100% - 32px), 420px);
+
+      transform:
+        translateX(-50%);
+
+      width:
+        min(
+          calc(100% - 32px),
+          420px
+        );
+
       padding: 18px;
-      border: 1px solid #ececec;
+
+      border:
+        1px solid #ececec;
+
       border-radius: 18px;
-      background: rgba(255, 255, 255, 0.97);
-      color: var(--muted);
+
+      background:
+        rgba(
+          255,
+          255,
+          255,
+          0.97
+        );
+
+      color:
+        var(--muted);
+
       text-align: center;
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.14);
+
+      box-shadow:
+        0 8px 25px
+        rgba(0, 0, 0, 0.14);
+
       display: none;
     }
 
@@ -428,34 +745,54 @@
 
     .empty-map-message i {
       display: block;
+
       margin-bottom: 10px;
+
       color: #b8bdc5;
+
       font-size: 35px;
     }
 
     .empty-map-message strong {
       display: block;
+
       margin-bottom: 5px;
+
       color: #111;
+
       font-size: 15px;
     }
 
     .empty-map-message span {
       font-size: 12px;
+
       line-height: 1.45;
     }
 
-    /* RESPONSIVE */
+    /* =========================
+       RESPONSIVE
+    ========================== */
 
     @media (max-width: 620px) {
+
       .header {
         height: 70px;
-        padding: 0 12px;
+
+        padding:
+          0 12px;
+
+        grid-template-columns:
+          45px
+          minmax(0, 1fr)
+          45px;
+
+        gap: 8px;
       }
 
       .header-button {
         width: 43px;
         height: 43px;
+
         font-size: 20px;
       }
 
@@ -469,18 +806,29 @@
 
       #map {
         top: 70px;
-        height: calc(100% - 154px);
+
+        height:
+          calc(
+            100% - 154px
+          );
       }
 
       .map-status {
         top: 83px;
-        width: calc(100% - 20px);
-        padding: 11px 12px;
+
+        width:
+          calc(
+            100% - 20px
+          );
+
+        padding:
+          11px 12px;
       }
 
       .map-status-icon {
         width: 39px;
         height: 39px;
+
         font-size: 17px;
       }
 
@@ -494,13 +842,16 @@
 
       .map-controls {
         right: 10px;
+
         bottom: 96px;
       }
 
       .map-control-button {
         width: 46px;
         height: 46px;
+
         border-radius: 14px;
+
         font-size: 18px;
       }
 
@@ -514,6 +865,7 @@
     }
 
     @media (max-width: 390px) {
+
       .header-title span {
         font-size: 16px;
       }
@@ -535,6 +887,10 @@
 
 <body>
 
+  <!-- =========================
+       HEADER
+  ========================== -->
+
   <header class="header">
 
     <button
@@ -547,33 +903,52 @@
     </button>
 
     <div class="header-title">
+
       <i class="fa-solid fa-map-location-dot"></i>
-      <span>Mapa de Clientes</span>
+
+      <span>
+        Mapa de Clientes
+      </span>
+
     </div>
+
+    <!-- AHORA ESTE BOTÓN FILTRA POR RUTA -->
 
     <button
       type="button"
-      class="header-button location"
-      onclick="centrarUbicacionUsuario()"
-      aria-label="Mi ubicación"
+      class="header-button route"
+      onclick="mostrarSelectorRutas()"
+      aria-label="Clientes por ruta"
+      title="Clientes por ruta"
     >
-      <i class="fa-solid fa-location-crosshairs"></i>
+      <i class="fa-solid fa-route"></i>
     </button>
 
   </header>
 
+
+  <!-- =========================
+       RESUMEN SUPERIOR
+  ========================== -->
+
   <div class="map-status">
 
     <div class="map-status-icon">
+
       <i class="fa-solid fa-route"></i>
+
     </div>
 
     <div class="map-status-content">
-      <strong>Ubicación de clientes</strong>
 
-      <span>
-        Toca un cliente para ver sus datos y calcular la ruta.
+      <strong>
+        Ubicación de clientes
+      </strong>
+
+      <span id="route-status-text">
+        Mostrando clientes de todas las rutas.
       </span>
+
     </div>
 
     <div
@@ -585,20 +960,39 @@
 
   </div>
 
+
+  <!-- =========================
+       MAPA
+  ========================== -->
+
   <div id="map"></div>
+
+
+  <!-- =========================
+       MENSAJE SIN CLIENTES
+  ========================== -->
 
   <div
     class="empty-map-message"
     id="empty-map-message"
   >
+
     <i class="fa-solid fa-map-location-dot"></i>
 
-    <strong>No hay clientes con ubicación</strong>
+    <strong>
+      No hay clientes con ubicación
+    </strong>
 
-    <span>
+    <span id="empty-map-text">
       Registra la latitud y longitud de un cliente para mostrarlo en el mapa.
     </span>
+
   </div>
+
+
+  <!-- =========================
+       CONTROLES DEL MAPA
+  ========================== -->
 
   <div class="map-controls">
 
@@ -612,11 +1006,13 @@
       <i class="fa-solid fa-expand"></i>
     </button>
 
+    <!-- GPS SE MANTIENE AQUÍ -->
+
     <button
       type="button"
       class="map-control-button primary"
       onclick="centrarUbicacionUsuario()"
-      aria-label="Centrar mi ubicación"
+      aria-label="Mi ubicación"
       title="Mi ubicación"
     >
       <i class="fa-solid fa-location-crosshairs"></i>
@@ -624,13 +1020,28 @@
 
   </div>
 
+
+  <!-- =========================
+       CARGANDO UBICACIÓN
+  ========================== -->
+
   <div
     class="loading-location"
     id="loading-location"
   >
+
     <i class="fa-solid fa-spinner fa-spin"></i>
-    <span>Buscando tu ubicación...</span>
+
+    <span>
+      Buscando tu ubicación...
+    </span>
+
   </div>
+
+
+  <!-- =========================
+       MENÚ INFERIOR
+  ========================== -->
 
   <nav class="bottom-nav">
 
@@ -664,7 +1075,9 @@
         0
       </span>
 
-      <span>Carrito</span>
+      <span>
+        Carrito
+      </span>
     </a>
 
     <a
@@ -672,144 +1085,259 @@
       class="nav-item"
     >
       <i class="fa-solid fa-gear"></i>
-      <span>Configuración</span>
+
+      <span>
+        Configuración
+      </span>
     </a>
 
   </nav>
 
+
   <script>
+
     let map;
+
     let marcadorUsuario;
+
     let circuloPrecision;
+
     let infoUsuario;
+
     let directionsService;
+
     let directionsRenderer;
-    let ubicacionActual = null;
-    let marcadoresClientes = [];
-    let watchId = null;
-    let mapaCentradoPrimeraVez = false;
-    let ventanaMapaActual = null;
+
+    let ubicacionActual =
+      null;
+
+    let marcadoresClientes =
+      [];
+
+    let watchId =
+      null;
+
+    let mapaCentradoPrimeraVez =
+      false;
+
+    let ventanaMapaActual =
+      null;
+
+    let filtroRutaActual =
+      "todas";
+
+
+    /* =========================
+       INICIAR MAPA
+    ========================== */
 
     function initMap() {
-      map = new google.maps.Map(
-        document.getElementById("map"),
-        {
-          center: {
-            lat: 18.4861,
-            lng: -69.9312
-          },
 
-          zoom: 13,
-          mapTypeId: "roadmap",
-          disableDefaultUI: true,
-          zoomControl: true,
-          gestureHandling: "greedy",
+      map =
+        new google.maps.Map(
+          document.getElementById(
+            "map"
+          ),
+          {
 
-          styles: [
-            {
-              featureType: "poi",
-              elementType: "all",
-              stylers: [
-                {
-                  visibility: "off"
-                }
-              ]
+            center: {
+              lat: 18.4861,
+              lng: -69.9312
             },
 
-            {
-              featureType: "transit",
-              elementType: "all",
-              stylers: [
-                {
-                  visibility: "off"
-                }
-              ]
-            },
+            zoom:
+              13,
 
-            {
-              featureType: "road",
-              elementType: "labels.icon",
-              stylers: [
-                {
-                  visibility: "off"
-                }
-              ]
-            },
+            mapTypeId:
+              "roadmap",
 
-            {
-              featureType: "administrative",
-              elementType: "labels",
-              stylers: [
-                {
-                  visibility: "off"
-                }
-              ]
-            },
+            disableDefaultUI:
+              true,
 
-            {
-              featureType: "landscape",
-              elementType: "all",
-              stylers: [
-                {
-                  color: "#f2f2f2"
-                }
-              ]
-            },
+            zoomControl:
+              true,
 
-            {
-              featureType: "water",
-              elementType: "all",
-              stylers: [
-                {
-                  color: "#c9e1f9"
-                }
-              ]
-            }
-          ]
-        }
-      );
+            gestureHandling:
+              "greedy",
+
+            styles: [
+
+              {
+                featureType:
+                  "poi",
+
+                elementType:
+                  "all",
+
+                stylers: [
+                  {
+                    visibility:
+                      "off"
+                  }
+                ]
+              },
+
+              {
+                featureType:
+                  "transit",
+
+                elementType:
+                  "all",
+
+                stylers: [
+                  {
+                    visibility:
+                      "off"
+                  }
+                ]
+              },
+
+              {
+                featureType:
+                  "road",
+
+                elementType:
+                  "labels.icon",
+
+                stylers: [
+                  {
+                    visibility:
+                      "off"
+                  }
+                ]
+              },
+
+              {
+                featureType:
+                  "administrative",
+
+                elementType:
+                  "labels",
+
+                stylers: [
+                  {
+                    visibility:
+                      "off"
+                  }
+                ]
+              },
+
+              {
+                featureType:
+                  "landscape",
+
+                elementType:
+                  "all",
+
+                stylers: [
+                  {
+                    color:
+                      "#f2f2f2"
+                  }
+                ]
+              },
+
+              {
+                featureType:
+                  "water",
+
+                elementType:
+                  "all",
+
+                stylers: [
+                  {
+                    color:
+                      "#c9e1f9"
+                  }
+                ]
+              }
+
+            ]
+
+          }
+        );
+
 
       directionsService =
         new google.maps.DirectionsService();
 
-      directionsRenderer =
-        new google.maps.DirectionsRenderer({
-          map: map,
-          suppressMarkers: false,
-          preserveViewport: false,
 
-          polylineOptions: {
-            strokeColor: "#f26a21",
-            strokeOpacity: 0.9,
-            strokeWeight: 6
+      directionsRenderer =
+        new google.maps.DirectionsRenderer(
+          {
+
+            map:
+              map,
+
+            suppressMarkers:
+              false,
+
+            preserveViewport:
+              false,
+
+            polylineOptions: {
+
+              strokeColor:
+                "#f26a21",
+
+              strokeOpacity:
+                0.9,
+
+              strokeWeight:
+                6
+
+            }
+
           }
-        });
+        );
+
 
       verificarReinicioVisitas();
+
       mostrarClientes();
+
       iniciarGeolocalizacion();
+
       actualizarContadorCarrito();
+
     }
 
+
+    /* =========================
+       GPS
+    ========================== */
+
     function iniciarGeolocalizacion() {
+
       const cargando =
         document.getElementById(
           "loading-location"
         );
 
-      if (!navigator.geolocation) {
+
+      if (
+        !navigator.geolocation
+      ) {
+
         console.warn(
           "Este dispositivo no permite obtener la ubicación."
         );
 
         return;
+
       }
 
-      cargando?.classList.add("show");
+
+      cargando?.classList.add(
+        "show"
+      );
+
 
       watchId =
         navigator.geolocation.watchPosition(
+
           position => {
+
             const latitud =
               position.coords.latitude;
 
@@ -817,127 +1345,224 @@
               position.coords.longitude;
 
             const precision =
-              position.coords.accuracy || 0;
+              position.coords.accuracy ||
+              0;
 
             const velocidad =
               position.coords.speed;
 
+
             ubicacionActual = {
-              lat: latitud,
-              lng: longitud
+
+              lat:
+                latitud,
+
+              lng:
+                longitud
+
             };
 
+
             actualizarMarcadorUsuario(
+
               ubicacionActual,
+
               precision,
+
               velocidad
+
             );
 
-            if (!mapaCentradoPrimeraVez) {
-              const clientesConUbicacion =
-                marcadoresClientes.length;
 
-              if (clientesConUbicacion === 0) {
-                map.panTo(ubicacionActual);
-                map.setZoom(17);
+            if (
+              !mapaCentradoPrimeraVez
+            ) {
+
+              if (
+                marcadoresClientes.length ===
+                0
+              ) {
+
+                map.panTo(
+                  ubicacionActual
+                );
+
+                map.setZoom(
+                  17
+                );
+
               }
 
-              mapaCentradoPrimeraVez = true;
+              mapaCentradoPrimeraVez =
+                true;
+
             }
+
 
             cargando?.classList.remove(
               "show"
             );
+
           },
 
           error => {
+
             cargando?.classList.remove(
               "show"
             );
 
+
             let mensaje =
               "No se pudo obtener la ubicación.";
+
 
             if (
               error.code ===
               error.PERMISSION_DENIED
             ) {
+
               mensaje =
                 "El permiso de ubicación fue rechazado.";
+
             } else if (
               error.code ===
               error.POSITION_UNAVAILABLE
             ) {
+
               mensaje =
                 "La señal GPS no está disponible.";
+
             } else if (
               error.code ===
               error.TIMEOUT
             ) {
+
               mensaje =
                 "La búsqueda de ubicación tardó demasiado.";
+
             }
 
-            console.warn(mensaje, error);
+
+            console.warn(
+              mensaje,
+              error
+            );
+
           },
 
           {
-            enableHighAccuracy: true,
-            timeout: 20000,
-            maximumAge: 0
+
+            enableHighAccuracy:
+              true,
+
+            timeout:
+              20000,
+
+            maximumAge:
+              0
+
           }
+
         );
+
     }
+
 
     function actualizarMarcadorUsuario(
       posicion,
       precision,
       velocidad
     ) {
-      if (!marcadorUsuario) {
+
+      if (
+        !marcadorUsuario
+      ) {
+
         marcadorUsuario =
-          new google.maps.Marker({
-            position: posicion,
-            map: map,
-            title:
-              "Ubicación actual del dispositivo",
+          new google.maps.Marker(
+            {
 
-            icon: {
-              path:
-                google.maps.SymbolPath.CIRCLE,
+              position:
+                posicion,
 
-              scale: 10,
-              fillColor: "#087be7",
-              fillOpacity: 1,
-              strokeColor: "#ffffff",
-              strokeWeight: 4
-            },
+              map:
+                map,
 
-            zIndex: 9999
-          });
+              title:
+                "Ubicación actual",
+
+              icon: {
+
+                path:
+                  google.maps.SymbolPath.CIRCLE,
+
+                scale:
+                  10,
+
+                fillColor:
+                  "#087be7",
+
+                fillOpacity:
+                  1,
+
+                strokeColor:
+                  "#ffffff",
+
+                strokeWeight:
+                  4
+
+              },
+
+              zIndex:
+                9999
+
+            }
+          );
+
 
         circuloPrecision =
-          new google.maps.Circle({
-            map: map,
-            center: posicion,
-            radius: precision,
+          new google.maps.Circle(
+            {
 
-            strokeColor: "#087be7",
-            strokeOpacity: 0.45,
-            strokeWeight: 1,
+              map:
+                map,
 
-            fillColor: "#087be7",
-            fillOpacity: 0.1
-          });
+              center:
+                posicion,
+
+              radius:
+                precision,
+
+              strokeColor:
+                "#087be7",
+
+              strokeOpacity:
+                0.45,
+
+              strokeWeight:
+                1,
+
+              fillColor:
+                "#087be7",
+
+              fillOpacity:
+                0.1
+
+            }
+          );
+
 
         infoUsuario =
           new google.maps.InfoWindow();
+
 
         marcadorUsuario.addListener(
           "click",
           mostrarInformacionUsuario
         );
+
       } else {
+
         marcadorUsuario.setPosition(
           posicion
         );
@@ -949,16 +1574,21 @@
         circuloPrecision.setRadius(
           precision
         );
+
       }
+
 
       marcadorUsuario.precision =
         precision;
 
       marcadorUsuario.velocidad =
         velocidad;
+
     }
 
+
     function mostrarInformacionUsuario() {
+
       if (
         !ubicacionActual ||
         !marcadorUsuario
@@ -966,134 +1596,174 @@
         return;
       }
 
+
       cerrarVentanasAbiertas();
+
 
       const precision =
         Math.round(
-          marcadorUsuario.precision || 0
+          marcadorUsuario.precision ||
+          0
         );
 
+
       const velocidad =
-        marcadorUsuario.velocidad !== null &&
-        marcadorUsuario.velocidad !== undefined
+        marcadorUsuario.velocidad !==
+          null &&
+        marcadorUsuario.velocidad !==
+          undefined
+
           ? (
-              marcadorUsuario.velocidad * 3.6
+              marcadorUsuario.velocidad *
+              3.6
             ).toFixed(1)
+
           : "0.0";
 
-      infoUsuario.setContent(`
-        <div style="
-          font-family:Arial,sans-serif;
-          min-width:210px;
-          padding:5px;
-        ">
+
+      infoUsuario.setContent(
+        `
 
           <div style="
-            display:flex;
-            align-items:center;
-            gap:10px;
-            margin-bottom:12px;
+            font-family:Arial,sans-serif;
+            min-width:210px;
+            padding:5px;
           ">
 
             <div style="
-              width:42px;
-              height:42px;
-              border-radius:14px;
-              background:#e4f3ff;
-              color:#087be7;
               display:flex;
               align-items:center;
-              justify-content:center;
-              font-size:19px;
+              gap:10px;
+              margin-bottom:12px;
             ">
-              <i class="fa-solid fa-location-crosshairs"></i>
-            </div>
 
-            <div>
-              <strong style="
-                display:block;
-                color:#111;
-                font-size:14px;
-              ">
-                Tu ubicación actual
-              </strong>
-
-              <span style="
-                display:block;
-                margin-top:3px;
+              <div style="
+                width:42px;
+                height:42px;
+                border-radius:14px;
+                background:#e4f3ff;
                 color:#087be7;
-                font-size:11px;
-                font-weight:700;
+                display:flex;
+                align-items:center;
+                justify-content:center;
+                font-size:19px;
               ">
-                Dispositivo
-              </span>
+
+                <i
+                  class="fa-solid fa-location-crosshairs"
+                ></i>
+
+              </div>
+
+              <div>
+
+                <strong style="
+                  display:block;
+                  color:#111;
+                  font-size:14px;
+                ">
+
+                  Tu ubicación actual
+
+                </strong>
+
+                <span style="
+                  display:block;
+                  margin-top:3px;
+                  color:#087be7;
+                  font-size:11px;
+                  font-weight:700;
+                ">
+
+                  Dispositivo
+
+                </span>
+
+              </div>
+
+            </div>
+
+
+            <div style="
+              color:#5f6570;
+              font-size:12px;
+              line-height:1.7;
+            ">
+
+              <b>
+                Latitud:
+              </b>
+
+              ${
+                ubicacionActual
+                  .lat
+                  .toFixed(6)
+              }
+
+              <br>
+
+
+              <b>
+                Longitud:
+              </b>
+
+              ${
+                ubicacionActual
+                  .lng
+                  .toFixed(6)
+              }
+
+              <br>
+
+
+              <b>
+                Precisión:
+              </b>
+
+              ${precision}
+              metros
+
+              <br>
+
+
+              <b>
+                Velocidad:
+              </b>
+
+              ${velocidad}
+              km/h
+
             </div>
 
           </div>
 
-          <div style="
-            color:#5f6570;
-            font-size:12px;
-            line-height:1.7;
-          ">
-            <b>Latitud:</b>
-            ${ubicacionActual.lat.toFixed(6)}
-            <br>
-
-            <b>Longitud:</b>
-            ${ubicacionActual.lng.toFixed(6)}
-            <br>
-
-            <b>Precisión:</b>
-            ${precision} metros
-            <br>
-
-            <b>Velocidad:</b>
-            ${velocidad} km/h
-          </div>
-
-        </div>
-      `);
-
-      infoUsuario.open({
-        anchor: marcadorUsuario,
-        map: map
-      });
-    }
-
-    function verificarReinicioVisitas() {
-      const hoy =
-        new Date().toLocaleDateString();
-
-      const ultimaFecha =
-        localStorage.getItem(
-          "ultimaFechaVisita"
-        ) || "";
-
-      if (hoy === ultimaFecha) {
-        return;
-      }
-
-      const clientes =
-        obtenerClientes();
-
-      clientes.forEach(cliente => {
-        cliente.estado = "visitar";
-      });
-
-      localStorage.setItem(
-        "clientes",
-        JSON.stringify(clientes)
+        `
       );
 
-      localStorage.setItem(
-        "ultimaFechaVisita",
-        hoy
+
+      infoUsuario.open(
+        {
+
+          anchor:
+            marcadorUsuario,
+
+          map:
+            map
+
+        }
       );
+
     }
+
+
+    /* =========================
+       CLIENTES
+    ========================== */
 
     function obtenerClientes() {
+
       try {
+
         const clientes =
           JSON.parse(
             localStorage.getItem(
@@ -1101,428 +1771,1250 @@
             ) || "[]"
           );
 
-        return Array.isArray(clientes)
+
+        return Array.isArray(
+          clientes
+        )
           ? clientes
           : [];
+
       } catch (error) {
+
         console.warn(
           "No se pudieron leer los clientes:",
           error
         );
 
         return [];
+
       }
+
     }
 
-    function mostrarClientes() {
+
+    function verificarReinicioVisitas() {
+
+      const hoy =
+        new Date()
+          .toLocaleDateString(
+            "es-DO"
+          );
+
+
+      const ultimaFecha =
+        localStorage.getItem(
+          "ultimaFechaVisita"
+        ) || "";
+
+
+      if (
+        hoy ===
+        ultimaFecha
+      ) {
+        return;
+      }
+
+
       const clientes =
         obtenerClientes();
 
-      marcadoresClientes.forEach(
-        marcador => {
-          marcador.setMap(null);
+
+      clientes.forEach(
+        cliente => {
+
+          cliente.estado =
+            "visitar";
+
         }
       );
 
-      marcadoresClientes = [];
+
+      localStorage.setItem(
+        "clientes",
+        JSON.stringify(
+          clientes
+        )
+      );
+
+
+      localStorage.setItem(
+        "ultimaFechaVisita",
+        hoy
+      );
+
+    }
+
+
+    /* =========================
+       ICONO DE CLIENTE
+    ========================== */
+
+    function crearIconoCliente(
+      color
+    ) {
+
+      const svg = `
+
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="50"
+          height="62"
+          viewBox="0 0 50 62"
+        >
+
+          <path
+            d="
+              M25 1
+              C12 1 3 11 3 24
+              C3 39 25 60 25 60
+              C25 60 47 39 47 24
+              C47 11 38 1 25 1Z
+            "
+            fill="${color}"
+            stroke="#ffffff"
+            stroke-width="3"
+          />
+
+          <circle
+            cx="25"
+            cy="24"
+            r="14"
+            fill="#ffffff"
+          />
+
+          <path
+            d="
+              M17 21
+              L19 16
+              H31
+              L33 21
+              V23
+              C33 24.5 31.8 26 30 26
+              C28.8 26 27.8 25.4 27 24.5
+              C26.2 25.4 25.2 26 24 26
+              C22.8 26 21.8 25.4 21 24.5
+              C20.2 25.4 19.2 26 18 26
+              C16.8 26 16 25 16 23
+              V21
+              Z
+
+              M18 27
+              H32
+              V34
+              H27
+              V29
+              H23
+              V34
+              H18
+              Z
+            "
+            fill="${color}"
+          />
+
+        </svg>
+
+      `;
+
+
+      return {
+
+        url:
+          "data:image/svg+xml;charset=UTF-8," +
+          encodeURIComponent(
+            svg
+          ),
+
+        scaledSize:
+          new google.maps.Size(
+            42,
+            52
+          ),
+
+        anchor:
+          new google.maps.Point(
+            21,
+            52
+          )
+
+      };
+
+    }
+
+
+    /* =========================
+       MOSTRAR CLIENTES
+    ========================== */
+
+    function mostrarClientes() {
+
+      const clientes =
+        obtenerClientes();
+
+
+      marcadoresClientes.forEach(
+        marcador => {
+
+          marcador.setMap(
+            null
+          );
+
+        }
+      );
+
+
+      marcadoresClientes =
+        [];
+
+
+      cerrarVentanasAbiertas();
+
 
       const limitesClientes =
         new google.maps.LatLngBounds();
 
-      let clientesConUbicacion = 0;
 
-      clientes.forEach((cliente, index) => {
-        const lat =
-          Number.parseFloat(
-            cliente.latitud
-          );
+      let clientesConUbicacion =
+        0;
 
-        const lng =
-          Number.parseFloat(
-            cliente.longitud
-          );
 
-        const estado =
-          normalizarTexto(
-            cliente.estado || "visitar"
-          );
+      const clientesFiltrados =
+        clientes.filter(
+          cliente => {
 
-        if (
-          !Number.isFinite(lat) ||
-          !Number.isFinite(lng)
-        ) {
-          console.warn(
-            `Cliente sin ubicación válida: ${
-              cliente.nombre ||
-              cliente.negocio ||
-              index + 1
-            }`,
-            cliente.latitud,
-            cliente.longitud
-          );
+            if (
+              filtroRutaActual ===
+              "todas"
+            ) {
 
-          return;
-        }
+              return true;
 
-        clientesConUbicacion++;
+            }
 
-        const esVisitado =
-          estado === "visitado";
 
-        const colorMarcador =
-          esVisitado
-            ? "#159638"
-            : "#f26a21";
+            return (
+              normalizarTexto(
+                cliente.ruta ||
+                ""
+              ) ===
+              normalizarTexto(
+                filtroRutaActual
+              )
+            );
 
-        const marker =
-          new google.maps.Marker({
-            position: {
-              lat,
-              lng
-            },
-
-            map: map,
-
-            title:
-              cliente.negocio ||
-              cliente.nombre ||
-              "Cliente",
-
-            icon: {
-              path:
-                google.maps.SymbolPath.CIRCLE,
-
-              scale: 15,
-              fillColor: colorMarcador,
-              fillOpacity: 1,
-              strokeColor: "#ffffff",
-              strokeWeight: 4
-            },
-
-            label: {
-              text: String(
-                clientesConUbicacion
-              ),
-
-              color: "#ffffff",
-              fontSize: "11px",
-              fontWeight: "bold"
-            },
-
-            zIndex: 100 + index
-          });
-
-        marcadoresClientes.push(marker);
-
-        limitesClientes.extend(
-          marker.getPosition()
+          }
         );
 
-        const nombreNegocio =
-          escaparHTML(
-            cliente.negocio ||
-            cliente.nombre ||
-            "Cliente"
+
+      clientesFiltrados.forEach(
+        (
+          cliente,
+          index
+        ) => {
+
+          const lat =
+            Number.parseFloat(
+              cliente.latitud
+            );
+
+
+          const lng =
+            Number.parseFloat(
+              cliente.longitud
+            );
+
+
+          if (
+            !Number.isFinite(
+              lat
+            ) ||
+            !Number.isFinite(
+              lng
+            )
+          ) {
+
+            return;
+
+          }
+
+
+          clientesConUbicacion++;
+
+
+          const estado =
+            normalizarTexto(
+              cliente.estado ||
+              "visitar"
+            );
+
+
+          const esVisitado =
+            estado ===
+            "visitado";
+
+
+          const colorMarcador =
+            esVisitado
+              ? "#159638"
+              : "#f26a21";
+
+
+          const marker =
+            new google.maps.Marker(
+              {
+
+                position: {
+                  lat,
+                  lng
+                },
+
+                map:
+                  map,
+
+                title:
+                  cliente.negocio ||
+                  cliente.nombre ||
+                  "Cliente",
+
+                icon:
+                  crearIconoCliente(
+                    colorMarcador
+                  ),
+
+                zIndex:
+                  100 +
+                  index
+
+              }
+            );
+
+
+          marcadoresClientes.push(
+            marker
           );
 
-        const nombrePersona =
-          escaparHTML(
-            cliente.nombre ||
-            "No disponible"
+
+          limitesClientes.extend(
+            marker.getPosition()
           );
 
-        const direccion =
-          escaparHTML(
-            cliente.direccion ||
-            "Dirección no disponible"
-          );
 
-        const telefono =
-          escaparHTML(
-            cliente.telefono ||
-            "No disponible"
-          );
+          const nombreNegocio =
+            escaparHTML(
+              cliente.negocio ||
+              cliente.nombre ||
+              "Cliente"
+            );
 
-        const estadoTexto =
-          esVisitado
-            ? "Visitado"
-            : "Por visitar";
 
-        const colorFondo =
-          esVisitado
-            ? "#eaf8e9"
-            : "#fff1e8";
+          const nombrePersona =
+            escaparHTML(
 
-        const contenido = `
-          <div class="cliente-popup">
+              [
+                cliente.nombre,
+                cliente.apellido
+              ]
+                .filter(
+                  Boolean
+                )
+                .join(" ") ||
 
-            <div class="cliente-popup-header">
+              "No disponible"
 
-              <div
-                class="cliente-popup-icon"
-                style="
-                  background:${colorFondo};
-                  color:${colorMarcador};
-                "
-              >
-                <i class="fa-solid fa-store"></i>
+            );
+
+
+          const direccion =
+            escaparHTML(
+              cliente.direccion ||
+              "Dirección no disponible"
+            );
+
+
+          const telefono =
+            escaparHTML(
+              cliente.telefono ||
+              "No disponible"
+            );
+
+
+          const ruta =
+            escaparHTML(
+              cliente.ruta ||
+              "Sin ruta"
+            );
+
+
+          const estadoTexto =
+            esVisitado
+              ? "Visitado"
+              : "Por visitar";
+
+
+          const colorFondo =
+            esVisitado
+              ? "#eaf8e9"
+              : "#fff1e8";
+
+
+          const contenido = `
+
+            <div class="cliente-popup">
+
+
+              <div class="cliente-popup-header">
+
+
+                <div
+                  class="cliente-popup-icon"
+                  style="
+                    background:${colorFondo};
+                    color:${colorMarcador};
+                  "
+                >
+
+                  <i
+                    class="fa-solid fa-store"
+                  ></i>
+
+                </div>
+
+
+                <div class="cliente-popup-title">
+
+                  <strong>
+
+                    ${nombreNegocio}
+
+                  </strong>
+
+
+                  <span style="
+                    color:${colorMarcador};
+                  ">
+
+                    ${estadoTexto}
+
+                  </span>
+
+                </div>
+
               </div>
 
-              <div class="cliente-popup-title">
 
-                <strong>
-                  ${nombreNegocio}
-                </strong>
+              <div class="cliente-popup-line">
 
-                <span style="
-                  color:${colorMarcador};
-                ">
-                  ${estadoTexto}
+                <i
+                  class="fa-solid fa-user"
+                ></i>
+
+                <span>
+                  ${nombrePersona}
                 </span>
 
               </div>
 
+
+              <div class="cliente-popup-line">
+
+                <i
+                  class="fa-solid fa-route"
+                ></i>
+
+                <span>
+
+                  <strong>
+                    Ruta:
+                  </strong>
+
+                  ${ruta}
+
+                </span>
+
+              </div>
+
+
+              <div class="cliente-popup-line">
+
+                <i
+                  class="fa-solid fa-location-dot"
+                ></i>
+
+                <span>
+                  ${direccion}
+                </span>
+
+              </div>
+
+
+              <div class="cliente-popup-line">
+
+                <i
+                  class="fa-solid fa-phone"
+                ></i>
+
+                <span>
+                  ${telefono}
+                </span>
+
+              </div>
+
+
+              <button
+                type="button"
+                class="route-button"
+                onclick="
+                  trazarRuta(
+                    ${lat},
+                    ${lng}
+                  )
+                "
+              >
+
+                <i
+                  class="fa-solid fa-diamond-turn-right"
+                ></i>
+
+                Cómo llegar
+
+              </button>
+
             </div>
 
-            <div class="cliente-popup-line">
-              <i class="fa-solid fa-user"></i>
+          `;
 
-              <span>
-                ${nombrePersona}
-              </span>
-            </div>
 
-            <div class="cliente-popup-line">
-              <i class="fa-solid fa-location-dot"></i>
+          const infoWindow =
+            new google.maps.InfoWindow(
+              {
 
-              <span>
-                ${direccion}
-              </span>
-            </div>
+                content:
+                  contenido
 
-            <div class="cliente-popup-line">
-              <i class="fa-solid fa-phone"></i>
+              }
+            );
 
-              <span>
-                ${telefono}
-              </span>
-            </div>
 
-            <button
-              type="button"
-              class="route-button"
-              onclick="trazarRuta(${lat}, ${lng})"
-            >
-              <i class="fa-solid fa-route"></i>
-              Cómo llegar
-            </button>
+          marker.addListener(
+            "click",
+            () => {
 
-          </div>
-        `;
+              cerrarVentanasAbiertas();
 
-        const infoWindow =
-          new google.maps.InfoWindow({
-            content: contenido
-          });
 
-        marker.addListener(
-          "click",
-          () => {
-            cerrarVentanasAbiertas();
+              infoWindow.open(
+                {
 
-            infoWindow.open({
-              anchor: marker,
-              map: map
-            });
+                  anchor:
+                    marker,
 
-            ventanaMapaActual =
-              infoWindow;
-          }
-        );
-      });
+                  map:
+                    map
+
+                }
+              );
+
+
+              ventanaMapaActual =
+                infoWindow;
+
+            }
+          );
+
+        }
+      );
+
 
       const contador =
         document.getElementById(
           "clients-count"
         );
 
+
       const mensajeVacio =
         document.getElementById(
           "empty-map-message"
         );
 
-      if (contador) {
+
+      const textoVacio =
+        document.getElementById(
+          "empty-map-text"
+        );
+
+
+      if (
+        contador
+      ) {
+
         contador.textContent =
           clientesConUbicacion;
+
       }
 
-      if (clientesConUbicacion > 0) {
-        mensajeVacio?.classList.remove(
-          "show"
-        );
+
+      actualizarTextoRuta();
+
+
+      if (
+        clientesConUbicacion >
+        0
+      ) {
+
+        mensajeVacio
+          ?.classList
+          .remove(
+            "show"
+          );
+
 
         map.fitBounds(
           limitesClientes
         );
 
+
         google.maps.event.addListenerOnce(
+
           map,
+
           "bounds_changed",
+
           () => {
-            if (map.getZoom() > 17) {
-              map.setZoom(17);
+
+            if (
+              map.getZoom() >
+              17
+            ) {
+
+              map.setZoom(
+                17
+              );
+
             }
+
+          }
+
+        );
+
+      } else {
+
+        if (
+          textoVacio
+        ) {
+
+          textoVacio.textContent =
+            filtroRutaActual ===
+            "todas"
+
+              ? "Registra la latitud y longitud de un cliente para mostrarlo en el mapa."
+
+              : `No hay clientes con ubicación registrados en la ruta ${filtroRutaActual}.`;
+
+        }
+
+
+        mensajeVacio
+          ?.classList
+          .add(
+            "show"
+          );
+
+
+        map.setCenter(
+          {
+
+            lat:
+              18.4861,
+
+            lng:
+              -69.9312
+
           }
         );
-      } else {
-        mensajeVacio?.classList.add(
-          "show"
+
+
+        map.setZoom(
+          13
         );
 
-        map.setCenter({
-          lat: 18.4861,
-          lng: -69.9312
-        });
-
-        map.setZoom(13);
       }
+
     }
 
-    function cerrarVentanasAbiertas() {
-      if (ventanaMapaActual) {
-        ventanaMapaActual.close();
-        ventanaMapaActual = null;
-      }
 
-      if (infoUsuario) {
-        infoUsuario.close();
-      }
-    }
+    /* =========================
+       RUTAS
+    ========================== */
 
-    function trazarRuta(lat, lng) {
-      if (!ubicacionActual) {
-        alert(
-          "Todavía no se ha encontrado la ubicación del dispositivo. Activa el GPS e inténtalo nuevamente."
+    function obtenerRutasDisponibles() {
+
+      const clientes =
+        obtenerClientes();
+
+
+      const rutas =
+        new Set();
+
+
+      clientes.forEach(
+        cliente => {
+
+          const ruta =
+            String(
+              cliente.ruta ||
+              ""
+            ).trim();
+
+
+          if (
+            ruta
+          ) {
+
+            rutas.add(
+              ruta
+            );
+
+          }
+
+        }
+      );
+
+
+      return Array
+        .from(
+          rutas
+        )
+        .sort(
+          (
+            a,
+            b
+          ) =>
+            a.localeCompare(
+              b,
+              "es",
+              {
+                numeric:
+                  true
+              }
+            )
         );
+
+    }
+
+
+    function mostrarSelectorRutas() {
+
+      const rutas =
+        obtenerRutasDisponibles();
+
+
+      if (
+        rutas.length ===
+        0
+      ) {
+
+        Swal.fire(
+          {
+
+            position:
+              "center",
+
+            icon:
+              "info",
+
+            title:
+              "No hay rutas",
+
+            text:
+              "Los clientes registrados todavía no tienen una ruta asignada.",
+
+            confirmButtonColor:
+              "#f26a21"
+
+          }
+        );
+
 
         return;
+
       }
+
+
+      const opciones =
+        {
+
+          todas:
+            "Todas las rutas"
+
+        };
+
+
+      rutas.forEach(
+        ruta => {
+
+          opciones[
+            ruta
+          ] =
+            ruta;
+
+        }
+      );
+
+
+      Swal.fire(
+        {
+
+          position:
+            "center",
+
+          title:
+            "Clientes por ruta",
+
+          html: `
+
+            <div style="
+              color:#737985;
+              font-size:13px;
+              margin-bottom:10px;
+              line-height:1.5;
+            ">
+
+              Selecciona la ruta que deseas mostrar en el mapa.
+
+            </div>
+
+          `,
+
+          input:
+            "select",
+
+          inputOptions:
+            opciones,
+
+          inputValue:
+            filtroRutaActual,
+
+          showCancelButton:
+            true,
+
+          confirmButtonText:
+            "Mostrar ruta",
+
+          cancelButtonText:
+            "Cancelar",
+
+          confirmButtonColor:
+            "#f26a21",
+
+          cancelButtonColor:
+            "#737985"
+
+        }
+      )
+      .then(
+        resultado => {
+
+          if (
+            !resultado.isConfirmed
+          ) {
+
+            return;
+
+          }
+
+
+          filtroRutaActual =
+            resultado.value ||
+            "todas";
+
+
+          directionsRenderer
+            ?.set(
+              "directions",
+              null
+            );
+
+
+          mostrarClientes();
+
+        }
+      );
+
+    }
+
+
+    function actualizarTextoRuta() {
+
+      const elemento =
+        document.getElementById(
+          "route-status-text"
+        );
+
+
+      if (
+        !elemento
+      ) {
+
+        return;
+
+      }
+
+
+      if (
+        filtroRutaActual ===
+        "todas"
+      ) {
+
+        elemento.textContent =
+          "Mostrando clientes de todas las rutas.";
+
+      } else {
+
+        elemento.textContent =
+          `Mostrando clientes de la ruta: ${filtroRutaActual}.`;
+
+      }
+
+    }
+
+
+    /* =========================
+       RUTA DE NAVEGACIÓN
+    ========================== */
+
+    function trazarRuta(
+      lat,
+      lng
+    ) {
+
+      if (
+        !ubicacionActual
+      ) {
+
+        Swal.fire(
+          {
+
+            position:
+              "center",
+
+            icon:
+              "warning",
+
+            title:
+              "Ubicación no disponible",
+
+            text:
+              "Todavía no se ha encontrado la ubicación del dispositivo. Activa el GPS e inténtalo nuevamente.",
+
+            confirmButtonColor:
+              "#f26a21"
+
+          }
+        );
+
+
+        return;
+
+      }
+
 
       cerrarVentanasAbiertas();
 
-      const solicitud = {
-        origin: ubicacionActual,
 
-        destination: {
-          lat,
-          lng
-        },
+      const solicitud =
+        {
 
-        travelMode:
-          google.maps.TravelMode.DRIVING
-      };
+          origin:
+            ubicacionActual,
+
+          destination: {
+            lat,
+            lng
+          },
+
+          travelMode:
+            google.maps
+              .TravelMode
+              .DRIVING
+
+        };
+
 
       directionsService.route(
+
         solicitud,
-        (resultado, estado) => {
+
+        (
+          resultado,
+          estado
+        ) => {
+
           if (
             estado ===
-            google.maps.DirectionsStatus.OK
+            google.maps
+              .DirectionsStatus
+              .OK
           ) {
-            directionsRenderer.setDirections(
-              resultado
-            );
+
+            directionsRenderer
+              .setDirections(
+                resultado
+              );
+
           } else {
+
             console.warn(
               "Error al calcular la ruta:",
               estado
             );
 
-            alert(
-              "No se pudo calcular la ruta."
+
+            Swal.fire(
+              {
+
+                position:
+                  "center",
+
+                icon:
+                  "error",
+
+                title:
+                  "Ruta no disponible",
+
+                text:
+                  "No se pudo calcular la ruta.",
+
+                confirmButtonColor:
+                  "#f26a21"
+
+              }
             );
+
           }
+
         }
+
       );
+
     }
 
+
+    /* =========================
+       UBICACIÓN ACTUAL
+    ========================== */
+
     function centrarUbicacionUsuario() {
-      if (!ubicacionActual) {
-        alert(
-          "Todavía no se ha encontrado la ubicación del dispositivo."
+
+      if (
+        !ubicacionActual
+      ) {
+
+        Swal.fire(
+          {
+
+            position:
+              "center",
+
+            icon:
+              "info",
+
+            title:
+              "Buscando ubicación",
+
+            text:
+              "Todavía no se ha encontrado la ubicación del dispositivo.",
+
+            confirmButtonColor:
+              "#f26a21"
+
+          }
         );
 
+
         return;
+
       }
+
+
+      cerrarVentanasAbiertas();
+
 
       map.panTo(
         ubicacionActual
       );
 
-      map.setZoom(18);
+
+      map.setZoom(
+        18
+      );
+
 
       mostrarInformacionUsuario();
+
     }
 
+
+    /* =========================
+       MOSTRAR TODOS
+    ========================== */
+
     function mostrarTodosLosMarcadores() {
+
       const limites =
-        new google.maps.LatLngBounds();
+        new google.maps
+          .LatLngBounds();
+
 
       marcadoresClientes.forEach(
         marcador => {
+
           limites.extend(
-            marcador.getPosition()
+            marcador
+              .getPosition()
           );
+
         }
       );
 
-      if (ubicacionActual) {
+
+      if (
+        ubicacionActual
+      ) {
+
         limites.extend(
           ubicacionActual
         );
+
       }
 
-      if (limites.isEmpty()) {
-        alert(
-          "No hay ubicaciones disponibles para mostrar."
+
+      if (
+        limites.isEmpty()
+      ) {
+
+        Swal.fire(
+          {
+
+            position:
+              "center",
+
+            icon:
+              "info",
+
+            title:
+              "Sin ubicaciones",
+
+            text:
+              "No hay ubicaciones disponibles para mostrar.",
+
+            confirmButtonColor:
+              "#f26a21"
+
+          }
         );
 
+
         return;
+
       }
+
 
       cerrarVentanasAbiertas();
 
-      directionsRenderer.set(
-        "directions",
-        null
+
+      directionsRenderer
+        ?.set(
+          "directions",
+          null
+        );
+
+
+      map.fitBounds(
+        limites
       );
 
-      map.fitBounds(limites);
 
       google.maps.event.addListenerOnce(
+
         map,
+
         "bounds_changed",
+
         () => {
-          if (map.getZoom() > 17) {
-            map.setZoom(17);
+
+          if (
+            map.getZoom() >
+            17
+          ) {
+
+            map.setZoom(
+              17
+            );
+
           }
+
         }
+
       );
+
     }
 
+
+    /* =========================
+       CERRAR POPUPS
+    ========================== */
+
+    function cerrarVentanasAbiertas() {
+
+      if (
+        ventanaMapaActual
+      ) {
+
+        ventanaMapaActual.close();
+
+        ventanaMapaActual =
+          null;
+
+      }
+
+
+      if (
+        infoUsuario
+      ) {
+
+        infoUsuario.close();
+
+      }
+
+    }
+
+
+    /* =========================
+       CARRITO
+    ========================== */
+
     function actualizarContadorCarrito() {
+
       const badge =
         document.getElementById(
           "cart-count"
         );
 
-      if (!badge) {
+
+      if (
+        !badge
+      ) {
+
         return;
+
       }
 
-      let carrito = [];
+
+      let carrito =
+        [];
+
 
       try {
+
         const datos =
           JSON.parse(
             localStorage.getItem(
@@ -1530,93 +3022,186 @@
             ) || "[]"
           );
 
+
         carrito =
-          Array.isArray(datos)
+          Array.isArray(
+            datos
+          )
             ? datos
             : [];
+
       } catch (error) {
-        carrito = [];
+
+        carrito =
+          [];
+
       }
+
 
       const total =
         carrito.reduce(
-          (suma, producto) => {
-            return suma + Number(
-              producto.quantity ||
-              producto.cantidad ||
-              0
-            );
+          (
+            suma,
+            producto
+          ) => {
+
+            return suma +
+              Number(
+                producto.quantity ||
+                producto.cantidad ||
+                0
+              );
+
           },
           0
         );
+
 
       badge.textContent =
         total > 99
           ? "99+"
           : total;
 
+
       badge.style.display =
         total > 0
           ? "inline-block"
           : "none";
+
     }
 
-    function normalizarTexto(valor) {
-      return String(valor || "")
+
+    /* =========================
+       UTILIDADES
+    ========================== */
+
+    function normalizarTexto(
+      valor
+    ) {
+
+      return String(
+        valor ||
+        ""
+      )
         .trim()
         .toLowerCase()
-        .normalize("NFD")
+        .normalize(
+          "NFD"
+        )
         .replace(
           /[\u0300-\u036f]/g,
           ""
         );
+
     }
 
-    function escaparHTML(valor) {
-      return String(valor)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
+
+    function escaparHTML(
+      valor
+    ) {
+
+      return String(
+        valor ??
+        ""
+      )
+        .replaceAll(
+          "&",
+          "&amp;"
+        )
+        .replaceAll(
+          "<",
+          "&lt;"
+        )
+        .replaceAll(
+          ">",
+          "&gt;"
+        )
+        .replaceAll(
+          '"',
+          "&quot;"
+        )
+        .replaceAll(
+          "'",
+          "&#039;"
+        );
+
     }
+
+
+    /* =========================
+       EVENTOS
+    ========================== */
 
     window.addEventListener(
       "storage",
       evento => {
-        if (evento.key === "cart") {
+
+        if (
+          evento.key ===
+          "cart"
+        ) {
+
           actualizarContadorCarrito();
+
         }
 
-        if (evento.key === "clientes") {
+
+        if (
+          evento.key ===
+          "clientes"
+        ) {
+
           mostrarClientes();
+
         }
+
       }
     );
+
 
     document.addEventListener(
       "visibilitychange",
       () => {
-        if (!document.hidden) {
+
+        if (
+          !document.hidden
+        ) {
+
           actualizarContadorCarrito();
+
           mostrarClientes();
+
         }
+
       }
     );
+
 
     window.addEventListener(
       "beforeunload",
       () => {
+
         if (
-          watchId !== null &&
+          watchId !==
+            null &&
           navigator.geolocation
         ) {
-          navigator.geolocation.clearWatch(
-            watchId
-          );
+
+          navigator
+            .geolocation
+            .clearWatch(
+              watchId
+            );
+
         }
+
       }
     );
+
+
+    /* =========================
+       FUNCIONES GLOBALES
+    ========================== */
 
     window.initMap =
       initMap;
@@ -1629,7 +3214,14 @@
 
     window.mostrarTodosLosMarcadores =
       mostrarTodosLosMarcadores;
+
+    window.mostrarSelectorRutas =
+      mostrarSelectorRutas;
+
   </script>
+
+
+  <!-- GOOGLE MAPS -->
 
   <script
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCIaHCkpuglZoc8jgWfJRBZaedJvq6caBw&callback=initMap"
