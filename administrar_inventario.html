@@ -52,7 +52,7 @@
       background: var(--background);
       color: var(--text);
       padding-top: 78px;
-      padding-bottom: 35px;
+      padding-bottom: 110px;
       transition: padding-top 0.3s ease;
     }
 
@@ -62,7 +62,8 @@
     }
 
     button,
-    a {
+    a,
+    input {
       -webkit-tap-highlight-color: transparent;
     }
 
@@ -74,7 +75,9 @@
       max-width: 100%;
     }
 
-    /* ENCABEZADO */
+    /* =========================
+       ENCABEZADO
+    ========================== */
 
     .header {
       position: fixed;
@@ -121,7 +124,11 @@
       height: 48px;
       border: 1px solid #373737;
       border-radius: 15px;
-      background: linear-gradient(145deg, #191919, #080808);
+      background: linear-gradient(
+        145deg,
+        #191919,
+        #080808
+      );
       color: #fff;
       display: flex;
       align-items: center;
@@ -138,7 +145,9 @@
       transform: scale(0.96);
     }
 
-    /* BUSCADOR */
+    /* =========================
+       BUSCADOR
+    ========================== */
 
     .search-panel {
       position: fixed;
@@ -151,6 +160,7 @@
       overflow: hidden;
       opacity: 0;
       background: var(--black);
+
       transition:
         max-height 0.3s ease,
         padding 0.3s ease,
@@ -223,7 +233,9 @@
       padding-top: 157px;
     }
 
-    /* CONTENIDO */
+    /* =========================
+       CONTENIDO
+    ========================== */
 
     .container {
       width: min(100%, 1100px);
@@ -254,11 +266,16 @@
       white-space: nowrap;
     }
 
-    /* PRODUCTOS */
+    /* =========================
+       PRODUCTOS
+    ========================== */
 
     .products-grid {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(
+        3,
+        minmax(0, 1fr)
+      );
       gap: 17px;
     }
 
@@ -269,6 +286,7 @@
       border-radius: 20px;
       background: #fff;
       box-shadow: 0 7px 22px rgba(0, 0, 0, 0.07);
+
       transition:
         transform 0.2s ease,
         box-shadow 0.2s ease;
@@ -349,7 +367,9 @@
       white-space: nowrap;
     }
 
-    /* BOTÓN ADMINISTRAR */
+    /* =========================
+       BOTÓN ADMINISTRAR
+    ========================== */
 
     .product-actions {
       display: grid;
@@ -376,7 +396,59 @@
       transform: scale(0.97);
     }
 
-    /* SIN RESULTADOS */
+    /* =========================
+       BOTÓN FLOTANTE CREAR
+    ========================== */
+
+    .floating-create-product {
+      position: fixed;
+      right: 22px;
+      bottom: 22px;
+      z-index: 1500;
+
+      width: 64px;
+      height: 64px;
+
+      border: none;
+      border-radius: 50%;
+
+      background: linear-gradient(
+        135deg,
+        var(--orange),
+        var(--orange-dark)
+      );
+
+      color: #fff;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      font-size: 25px;
+
+      /* SIN SOMBRA */
+      box-shadow: none;
+
+      transition:
+        transform 0.2s ease,
+        background 0.2s ease;
+    }
+
+    .floating-create-product:hover {
+      background: linear-gradient(
+        135deg,
+        #ff7932,
+        #b5420d
+      );
+    }
+
+    .floating-create-product:active {
+      transform: scale(0.92);
+    }
+
+    /* =========================
+       SIN RESULTADOS
+    ========================== */
 
     .empty-state {
       grid-column: 1 / -1;
@@ -423,7 +495,9 @@
       line-height: 1.5;
     }
 
-    /* FORMULARIO DE EDICIÓN */
+    /* =========================
+       FORMULARIO DE EDICIÓN
+    ========================== */
 
     .edit-form {
       display: grid;
@@ -454,17 +528,23 @@
       box-shadow: 0 0 0 3px rgba(242, 106, 33, 0.12);
     }
 
-    /* RESPONSIVE */
+    /* =========================
+       RESPONSIVE
+    ========================== */
 
     @media (max-width: 850px) {
       .products-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns: repeat(
+          2,
+          minmax(0, 1fr)
+        );
       }
     }
 
     @media (max-width: 620px) {
       body {
         padding-top: 70px;
+        padding-bottom: 100px;
       }
 
       body.search-open {
@@ -474,7 +554,10 @@
       .header {
         height: 70px;
         padding: 0 12px;
-        grid-template-columns: 45px minmax(0, 1fr) 45px;
+        grid-template-columns:
+          45px
+          minmax(0, 1fr)
+          45px;
         gap: 8px;
       }
 
@@ -536,6 +619,14 @@
       .info-button {
         min-height: 43px;
       }
+
+      .floating-create-product {
+        right: 16px;
+        bottom: 18px;
+        width: 60px;
+        height: 60px;
+        font-size: 23px;
+      }
     }
 
     @media (max-width: 390px) {
@@ -573,6 +664,14 @@
         padding-inline: 7px;
         font-size: 10px;
       }
+
+      .floating-create-product {
+        width: 56px;
+        height: 56px;
+        right: 14px;
+        bottom: 16px;
+        font-size: 21px;
+      }
     }
   </style>
 </head>
@@ -606,6 +705,9 @@
 
   </header>
 
+
+  <!-- BUSCADOR -->
+
   <div
     class="search-panel"
     id="searchPanel"
@@ -613,7 +715,9 @@
 
     <div class="search-wrapper">
 
-      <i class="fa-solid fa-magnifying-glass search-icon"></i>
+      <i
+        class="fa-solid fa-magnifying-glass search-icon"
+      ></i>
 
       <input
         type="text"
@@ -637,11 +741,16 @@
 
   </div>
 
+
+  <!-- CONTENIDO -->
+
   <main class="container">
 
     <div class="page-heading">
 
-      <h1>Lista de productos</h1>
+      <h1>
+        Lista de productos
+      </h1>
 
       <span
         class="product-count"
@@ -652,10 +761,12 @@
 
     </div>
 
+
     <section
       class="products-grid"
       id="productsGrid"
     ></section>
+
 
     <div
       class="empty-state"
@@ -666,7 +777,9 @@
         <i class="fa-solid fa-box-open"></i>
       </div>
 
-      <h3>No se encontraron productos</h3>
+      <h3>
+        No se encontraron productos
+      </h3>
 
       <p>
         Intenta buscar con otro nombre, código o categoría.
@@ -676,19 +789,43 @@
 
   </main>
 
+
+  <!-- BOTÓN FLOTANTE PARA CREAR PRODUCTO -->
+
+  <button
+    type="button"
+    class="floating-create-product"
+    onclick="irACrearProducto()"
+    aria-label="Crear producto"
+    title="Crear producto"
+  >
+    <i class="fa-solid fa-plus"></i>
+  </button>
+
+
   <script>
+
     let products = cargarProductos();
+
+
+    /* =========================
+       CARGAR PRODUCTOS
+    ========================== */
 
     function cargarProductos() {
       try {
         const datos = JSON.parse(
-          localStorage.getItem("products") || "[]"
+          localStorage.getItem(
+            "products"
+          ) || "[]"
         );
 
         return Array.isArray(datos)
           ? datos
           : [];
+
       } catch (error) {
+
         console.warn(
           "No se pudieron cargar los productos:",
           error
@@ -698,6 +835,7 @@
       }
     }
 
+
     function guardarProductos() {
       localStorage.setItem(
         "products",
@@ -705,7 +843,23 @@
       );
     }
 
+
+    /* =========================
+       CREAR PRODUCTO
+    ========================== */
+
+    function irACrearProducto() {
+      window.location.href =
+        "crear-producto.html";
+    }
+
+
+    /* =========================
+       BUSCADOR
+    ========================== */
+
     function toggleSearch() {
+
       const panel =
         document.getElementById(
           "searchPanel"
@@ -727,15 +881,21 @@
       );
 
       if (estaActivo) {
+
         setTimeout(() => {
           input.focus();
         }, 220);
+
       } else {
+
         input.blur();
+
       }
     }
 
+
     function cerrarBusqueda() {
+
       const panel =
         document.getElementById(
           "searchPanel"
@@ -757,10 +917,14 @@
       input.value = "";
       input.blur();
 
-      renderProductos(products);
+      renderProductos(
+        products
+      );
     }
 
+
     function filtrarProductos() {
+
       const input =
         document.getElementById(
           "searchInput"
@@ -768,42 +932,61 @@
 
       const termino =
         normalizarTexto(
-          input ? input.value : ""
+          input
+            ? input.value
+            : ""
         );
 
       const filtrados =
-        products.filter(producto => {
-          const nombre =
-            normalizarTexto(
-              producto.name ||
-              producto.nombre
+        products.filter(
+          producto => {
+
+            const nombre =
+              normalizarTexto(
+                producto.name ||
+                producto.nombre
+              );
+
+            const codigo =
+              normalizarTexto(
+                producto.code ||
+                producto.codigo
+              );
+
+            const categoria =
+              normalizarTexto(
+                producto.category ||
+                producto.categoria
+              );
+
+            return (
+              nombre.includes(
+                termino
+              ) ||
+              codigo.includes(
+                termino
+              ) ||
+              categoria.includes(
+                termino
+              )
             );
+          }
+        );
 
-          const codigo =
-            normalizarTexto(
-              producto.code ||
-              producto.codigo
-            );
-
-          const categoria =
-            normalizarTexto(
-              producto.category ||
-              producto.categoria
-            );
-
-          return (
-            nombre.includes(termino) ||
-            codigo.includes(termino) ||
-            categoria.includes(termino)
-          );
-        });
-
-      renderProductos(filtrados);
+      renderProductos(
+        filtrados
+      );
     }
+
+
+    /* =========================
+       RENDER PRODUCTOS
+    ========================== */
 
     function renderProductos(
       lista = products
     ) {
+
       const contenedor =
         document.getElementById(
           "productsGrid"
@@ -826,7 +1009,11 @@
           ? "1 producto"
           : `${lista.length} productos`;
 
-      if (lista.length === 0) {
+
+      if (
+        lista.length === 0
+      ) {
+
         estadoVacio.classList.add(
           "show"
         );
@@ -834,124 +1021,157 @@
         return;
       }
 
+
       estadoVacio.classList.remove(
         "show"
       );
 
-      lista.forEach(producto => {
-        const indiceReal =
-          products.indexOf(producto);
 
-        const nombre =
-          obtenerNombreProducto(
-            producto
-          );
+      lista.forEach(
+        producto => {
 
-        const precio =
-          obtenerPrecioProducto(
-            producto
-          );
+          const indiceReal =
+            products.indexOf(
+              producto
+            );
 
-        const cantidad =
-          obtenerCantidadProducto(
-            producto
-          );
+          const nombre =
+            obtenerNombreProducto(
+              producto
+            );
 
-        const codigo =
-          producto.code ||
-          producto.codigo ||
-          "Sin código";
+          const precio =
+            obtenerPrecioProducto(
+              producto
+            );
 
-        const imagen =
-          producto.image ||
-          producto.imagen ||
-          "https://via.placeholder.com/500x400?text=Producto";
+          const cantidad =
+            obtenerCantidadProducto(
+              producto
+            );
 
-        const disponible =
-          cantidad > 0;
+          const codigo =
+            producto.code ||
+            producto.codigo ||
+            "Sin código";
 
-        const tarjeta =
-          document.createElement(
-            "article"
-          );
+          const imagen =
+            producto.image ||
+            producto.imagen ||
+            "https://via.placeholder.com/500x400?text=Producto";
 
-        tarjeta.className =
-          "product-card";
+          const disponible =
+            cantidad > 0;
 
-        tarjeta.innerHTML = `
-          <div class="product-image">
 
-            <img
-              src="${escaparHTML(imagen)}"
-              alt="${escaparHTML(nombre)}"
-              onerror="
-                this.onerror=null;
-                this.src='https://via.placeholder.com/500x400?text=Producto';
-              "
-            >
+          const tarjeta =
+            document.createElement(
+              "article"
+            );
 
-            <span class="stock-badge ${
-              disponible ? "" : "out"
-            }">
-              ${
-                disponible
-                  ? "Disponible"
-                  : "Sin stock"
-              }
-            </span>
+          tarjeta.className =
+            "product-card";
 
-          </div>
 
-          <div class="product-content">
+          tarjeta.innerHTML = `
+            <div class="product-image">
 
-            <h2 class="product-name">
-              ${escaparHTML(nombre)}
-            </h2>
-
-            <div class="product-code">
-              Código:
-              ${escaparHTML(codigo)}
-            </div>
-
-            <div class="product-meta">
-
-              <div class="product-price">
-                $${formatearMoneda(precio)}
-              </div>
-
-              <div class="product-stock">
-                Stock: ${cantidad}
-              </div>
-
-            </div>
-
-            <div class="product-actions">
-
-              <button
-                type="button"
-                class="info-button"
-                onclick="mostrarOpcionesProducto(${indiceReal})"
-                aria-label="Administrar producto"
-                title="Editar o eliminar"
+              <img
+                src="${escaparHTML(
+                  imagen
+                )}"
+                alt="${escaparHTML(
+                  nombre
+                )}"
+                onerror="
+                  this.onerror=null;
+                  this.src='https://via.placeholder.com/500x400?text=Producto';
+                "
               >
-                <i class="fa-solid fa-circle-info"></i>
-                Administrar producto
-              </button>
+
+              <span
+                class="stock-badge ${
+                  disponible
+                    ? ""
+                    : "out"
+                }"
+              >
+                ${
+                  disponible
+                    ? "Disponible"
+                    : "Sin stock"
+                }
+              </span>
 
             </div>
 
-          </div>
-        `;
 
-        contenedor.appendChild(
-          tarjeta
-        );
-      });
+            <div class="product-content">
+
+              <h2 class="product-name">
+                ${escaparHTML(
+                  nombre
+                )}
+              </h2>
+
+
+              <div class="product-code">
+                Código:
+                ${escaparHTML(
+                  codigo
+                )}
+              </div>
+
+
+              <div class="product-meta">
+
+                <div class="product-price">
+                  $${formatearMoneda(
+                    precio
+                  )}
+                </div>
+
+                <div class="product-stock">
+                  Stock:
+                  ${cantidad}
+                </div>
+
+              </div>
+
+
+              <div class="product-actions">
+
+                <button
+                  type="button"
+                  class="info-button"
+                  onclick="mostrarOpcionesProducto(${indiceReal})"
+                  aria-label="Administrar producto"
+                >
+                  <i class="fa-solid fa-pen-to-square"></i>
+                  Administrar producto
+                </button>
+
+              </div>
+
+            </div>
+          `;
+
+          contenedor.appendChild(
+            tarjeta
+          );
+        }
+      );
     }
+
+
+    /* =========================
+       ADMINISTRAR PRODUCTO
+    ========================== */
 
     function mostrarOpcionesProducto(
       index
     ) {
+
       const producto =
         products[index];
 
@@ -974,6 +1194,11 @@
           producto
         );
 
+      const costo =
+        obtenerCostoProducto(
+          producto
+        );
+
       const codigo =
         producto.code ||
         producto.codigo ||
@@ -984,7 +1209,9 @@
         producto.categoria ||
         "Sin categoría";
 
+
       Swal.fire({
+
         position: "center",
 
         title:
@@ -993,7 +1220,6 @@
         html: `
           <div style="
             text-align:left;
-            padding:2px;
           ">
 
             <div style="
@@ -1012,14 +1238,28 @@
                 color:#111;
                 font-size:17px;
               ">
-                ${escaparHTML(nombre)}
+                ${escaparHTML(
+                  nombre
+                )}
               </strong>
+
+              <b style="color:#111;">
+                Costo:
+              </b>
+
+              $${formatearMoneda(
+                costo
+              )}
+
+              <br>
 
               <b style="color:#111;">
                 Precio:
               </b>
 
-              $${formatearMoneda(precio)}
+              $${formatearMoneda(
+                precio
+              )}
 
               <br>
 
@@ -1035,7 +1275,9 @@
                 Código:
               </b>
 
-              ${escaparHTML(codigo)}
+              ${escaparHTML(
+                codigo
+              )}
 
               <br>
 
@@ -1043,9 +1285,12 @@
                 Categoría:
               </b>
 
-              ${escaparHTML(categoria)}
+              ${escaparHTML(
+                categoria
+              )}
 
             </div>
+
 
             <div style="
               display:grid;
@@ -1067,13 +1312,16 @@
                   cursor:pointer;
                 "
               >
+
                 <i
                   class="fa-solid fa-pen-to-square"
                   style="margin-right:7px;"
                 ></i>
 
                 Editar
+
               </button>
+
 
               <button
                 type="button"
@@ -1089,12 +1337,14 @@
                   cursor:pointer;
                 "
               >
+
                 <i
                   class="fa-regular fa-trash-can"
                   style="margin-right:7px;"
                 ></i>
 
                 Eliminar
+
               </button>
 
             </div>
@@ -1108,45 +1358,63 @@
         showCloseButton:
           true,
 
-        didOpen: popup => {
-          const botonEditar =
-            popup.querySelector(
-              "#editarProductoSwal"
-            );
+        didOpen:
+          popup => {
 
-          const botonEliminar =
-            popup.querySelector(
-              "#eliminarProductoSwal"
-            );
+            popup
+              .querySelector(
+                "#editarProductoSwal"
+              )
+              ?.addEventListener(
+                "click",
+                () => {
 
-          botonEditar?.addEventListener(
-            "click",
-            () => {
-              Swal.close();
+                  Swal.close();
 
-              editarProducto(index);
-            }
-          );
+                  editarProducto(
+                    index
+                  );
 
-          botonEliminar?.addEventListener(
-            "click",
-            () => {
-              Swal.close();
+                }
+              );
 
-              eliminarProducto(index);
-            }
-          );
-        }
+
+            popup
+              .querySelector(
+                "#eliminarProductoSwal"
+              )
+              ?.addEventListener(
+                "click",
+                () => {
+
+                  Swal.close();
+
+                  eliminarProducto(
+                    index
+                  );
+
+                }
+              );
+          }
       });
     }
 
-    function editarProducto(index) {
+
+    /* =========================
+       EDITAR
+    ========================== */
+
+    function editarProducto(
+      index
+    ) {
+
       const producto =
         products[index];
 
       if (!producto) {
         return;
       }
+
 
       const nombreActual =
         obtenerNombreProducto(
@@ -1178,8 +1446,11 @@
         producto.categoria ||
         "";
 
+
       Swal.fire({
-        position: "center",
+
+        position:
+          "center",
 
         title:
           "Editar producto",
@@ -1188,6 +1459,7 @@
           <div class="edit-form">
 
             <label class="edit-label">
+
               Nombre
 
               <input
@@ -1198,9 +1470,12 @@
                   nombreActual
                 )}"
               >
+
             </label>
 
+
             <label class="edit-label">
+
               Costo
 
               <input
@@ -1211,9 +1486,12 @@
                 step="0.01"
                 value="${costoActual}"
               >
+
             </label>
 
+
             <label class="edit-label">
+
               Precio
 
               <input
@@ -1224,9 +1502,12 @@
                 step="0.01"
                 value="${precioActual}"
               >
+
             </label>
 
+
             <label class="edit-label">
+
               Cantidad
 
               <input
@@ -1237,9 +1518,12 @@
                 step="1"
                 value="${cantidadActual}"
               >
+
             </label>
 
+
             <label class="edit-label">
+
               Código
 
               <input
@@ -1250,9 +1534,12 @@
                   codigoActual
                 )}"
               >
+
             </label>
 
+
             <label class="edit-label">
+
               Categoría
 
               <input
@@ -1263,6 +1550,7 @@
                   categoriaActual
                 )}"
               >
+
             </label>
 
           </div>
@@ -1287,6 +1575,7 @@
           false,
 
         preConfirm: () => {
+
           const nombre =
             document
               .getElementById(
@@ -1338,7 +1627,9 @@
               .value
               .trim();
 
+
           if (!nombre) {
+
             Swal.showValidationMessage(
               "El nombre es obligatorio."
             );
@@ -1346,10 +1637,14 @@
             return false;
           }
 
+
           if (
-            !Number.isFinite(costo) ||
+            !Number.isFinite(
+              costo
+            ) ||
             costo < 0
           ) {
+
             Swal.showValidationMessage(
               "Introduce un costo válido."
             );
@@ -1357,10 +1652,14 @@
             return false;
           }
 
+
           if (
-            !Number.isFinite(precio) ||
+            !Number.isFinite(
+              precio
+            ) ||
             precio < 0
           ) {
+
             Swal.showValidationMessage(
               "Introduce un precio válido."
             );
@@ -1368,16 +1667,21 @@
             return false;
           }
 
+
           if (
-            !Number.isInteger(cantidad) ||
+            !Number.isInteger(
+              cantidad
+            ) ||
             cantidad < 0
           ) {
+
             Swal.showValidationMessage(
               "Introduce una cantidad válida."
             );
 
             return false;
           }
+
 
           return {
             nombre,
@@ -1388,59 +1692,90 @@
             categoria
           };
         }
-      }).then(resultado => {
-        if (!resultado.isConfirmed) {
-          return;
+
+      }).then(
+        resultado => {
+
+          if (
+            !resultado.isConfirmed
+          ) {
+            return;
+          }
+
+          const datos =
+            resultado.value;
+
+
+          establecerNombreProducto(
+            producto,
+            datos.nombre
+          );
+
+          establecerCostoProducto(
+            producto,
+            datos.costo
+          );
+
+          establecerPrecioProducto(
+            producto,
+            datos.precio
+          );
+
+          establecerCantidadProducto(
+            producto,
+            datos.cantidad
+          );
+
+          establecerCodigoProducto(
+            producto,
+            datos.codigo
+          );
+
+          establecerCategoriaProducto(
+            producto,
+            datos.categoria
+          );
+
+
+          guardarProductos();
+
+          filtrarProductos();
+
+
+          Swal.fire({
+
+            toast:
+              true,
+
+            position:
+              "top",
+
+            icon:
+              "success",
+
+            title:
+              "Producto actualizado",
+
+            showConfirmButton:
+              false,
+
+            timer:
+              1600
+          });
+
         }
-
-        const datos =
-          resultado.value;
-
-        establecerNombreProducto(
-          producto,
-          datos.nombre
-        );
-
-        establecerCostoProducto(
-          producto,
-          datos.costo
-        );
-
-        establecerPrecioProducto(
-          producto,
-          datos.precio
-        );
-
-        establecerCantidadProducto(
-          producto,
-          datos.cantidad
-        );
-
-        establecerCodigoProducto(
-          producto,
-          datos.codigo
-        );
-
-        establecerCategoriaProducto(
-          producto,
-          datos.categoria
-        );
-
-        guardarProductos();
-        filtrarProductos();
-
-        Swal.fire({
-          toast: true,
-          position: "top",
-          icon: "success",
-          title: "Producto actualizado",
-          showConfirmButton: false,
-          timer: 1600
-        });
-      });
+      );
     }
 
-    function eliminarProducto(index) {
+
+    /* =========================
+       ELIMINAR
+    ========================== */
+
+    function eliminarProducto(
+      index
+    ) {
+
       const producto =
         products[index];
 
@@ -1448,13 +1783,17 @@
         return;
       }
 
+
       const nombre =
         obtenerNombreProducto(
           producto
         );
 
+
       Swal.fire({
-        position: "center",
+
+        position:
+          "center",
 
         title:
           "¿Eliminar producto?",
@@ -1464,15 +1803,19 @@
             color:#4b5563;
             line-height:1.6;
           ">
+
             Se eliminará
 
             <strong style="
               color:#111;
             ">
-              ${escaparHTML(nombre)}
+              ${escaparHTML(
+                nombre
+              )}
             </strong>
 
             del inventario.
+
           </div>
         `,
 
@@ -1493,33 +1836,61 @@
 
         cancelButtonColor:
           "#737985"
-      }).then(resultado => {
-        if (!resultado.isConfirmed) {
-          return;
+
+      }).then(
+        resultado => {
+
+          if (
+            !resultado.isConfirmed
+          ) {
+            return;
+          }
+
+
+          products.splice(
+            index,
+            1
+          );
+
+
+          guardarProductos();
+
+          filtrarProductos();
+
+
+          Swal.fire({
+
+            toast:
+              true,
+
+            position:
+              "top",
+
+            icon:
+              "success",
+
+            title:
+              "Producto eliminado",
+
+            showConfirmButton:
+              false,
+
+            timer:
+              1600
+          });
         }
-
-        products.splice(
-          index,
-          1
-        );
-
-        guardarProductos();
-        filtrarProductos();
-
-        Swal.fire({
-          toast: true,
-          position: "top",
-          icon: "success",
-          title: "Producto eliminado",
-          showConfirmButton: false,
-          timer: 1600
-        });
-      });
+      );
     }
+
+
+    /* =========================
+       DATOS DEL PRODUCTO
+    ========================== */
 
     function obtenerNombreProducto(
       producto
     ) {
+
       return (
         producto.name ||
         producto.nombre ||
@@ -1527,9 +1898,11 @@
       );
     }
 
+
     function obtenerCostoProducto(
       producto
     ) {
+
       return Number(
         producto.cost ??
         producto.costo ??
@@ -1537,9 +1910,11 @@
       );
     }
 
+
     function obtenerPrecioProducto(
       producto
     ) {
+
       return Number(
         producto.price ??
         producto.precio ??
@@ -1547,92 +1922,120 @@
       );
     }
 
+
     function obtenerCantidadProducto(
       producto
     ) {
-      return Number(
-        producto.quantity ??
-        producto.cantidad ??
-        producto.stock ??
-        0
+
+      return Math.max(
+        0,
+        Number(
+          producto.quantity ??
+          producto.cantidad ??
+          producto.stock ??
+          0
+        )
       );
     }
+
 
     function establecerNombreProducto(
       producto,
       valor
     ) {
-      if ("name" in producto) {
-        producto.name = valor;
-      } else {
-        producto.nombre = valor;
-      }
+
+      producto.name =
+        valor;
+
+      producto.nombre =
+        valor;
     }
+
 
     function establecerCostoProducto(
       producto,
       valor
     ) {
-      if ("cost" in producto) {
-        producto.cost = valor;
-      } else {
-        producto.costo = valor;
-      }
+
+      producto.cost =
+        Number(valor);
+
+      producto.costo =
+        Number(valor);
     }
+
 
     function establecerPrecioProducto(
       producto,
       valor
     ) {
-      if ("price" in producto) {
-        producto.price = valor;
-      } else {
-        producto.precio = valor;
-      }
+
+      producto.price =
+        Number(valor);
+
+      producto.precio =
+        Number(valor);
     }
+
 
     function establecerCantidadProducto(
       producto,
       valor
     ) {
-      if ("quantity" in producto) {
-        producto.quantity = valor;
-      } else if (
-        "cantidad" in producto
-      ) {
-        producto.cantidad = valor;
-      } else if (
-        "stock" in producto
-      ) {
-        producto.stock = valor;
-      } else {
-        producto.quantity = valor;
-      }
+
+      const cantidad =
+        Math.max(
+          0,
+          Number(
+            valor || 0
+          )
+        );
+
+      producto.quantity =
+        cantidad;
+
+      producto.cantidad =
+        cantidad;
+
+      producto.stock =
+        cantidad;
     }
+
 
     function establecerCodigoProducto(
       producto,
       valor
     ) {
-      if ("code" in producto) {
-        producto.code = valor;
-      } else {
-        producto.codigo = valor;
-      }
+
+      producto.code =
+        valor;
+
+      producto.codigo =
+        valor;
     }
+
 
     function establecerCategoriaProducto(
       producto,
       valor
     ) {
-      if ("category" in producto) {
-        producto.category = valor;
-      } else {
-        producto.categoria = valor;
-      }
+
+      producto.category =
+        valor;
+
+      producto.categoria =
+        valor;
     }
 
-    function formatearMoneda(valor) {
+
+    /* =========================
+       UTILIDADES
+    ========================== */
+
+    function formatearMoneda(
+      valor
+    ) {
+
       return Number(
         valor || 0
       ).toLocaleString(
@@ -1644,22 +2047,32 @@
       );
     }
 
-    function normalizarTexto(valor) {
+
+    function normalizarTexto(
+      valor
+    ) {
+
       return String(
         valor || ""
       )
         .trim()
         .toLowerCase()
-        .normalize("NFD")
+        .normalize(
+          "NFD"
+        )
         .replace(
           /[\u0300-\u036f]/g,
           ""
         );
     }
 
-    function escaparHTML(valor) {
+
+    function escaparHTML(
+      valor
+    ) {
+
       return String(
-        valor || ""
+        valor ?? ""
       )
         .replaceAll(
           "&",
@@ -1683,27 +2096,42 @@
         );
     }
 
-    function escaparAtributo(valor) {
+
+    function escaparAtributo(
+      valor
+    ) {
+
       return escaparHTML(
         valor
       );
     }
 
+
+    /* =========================
+       EVENTOS
+    ========================== */
+
     document.addEventListener(
       "DOMContentLoaded",
       () => {
-        products = cargarProductos();
+
+        products =
+          cargarProductos();
+
         renderProductos();
       }
     );
 
+
     window.addEventListener(
       "storage",
       evento => {
+
         if (
           evento.key ===
           "products"
         ) {
+
           products =
             cargarProductos();
 
@@ -1711,11 +2139,16 @@
         }
       }
     );
+
 
     document.addEventListener(
       "visibilitychange",
       () => {
-        if (!document.hidden) {
+
+        if (
+          !document.hidden
+        ) {
+
           products =
             cargarProductos();
 
@@ -1723,6 +2156,19 @@
         }
       }
     );
+
+
+    window.addEventListener(
+      "pageshow",
+      () => {
+
+        products =
+          cargarProductos();
+
+        filtrarProductos();
+      }
+    );
+
   </script>
 
 </body>
